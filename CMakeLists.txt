@@ -90,9 +90,9 @@ endif(QT_LRELEASE_EXECUTABLE)
 message(STATUS "Generating translations ...")
 
 if(SVN_VERSION)
-    execute_process(COMMAND find ${CMAKE_CURRENT_SOURCE_DIR} -name *.ts COMMAND xargs ${QT_LRELEASE_EXECUTABLE} -silent -nounfinished)
+    execute_process(COMMAND find ${CMAKE_CURRENT_SOURCE_DIR} -name *.ts -print0 COMMAND xargs -0 ${QT_LRELEASE_EXECUTABLE} -silent -nounfinished)
 else(SVN_VERSION)
-    execute_process(COMMAND find ${CMAKE_CURRENT_SOURCE_DIR} -name *.ts COMMAND xargs ${QT_LRELEASE_EXECUTABLE} -silent)
+    execute_process(COMMAND find ${CMAKE_CURRENT_SOURCE_DIR} -name *.ts -print0 COMMAND xargs -0 ${QT_LRELEASE_EXECUTABLE} -silent)
 endif(SVN_VERSION)
 
 set(PLUGIN_DIR "${CMAKE_INSTALL_LIBDIR}/qmmp-${QMMP_VERSION_MAJOR}.${QMMP_VERSION_MINOR}" CACHE STRING "plugin path")
