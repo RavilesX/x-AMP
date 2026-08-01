@@ -1,7 +1,64 @@
+# --- Subversion mirror (upstream sync workspace) ---
+.svn/
+
+# --- qmake build output ---
 *.qm
 .build
 .qmake.stash
-Makefile
+qmmp.pro.*
 bin/qmmp
 lib
-qmmp.pro.*
+
+# --- CMake build output ---
+build/
+Build/
+build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+cmake_uninstall.cmake
+install_manifest.txt
+compile_commands.json
+Makefile
+*.pc
+Testing/
+
+# --- Qt moc/uic/rcc generated ---
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+*_automoc*
+.qt/
+
+# --- Compiled objects / libraries / executables ---
+*.d
+*.o
+*.obj
+*.lo
+*.slo
+*.so
+*.so.*
+*.dylib
+*.dll
+*.a
+*.la
+*.lai
+*.lib
+*.exe
+*.out
+*.app
+*.gch
+*.pch
+*.ilk
+*.pdb
+*.dwo
+
+# --- Editor / OS / misc ---
+*.tmp
+*.log
+*.bak
+*.swp
+.cache/
+.claude/settings.local.json
+.idea/
+.vscode/
