@@ -10,7 +10,7 @@ Version control is **Subversion**, not git (`.svn/`). Patches/bugs go to the Sou
 
 ## Build
 
-Two build systems exist in parallel; CMake is primary, qmake is a fallback. `lrelease` (qttools) must be installed — CMake compiles all `.ts` files at configure time and fails hard without it.
+CMake is the only build system. Upstream Qmmp also ships qmake `.pro`/`.pri` files; this fork deleted them, so a `git merge upstream` will reintroduce them as `deleted by us` conflicts — `git rm` them (see PLAN.md). `lrelease` (qttools) must be installed — CMake compiles all `.ts` files at configure time and fails hard without it.
 
 ```sh
 cmake ./ && make -j$(nproc)          # in-source (what README documents)
@@ -31,9 +31,13 @@ cmake ./ -DSVN_VERSION=1                # appends svn rev; also drops unfinished
 
 Plugin availability is auto-detected via `pkg_check_modules`; a `USE_X=ON` with a missing library silently yields a disabled plugin. The configure summary printed at the end of [CMakeLists.txt](CMakeLists.txt) is the authoritative check for what actually got enabled.
 
-qmake path: `qmake PREFIX=... && make`; plugin selection lives in the `CONFIG += *_PLUGIN` lines of [qmmp.pri](qmmp.pri), or `qmake DISABLED_PLUGINS+=JACK_PLUGIN`.
-
 **No test suite exists.** Verification is manual: build, install (or run from the build tree), play files.
+
+### Fork naming
+
+`APP_NAME_SUFFIX` is set to `-xamp` in [CMakeLists.txt](CMakeLists.txt), so x-AMP installs alongside upstream qmmp: binary `qmmp-xamp`, libs `libqmmp-xamp.so`, plugins in `lib/qmmp-<major>.<minor>-xamp`, data in `share/qmmp-xamp`. Runtime identity is spelled `xamp` (no dash — D-Bus rejects `-` in the last component of a service name): config/cache/data under `~/.config/xamp` etc. via `QCoreApplication::organizationName()`, IPC socket `/tmp/xamp.sock.$UID`, MPRIS `org.mpris.MediaPlayer2.xamp`.
+
+Asset files keep their upstream names on disk; the suffix is applied at install time with `install(... RENAME ...)`. Do not rename the sources — [src/app/images/images.qrc](src/app/images/images.qrc) and [main.cpp](src/app/main.cpp) reference them by their plain names.
 
 API docs: `cd doc && doxygen Doxyfile`.
 
@@ -100,8 +104,7 @@ Two UIs ship: `skinned` (XMMS/Winamp 2.x skins, needs X11/xcb) and `qsui` (plain
 1. Create `src/plugins/<Category>/<name>/` with factory + implementation.
 2. Add a `CMakeLists.txt` following [src/plugins/Input/vorbis/CMakeLists.txt](src/plugins/Input/vorbis/CMakeLists.txt): `pkg_check_modules(... IMPORTED_TARGET)`, guard `add_library(... MODULE)` on `<LIB>_FOUND`, `install(TARGETS ... DESTINATION ${PLUGIN_DIR}/<Category>)`.
 3. Register the subdir + `option(USE_X ...)` in the category `CMakeLists.txt`, and add a `PRINT_SUMMARY` line in the top-level summary block.
-4. Mirror it in the qmake files (`<name>.pro`, category `.pro`, `CONFIG += X_PLUGIN` in [qmmp.pri](qmmp.pri)) if keeping qmake parity.
-5. Add `translations/translations.qrc` + `<name>_plugin_en.ts` and register in [.tx/config](.tx/config).
+4. Add `translations/translations.qrc` + `<name>_plugin_en.ts` and register in [.tx/config](.tx/config).
 
 ### Single instance / CLI
 
