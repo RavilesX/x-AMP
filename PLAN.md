@@ -303,12 +303,28 @@ Sin suite de tests, el workflow verifica lo que sí se puede verificar:
 deshabilitado: que aparezca un plugin nuevo suele significar que el runner ganó
 una dependencia, y eso no debe romper el build.
 
-**La baseline no está commiteada todavía a propósito.** Las dependencias del
-runner no tienen por qué coincidir con las de esta máquina, así que commitear
-una generada en local haría fallar el primer run. Sin baseline el script
-imprime el resumen y sale con 0; el primer run de CI dirá exactamente qué
-commitear como `ci/plugins-baseline.txt`. **Hasta entonces la guardia está
-inactiva.**
+`ci/plugins-baseline.txt` se generó en local (60 habilitados, 10
+deshabilitados). Es razonable pese a venir de otra máquina: antes de instalar
+dependencias, `pkg-config` en este equipo solo veía `alsa`, así que el entorno
+local es prácticamente la lista de apt del workflow. Y la imagen
+`ubuntu-24.04` trae paquetes extra preinstalados, lo que solo puede habilitar
+*más* plugins — dirección que el script trata como ganancia, no como fallo.
+
+Para regenerarla tras un cambio legítimo:
+
+```sh
+cmake -B build 2>&1 | tee /tmp/cfg.log
+sed -n 's/^\(.*[A-Za-z0-9)]\)[ .,]\{2,\}\(enabled\|disabled\)$/\1 = \2/p' \
+  /tmp/cfg.log | sort > ci/plugins-baseline.txt
+```
+
+Sin baseline el script imprime el resumen y sale con 0, para que el primer run
+diga qué commitear en vez de fallar por un archivo que nadie podía haber
+escrito aún.
+
+**Nota:** los logs y artefactos de Actions requieren autenticación incluso en
+repos públicos (la API devuelve 403), así que sin `gh` instalado ni token hay
+que mirarlos por la web.
 
 ### Detalles que costaron
 
