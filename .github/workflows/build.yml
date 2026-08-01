@@ -1,0 +1,108 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# A second push to the same branch supersedes the first; no point burning
+# runner minutes on a build nobody will look at.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # Pinned rather than ubuntu-latest: the compiler version decides which
+    # warnings appear, and this matches the development machine (GCC 13).
+    runs-on: ubuntu-24.04
+
+    # The implicit shell is "bash -e", without pipefail, which would let a
+    # failing cmake or make pass because tee exits 0. "shell: bash" is
+    # "bash -eo pipefail".
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            cmake build-essential pkg-config \
+            qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools \
+            qt6-l10n-tools qt6-multimedia-dev libgl1-mesa-dev \
+            libtag1-dev libasound2-dev libpulse-dev libpipewire-0.3-dev \
+            libjack-jackd2-dev libogg-dev libvorbis-dev libflac-dev \
+            libmad0-dev libmpg123-dev libopus-dev libopusfile-dev \
+            libsndfile1-dev libwavpack-dev libmpcdec-dev libgme-dev \
+            libsidplayfp-dev libxmp-dev libfaad-dev libwildmidi-dev \
+            libarchive-dev libcurl4-openssl-dev libmms-dev \
+            libavcodec-dev libavformat-dev libavutil-dev \
+            libcdio-dev libcdio-cdda-dev libcdio-paranoia-dev libcddb2-dev \
+            libshout3-dev libsoxr-dev libbs2b-dev libenca-dev \
+            libprojectm-dev ladspa-sdk libx11-dev libxcb1-dev \
+            desktop-file-utils appstream
+
+      - name: Configure
+        run: cmake -B build 2>&1 | tee configure.log
+
+      # x-AMP has no test suite, so this is the main regression guard: a
+      # change in libqmmp can silently disable a distant plugin, and a
+      # missing dependency only ever shows up here.
+      - name: Check for plugin regressions
+        run: ./ci/plugin-summary.sh configure.log
+
+      - name: Build
+        run: make -C build -j"$(nproc)" 2>&1 | tee build.log
+
+      # Reported, not enforced: -Werror would turn every upstream merge into a
+      # blocked build over warnings that are not ours to fix. The tree built
+      # warning-free when this was set up, so any number here is worth reading.
+      - name: Report compiler warnings
+        run: |
+          count=$(grep -c 'warning:' build.log || true)
+          {
+            echo "### Compiler warnings: $count"
+            if [ "$count" -gt 0 ]; then
+              echo
+              echo '```'
+              grep 'warning:' build.log | sort -u | head -50
+              echo '```'
+            fi
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      # Catches the class of bug that broke phase 2: install() rules whose
+      # source file does not exist. It never shows up in a plain build.
+      - name: Staged install
+        run: |
+          make -C build install DESTDIR="$PWD/stage"
+          echo "Installed files: $(find stage -type f -o -type l | wc -l)"
+          echo "Without the -xamp suffix (metainfo is the only expected one):"
+          find stage -type f -o -type l | grep -v -- '-xamp' || true
+
+      # appstreamcli exits non-zero on warnings, not just errors, so this step
+      # is stricter than it looks. That is deliberate: the metadata is small
+      # and the fork's AppStream identity is worth keeping exactly right.
+      - name: Validate desktop entries and AppStream metadata
+        run: |
+          # The solid/actions entry is a KDE Solid action (Type=Service), not
+          # a standard desktop entry; desktop-file-validate rejects it both
+          # here and upstream, so it is deliberately not checked.
+          desktop-file-validate stage/usr/local/share/applications/*.desktop
+          appstreamcli validate --no-net \
+            stage/usr/local/share/metainfo/io.github.ravilesx.xamp.metainfo.xml
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: |
+            configure.log
+            build.log
+          retention-days: 14

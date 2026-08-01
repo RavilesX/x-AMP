@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Qmmp — Qt6-based audio player (C++17, GPL-2+). Version comes from `#define QMMP_VERSION_*` in [src/qmmp/qmmp.h](src/qmmp/qmmp.h) — CMake parses that header, so bumping the version means editing it (the checkout directory name is unrelated to the actual version).
+x-AMP — Qt6-based audio player (C++17, GPL-2+), a git fork of [Qmmp](https://qmmp.ylsoftware.com/) started from SVN trunk r13210. Version comes from `#define QMMP_VERSION_*` in [src/qmmp/qmmp.h](src/qmmp/qmmp.h) — CMake parses that header, so bumping the version means editing it (the checkout directory name is unrelated to the actual version).
 
-Version control is **Subversion**, not git (`.svn/`). Patches/bugs go to the SourceForge tracker (see [README](README)).
+Upstream Qmmp itself uses Subversion and a SourceForge tracker; x-AMP does not. Work happens on `main`, upstream snapshots land on the `upstream` branch tagged `upstream/rNNNNN`, and bugs go to this repository's issues. [PLAN.md](PLAN.md) is the continuity document: current state, the upstream-merge procedure, and the traps already found.
 
 ## Build
 

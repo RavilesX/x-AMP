@@ -1,5 +1,7 @@
 # x-AMP
 
+[![build](https://github.com/RavilesX/x-AMP/actions/workflows/build.yml/badge.svg)](https://github.com/RavilesX/x-AMP/actions/workflows/build.yml)
+
 Reproductor de audio para escritorio, basado en Qt 6.
 
 x-AMP es un **fork de [Qmmp](https://qmmp.ylsoftware.com/)**, creado por Ilya Kotov. El código base corresponde al *trunk* de Qmmp 2.4 (desarrollo), revisión SVN r13210.
@@ -15,10 +17,12 @@ Partir de una base madura y estable para construir un reproductor propio: mejora
 | | |
 |---|---|
 | Base Qmmp importada | ✅ r13210 |
-| Rebranding (nombre, rutas de configuración, instalación paralela) | 🚧 en curso |
+| Rebranding (nombre, rutas de configuración, instalación paralela) | ✅ |
+| Integración continua | ✅ |
 | Mejoras propias | 📋 pendientes |
 
-Aún no hay releases. El código actual es, en lo esencial, Qmmp sin modificar.
+Aún no hay releases. Más allá del rebranding y de dos arreglos de compilación,
+el código es todavía el de Qmmp sin modificar.
 
 ## Ramas
 
@@ -40,6 +44,10 @@ Al terminar la configuración, CMake imprime un resumen con los plugins realment
 ```sh
 cmake -B build -DUSE_JACK:BOOL=FALSE
 ```
+
+x-AMP se instala **junto a Qmmp**, sin pisarlo: el ejecutable es `qmmp-xamp`, las librerías llevan el sufijo `-xamp` y la configuración vive en `~/.config/xamp`. Los dos reproductores pueden estar instalados y ejecutándose a la vez.
+
+La lista exacta de paquetes de desarrollo para Ubuntu/Mint está en [PLAN.md](PLAN.md) y es la misma que usa el workflow de [integración continua](.github/workflows/build.yml).
 
 Detalles de arquitectura, opciones de compilación y cómo escribir plugins: [CLAUDE.md](CLAUDE.md).
 

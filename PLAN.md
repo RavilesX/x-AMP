@@ -19,7 +19,10 @@ Se mantienen separados a propósito: si `.svn` y `.git` vivieran en el mismo ár
 ## 2. Estado actual
 
 ```
-b30a443 (main)     Fix distclean deleting unrelated directories
+33f3b09 (main)     Record phases 1-2 in PLAN.md, drop qmake from CLAUDE.md
+89eee43            Install and run alongside upstream qmmp as x-AMP
+764bd25            Remove the qmake build system
+b30a443            Fix distclean deleting unrelated directories
 341751a            Fix translation build when source path contains spaces
 f13691f            Add PLAN.md working plan
 fd3edb6            Remove stale translated READMEs
@@ -36,10 +39,14 @@ Hecho:
 - [x] `README.md` propio: aviso de fork, GPL-2+ heredada, CC BY-SA 4.0 del skin *Glare*, créditos a `AUTHORS`.
 - [x] Eliminados `README`, `README.RUS`, `README.UKR` (traducciones obsoletas del README de Qmmp).
 - [x] `CLAUDE.md` con arquitectura y guía de plugins.
-- [x] **Fase 1 — línea base que compila.** Ver abajo.
+- [x] **Fase 1 — línea base que compila.**
+- [x] **Fase 2 — rebranding e instalación paralela.**
+- [x] **Fase 3 — integración continua.**
 
-Las únicas modificaciones al código de Qmmp hasta ahora son los dos arreglos de
-build de la Fase 1; el código del reproductor sigue intacto.
+Lo tocado del código de Qmmp hasta ahora: dos arreglos de build (Fase 1) y el
+rebranding (Fase 2), más la eliminación de qmake. La lógica del reproductor
+—motor de audio, decodificadores, interfaces— sigue intacta. La Fase 4 está sin
+definir.
 
 ## 3. Ramas y sincronización con upstream
 
@@ -160,11 +167,10 @@ tiene que ser `xamp` de todos modos. Un solo identificador para todo.
 
 Checklist:
 
-1. **Sufijo de compilación** — descomentar y ajustar en [CMakeLists.txt:101](CMakeLists.txt#L101):
+1. **Sufijo de compilación** — descomentar y ajustar en [CMakeLists.txt](CMakeLists.txt):
    ```cmake
    set(APP_NAME_SUFFIX "-xamp")
    ```
-   Equivalente qmake en [qmmp.pri:50](qmmp.pri#L50).
 
 2. **⚠️ `PLUGIN_DIR` no lleva sufijo.** [CMakeLists.txt:98](CMakeLists.txt#L98)
    lo fija a `<libdir>/qmmp-<major>.<minor>`, sin `APP_NAME_SUFFIX`. Hoy no
@@ -273,9 +279,60 @@ Checklist:
 Pendiente de comprobar a mano: instalar de verdad con `sudo make -C build
 install` y ver los dos reproductores corriendo a la vez.
 
-## Fase 3 — Integración continua
+## Fase 3 — Integración continua ✅ hecha
 
-Workflow de GitHub Actions en Ubuntu que ejecute `cmake -B build && make -C build -j`. Con ~50 plugins opcionales y sin tests, un cambio en `libqmmp` puede romper plugins lejanos sin aviso. Instalar las dependencias opcionales principales en el runner para que el build cubra más superficie que un build mínimo.
+[.github/workflows/build.yml](.github/workflows/build.yml), sobre
+`ubuntu-24.04` fijado (no `ubuntu-latest`: la versión del compilador decide qué
+warnings aparecen, y esa imagen trae GCC 13, igual que la máquina de
+desarrollo). Dispara en push y PR contra `main`, más `workflow_dispatch`;
+`concurrency` cancela builds superados por un push posterior.
+
+Sin suite de tests, el workflow verifica lo que sí se puede verificar:
+
+| Paso | Qué atrapa |
+|---|---|
+| Configurar + `ci/plugin-summary.sh` | Un plugin que pasa de habilitado a deshabilitado |
+| Build con `-Wall -Wextra` | Errores de compilación; los warnings se reportan |
+| `make install DESTDIR=…` | Reglas `install()` cuyo archivo de origen no existe |
+| `desktop-file-validate`, `appstreamcli` | Metadatos de escritorio rotos |
+
+### La guardia de plugins
+
+`ci/plugin-summary.sh` normaliza el resumen que imprime CMake y lo compara con
+`ci/plugins-baseline.txt`. Falla **solo** en la dirección habilitado →
+deshabilitado: que aparezca un plugin nuevo suele significar que el runner ganó
+una dependencia, y eso no debe romper el build.
+
+**La baseline no está commiteada todavía a propósito.** Las dependencias del
+runner no tienen por qué coincidir con las de esta máquina, así que commitear
+una generada en local haría fallar el primer run. Sin baseline el script
+imprime el resumen y sale con 0; el primer run de CI dirá exactamente qué
+commitear como `ci/plugins-baseline.txt`. **Hasta entonces la guardia está
+inactiva.**
+
+### Detalles que costaron
+
+- El shell implícito de Actions es `bash -e`, **sin** `pipefail`. Con
+  `cmake … | tee` eso significa que el estado de salida es el de `tee` y un
+  fallo de configuración pasa desapercibido. `defaults.run.shell: bash` fuerza
+  `bash -eo pipefail`.
+- `appstreamcli validate` sale con estado distinto de cero también con
+  *avisos*, no solo con errores. Es más estricto de lo que parece; se deja así
+  a propósito.
+- El resumen de CMake tiene dos rarezas tipográficas que hay que tolerar al
+  parsear: una línea rellena con solo dos puntos
+  (`Removable device detection (Windows) ..disabled`) y otra con una coma
+  suelta (`UDisks support ......,........enabled`).
+
+### Posibles mejoras
+
+- `ccache` para acortar el build (~470 objetos).
+- Un segundo job con las dependencias opcionales fuera, que compile el mínimo:
+  atraparía `#ifdef` rotos que el build completo esconde.
+- `-Werror`. Hoy el árbol compila sin un solo warning, así que es viable, pero
+  convertiría cada merge con upstream en un build bloqueado por warnings que no
+  son nuestros. Por eso los warnings se reportan en el resumen del job en lugar
+  de fallar.
 
 ## Fase 4 — Mejoras propias
 
