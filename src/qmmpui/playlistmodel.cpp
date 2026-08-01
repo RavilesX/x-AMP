@@ -55,10 +55,11 @@ public:
 
         container->setLinesPerGroup(uiSettings->linesPerGroup());
 
-        if(uiSettings->isShuffle())
-            playState = new ShufflePlayState(q);
-        else
-            playState = new NormalPlayState(q);
+        //x-AMP fix: the play state is created in the PlayListModel
+        //constructor instead. ShufflePlayState::prepare() calls
+        //q->trackCount(), which dereferences q->d_ptr -- but d_ptr is not
+        //assigned until this constructor returns, so with shuffle enabled in
+        //the saved settings startup crashed on an uninitialized pointer.
     }
 
     ~PlayListModelPrivate()
@@ -448,7 +449,7 @@ private:
     PlayListTrack *currentTrack = nullptr;
     PlayListTrack *stopTrack = nullptr;
     int currentTrackIndex = -1;
-    PlayState *playState; /*!< Current playing state (Normal or Shuffle) */
+    PlayState *playState = nullptr; /*!< Current playing state (Normal or Shuffle) */
     qint64 totalDuration = 0;
     FileLoader *loader;
     CoverLoader *coverLoder;
@@ -464,6 +465,13 @@ PlayListModel::PlayListModel(const QString &name, QObject *parent) :
     d_ptr(new PlayListModelPrivate(name, this))
 {
     Q_D(PlayListModel);
+    //created here rather than in PlayListModelPrivate's constructor: the
+    //shuffle state's prepare() goes through this->d_ptr, which is only valid
+    //from this point on
+    if(d->uiSettings->isShuffle())
+        d->playState = new ShufflePlayState(this);
+    else
+        d->playState = new NormalPlayState(this);
     connect(d->uiSettings, &QmmpUiSettings::groupsChanged, this, [d](bool state) { d->prepareGroups(state); });
     connect(d->uiSettings, &QmmpUiSettings::shuffleChanged, this, [d](bool state) { d->prepareForShufflePlaying(state); });
     connect(d->loader, &FileLoader::newTracksToInsert, this, [d](PlayListTrack *before, QList<PlayListTrack *> tracks) {
