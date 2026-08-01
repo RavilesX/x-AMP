@@ -481,7 +481,7 @@ bool SkinnedPlayList::event(QEvent *event)
     if(event->type() == QEvent::WinIdChange || event->type() == QEvent::Show)
     {
         WindowSystem::ghostWindow(winId());
-        WindowSystem::setWinHint(winId(), "playlist", "Qmmp");
+        WindowSystem::setWinHint(winId(), "playlist", "xamp");
     }
     return QWidget::event(event);
 }

@@ -39,7 +39,7 @@
 #define TITLE_FORMAT u"%p%if(%p&%t, - ,)%t%if(%p,,%if(%t,,%f))%if(%l, - %l,)"_s
 
 SkinnedTextScroller::SkinnedTextScroller (QWidget *parent) : QWidget (parent),
-    m_defautText(QStringLiteral("Qmmp %1").arg(Qmmp::strVersion()))
+    m_defautText(QStringLiteral("x-AMP %1").arg(Qmmp::strVersion()))
 {
     m_formater.setPattern(TITLE_FORMAT);
     m_core = SoundCore::instance();

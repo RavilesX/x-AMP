@@ -271,7 +271,7 @@ void SkinnedMainWindow::readSettings()
     }
 #ifdef QMMP_WS_X11
     WindowSystem::changeWinSticky(winId(), ACTION(SkinnedActionManager::WM_STICKY)->isChecked());
-    WindowSystem::setWinHint(winId(), "player", "Qmmp");
+    WindowSystem::setWinHint(winId(), "player", "xamp");
 #endif
     //Call setWindowOpacity only if needed
     double opacity = settings.value("mw_opacity"_L1, 1.0).toDouble();
@@ -348,7 +348,7 @@ void SkinnedMainWindow::toggleVisibility()
         }
 #ifdef QMMP_WS_X11
         WindowSystem::changeWinSticky(winId(), ACTION(SkinnedActionManager::WM_STICKY)->isChecked());
-        WindowSystem::setWinHint(winId(), "player", "Qmmp");
+        WindowSystem::setWinHint(winId(), "player", "xamp");
         raise();
 #endif
     }

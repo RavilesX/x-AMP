@@ -438,7 +438,7 @@ bool SkinnedEqWidget::event (QEvent *event)
             event->type() == QEvent::Show)
     {
         WindowSystem::ghostWindow(winId());
-        WindowSystem::setWinHint(winId(), "equalizer", "Qmmp");
+        WindowSystem::setWinHint(winId(), "equalizer", "xamp");
     }
     return QWidget::event(event);
 }

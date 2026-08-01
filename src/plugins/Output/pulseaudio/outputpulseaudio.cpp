@@ -65,7 +65,7 @@ bool OutputPulseAudio::initialize(quint32 freq, ChannelMap map, Qmmp::AudioForma
     pa_proplist_sets(proplist, PA_PROP_MEDIA_ROLE, "music");
     pa_proplist_sets(proplist, PA_PROP_APPLICATION_ICON_NAME, "qmmp");
 
-    if(!(m_ctx = pa_context_new_with_proplist(pa_mainloop_get_api(m_loop), "Qmmp", proplist)))
+    if(!(m_ctx = pa_context_new_with_proplist(pa_mainloop_get_api(m_loop), "x-AMP", proplist)))
     {
         qCWarning(plugin, "unable to instantiate a new connection context");
         pa_proplist_free(proplist);
@@ -125,7 +125,7 @@ bool OutputPulseAudio::initialize(quint32 freq, ChannelMap map, Qmmp::AudioForma
     for(int i = 0; i < map.count(); i++)
         pa_map.map[i] = m_pa_channels[map.value(i)];
 
-    if(!(m_stream = pa_stream_new(m_ctx, "Qmmp", &ss, &pa_map)))
+    if(!(m_stream = pa_stream_new(m_ctx, "x-AMP", &ss, &pa_map)))
     {
         qCWarning(plugin, "unable to create stream: %s", pa_strerror(pa_context_errno(m_ctx)));
         return false;
