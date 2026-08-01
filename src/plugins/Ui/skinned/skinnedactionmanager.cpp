@@ -62,6 +62,7 @@ SkinnedActionManager::SkinnedActionManager(QObject *parent) :
         { WM_ALLWAYS_ON_TOP, createAction2(tr("Always on Top"), u"always_on_top"_s) },
         { WM_STICKY, createAction2(tr("Put on All Workspaces"), u"sticky"_s) },
         { WM_DOUBLE_SIZE, createAction2(tr("Double Size"), u"double_size"_s, tr("Meta+D")) },
+        { WM_ZOOM_150, createAction2(tr("Zoom 150%"), u"zoom150"_s, tr("Meta+E")) },
         { WM_ANTIALIASING, createAction2(tr("Anti-aliasing"), u"anti_aliasing"_s) },
         //volume
         { VOL_ENC, createAction(tr("Volume &+"), u"vol_enc"_s, tr("0")) },
@@ -104,7 +105,19 @@ SkinnedActionManager::SkinnedActionManager(QObject *parent) :
     delete m_settings;
     m_settings = nullptr;
     m_actions[ABOUT]->setIcon(qApp->windowIcon());
-    connect(m_actions[WM_DOUBLE_SIZE], &QAction::toggled, m_actions[WM_ANTIALIASING], &QAction::setEnabled);
+    //x-AMP: Double Size and Zoom 150% are mutually exclusive but both may be
+    //off; anti-aliasing is meaningful whenever any scaling is active (at 150%
+    //smooth scaling is forced regardless, see Skin::scalePixmap)
+    auto updateScaleActions = [this] {
+        if(sender() == m_actions[WM_DOUBLE_SIZE] && m_actions[WM_DOUBLE_SIZE]->isChecked())
+            m_actions[WM_ZOOM_150]->setChecked(false);
+        else if(sender() == m_actions[WM_ZOOM_150] && m_actions[WM_ZOOM_150]->isChecked())
+            m_actions[WM_DOUBLE_SIZE]->setChecked(false);
+        m_actions[WM_ANTIALIASING]->setEnabled(m_actions[WM_DOUBLE_SIZE]->isChecked() ||
+                                               m_actions[WM_ZOOM_150]->isChecked());
+    };
+    connect(m_actions[WM_DOUBLE_SIZE], &QAction::toggled, this, updateScaleActions);
+    connect(m_actions[WM_ZOOM_150], &QAction::toggled, this, updateScaleActions);
     m_actions[WM_ANTIALIASING]->setEnabled(false);
 }
 

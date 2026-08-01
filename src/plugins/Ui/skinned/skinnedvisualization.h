@@ -90,7 +90,7 @@ private:
     QActionGroup *m_analyzerTypeGroup;
     QAction *m_peaksAction;
     QAction *m_transparentAction;
-    int m_ratio;
+    double m_ratio = 1.0;
     float m_buffer[QMMP_VISUAL_NODE_SIZE];
     bool m_update = false;
     bool m_running = false;
@@ -134,7 +134,7 @@ public:
 private:
     int m_intern_vis_data[76];
     Skin *m_skin;
-    int m_ratio;
+    double m_ratio = 1.0;
 };
 
 #endif

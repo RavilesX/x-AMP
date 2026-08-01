@@ -49,9 +49,9 @@ void SkinnedPlayListSlider::paintEvent(QPaintEvent *)
         paint.drawPixmap(0, 58 + i * 29, m_skin->getPlPart(Skin::PL_RFILL));
     }
     if(m_pressed)
-        paint.drawPixmap(5 * m_skin->ratio(), p, m_skin->getButton(Skin::PL_BT_SCROLL_P));
+        paint.drawPixmap(m_skin->scaled(5), p, m_skin->getButton(Skin::PL_BT_SCROLL_P));
     else
-        paint.drawPixmap(5 * m_skin->ratio(), p, m_skin->getButton(Skin::PL_BT_SCROLL_N));
+        paint.drawPixmap(m_skin->scaled(5), p, m_skin->getButton(Skin::PL_BT_SCROLL_N));
     m_pos = p;
 }
 
@@ -60,14 +60,14 @@ void SkinnedPlayListSlider::mousePressEvent(QMouseEvent *e)
     m_moving = true;
     m_pressed = true;
     m_press_pos = e->position().y();
-    if(m_pos < e->position().y() && e->position().y() < m_pos + 18 * m_skin->ratio())
+    if(m_pos < e->position().y() && e->position().y() < m_pos + m_skin->scaled(18))
     {
         m_press_pos = e->position().y() - m_pos;
     }
     else
     {
-        int value = convert(qMax(qMin(height() - 18 * m_skin->ratio(), qRound(e->position().y()) - 9 * m_skin->ratio()), 0));
-        m_press_pos = 9 * m_skin->ratio();
+        int value = convert(qMax(qMin(height() - m_skin->scaled(18), qRound(e->position().y()) - m_skin->scaled(9)), 0));
+        m_press_pos = m_skin->scaled(9);
         if(m_value != value)
         {
             emit sliderMoveRequest(value);
@@ -90,7 +90,7 @@ void SkinnedPlayListSlider::mouseMoveEvent(QMouseEvent* e)
         int po = e->position().y();
         po = po - m_press_pos;
 
-        if(0 <= po && po <= height() - 18 * m_skin->ratio())
+        if(0 <= po && po <= height() - m_skin->scaled(18))
         {
             int value = convert(po);
 
@@ -117,5 +117,5 @@ void SkinnedPlayListSlider::updateSkin()
 
 int SkinnedPlayListSlider::convert(int p)
 {
-    return int(floor(double(m_max - m_min) * (p) / (height() - 18 * m_skin->ratio()) + m_min));
+    return int(floor(double(m_max - m_min) * (p) / (height() - m_skin->scaled(18)) + m_min));
 }

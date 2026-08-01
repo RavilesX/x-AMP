@@ -99,7 +99,7 @@ void SkinnedEqGraph::draw()
 {
     QPixmap pixmap = skin()->getEqPart (Skin::EQ_GRAPH);
     if(pixmap.isNull())
-        pixmap = QPixmap(113 * m_ratio, 19 * m_ratio);
+        pixmap = QPixmap(skin()->scaled(113), skin()->scaled(19));
 
     if (m_values.size()!=10)
     {
@@ -122,7 +122,7 @@ void SkinnedEqGraph::draw()
         y = qBound(0, y, 18);
 
         QPainter paint(&pixmap);
-        paint.drawPixmap(i * m_ratio, y * m_ratio, skin()->getEqSpline(y));
+        paint.drawPixmap(skin()->scaled(i), skin()->scaled(y), skin()->getEqSpline(y));
     }
     setPixmap (pixmap);
     delete [] bands;

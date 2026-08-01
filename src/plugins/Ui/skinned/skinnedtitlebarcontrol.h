@@ -48,7 +48,7 @@ private:
     void mousePressEvent(QMouseEvent*) override;
     void mouseReleaseEvent(QMouseEvent*) override;
     void mouseMoveEvent(QMouseEvent*) override;
-    int m_ratio;
+    double m_ratio = 1.0;
 
 };
 

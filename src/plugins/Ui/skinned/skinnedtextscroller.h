@@ -68,7 +68,8 @@ private:
     QString m_sliderText;
     QString m_titleText;
     QPixmap m_pixmap;
-    int m_x1, m_x2, m_ratio;
+    int m_x1, m_x2;
+    double m_ratio = 1.0;
     bool m_scroll = false, m_bitmap = false, m_pressed = false;
     int m_press_pos = 0;
     QFont m_font;

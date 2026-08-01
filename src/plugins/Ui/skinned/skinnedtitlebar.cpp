@@ -70,19 +70,18 @@ SkinnedTitleBar::~SkinnedTitleBar()
 
 void SkinnedTitleBar::updatePositions()
 {
-    int r = skin()->ratio();
-    m_menu->move(r * 6, r * 3);
-    m_minimize->move(r * 244, r * 3);
-    m_shade->move(r * 254, r*3);
-    m_close->move(r * 264, r * 3);
+    m_menu->move(skin()->scaled(6), skin()->scaled(3));
+    m_minimize->move(skin()->scaled(244), skin()->scaled(3));
+    m_shade->move(skin()->scaled(254), skin()->scaled(3));
+    m_close->move(skin()->scaled(264), skin()->scaled(3));
     if(m_shade2)
-        m_shade2->move(r * 254, r * 3);
+        m_shade2->move(skin()->scaled(254), skin()->scaled(3));
     if(m_currentTime)
-        m_currentTime->move(r * 127, r * 4);
+        m_currentTime->move(skin()->scaled(127), skin()->scaled(4));
     if(m_control)
-        m_control->move(r * 168, r * 2);
+        m_control->move(skin()->scaled(168), skin()->scaled(2));
     if(m_visual)
-        m_visual->move(r * 79, r * 5);
+        m_visual->move(skin()->scaled(79), skin()->scaled(5));
 }
 
 void SkinnedTitleBar::mousePressEvent(QMouseEvent* event)
@@ -105,7 +104,7 @@ void SkinnedTitleBar::mouseReleaseEvent(QMouseEvent*)
 }
 void SkinnedTitleBar::mouseMoveEvent(QMouseEvent* event)
 {
-    if(m_pos.x() < width() - skin()->ratio() * 37)
+    if(m_pos.x() < width() - skin()->scaled(37))
     {
         QPoint npos = (event->globalPosition().toPoint() - m_pos);
         Dock::instance()->move(m_mw, npos);
@@ -145,7 +144,6 @@ void SkinnedTitleBar::showMainMenu()
 void SkinnedTitleBar::shade()
 {
     m_shaded = !m_shaded;
-    int r = skin()->ratio();
     if(m_shaded)
     {
         setPixmap(skin()->getTitleBar(Skin::TITLEBAR_SHADED_A));
@@ -185,7 +183,7 @@ void SkinnedTitleBar::shade()
     }
     qobject_cast<SkinnedDisplay *> (parent())->setMinimalMode(m_shaded);
     if(m_align)
-        Dock::instance()->align(m_mw, m_shaded ? -r * 102: r * 102);
+        Dock::instance()->align(m_mw, m_shaded ? -skin()->scaled(102): skin()->scaled(102));
     onModelChanged();
     updatePositions();
 }

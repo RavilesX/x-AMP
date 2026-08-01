@@ -70,7 +70,7 @@ private:
     QPixmap m_pixmap;
 
     uint m_slider1, m_slider2, m_slider3;
-    int m_ratio;
+    double m_ratio = 1.0;
 
 protected:
 

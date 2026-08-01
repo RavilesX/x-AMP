@@ -28,8 +28,8 @@ ShadedVisual::ShadedVisual(QWidget *parent) : Visual(parent)
 {
     m_skin = Skin::instance();
     m_ratio = m_skin->ratio();
-    resize(m_ratio*38,m_ratio*5);
-    m_pixmap = QPixmap(m_ratio*38,m_ratio*5);
+    resize(m_skin->scaled(38),m_skin->scaled(5));
+    m_pixmap = QPixmap(m_skin->scaled(38),m_skin->scaled(5));
     m_timer = new QTimer(this);
     connect(m_timer,  &QTimer::timeout, this, &ShadedVisual::timeout);
     connect(m_skin, &Skin::skinChanged, this, &ShadedVisual::updateSkin);
@@ -105,11 +105,11 @@ void ShadedVisual::draw (QPainter *p)
 {
     for (int i = 0; i < m_l; ++i)
     {
-        p->fillRect (i*3*m_ratio, 0, 3*m_ratio, 2*m_ratio, QBrush(m_skin->getVisColor (17-i)));
+        p->fillRect (m_skin->scaled(i*3), 0, m_skin->scaled(3), m_skin->scaled(2), QBrush(m_skin->getVisColor (17-i)));
     }
     for (int i = 0; i < m_r; ++i)
     {
-        p->fillRect (i*3*m_ratio, 3*m_ratio, 3*m_ratio, 2*m_ratio, QBrush(m_skin->getVisColor (17-i)));
+        p->fillRect (m_skin->scaled(i*3), m_skin->scaled(3), m_skin->scaled(3), m_skin->scaled(2), QBrush(m_skin->getVisColor (17-i)));
     }
 }
 
@@ -133,7 +133,7 @@ void ShadedVisual::showEvent (QShowEvent *)
 void ShadedVisual::updateSkin()
 {
     m_ratio = m_skin->ratio();
-    resize(m_ratio*38,m_ratio*5);
-    m_pixmap = QPixmap (m_ratio*38,m_ratio*5);
+    resize(m_skin->scaled(38),m_skin->scaled(5));
+    m_pixmap = QPixmap (m_skin->scaled(38),m_skin->scaled(5));
     clear();
 }

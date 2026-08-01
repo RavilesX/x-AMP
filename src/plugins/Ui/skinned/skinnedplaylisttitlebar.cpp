@@ -46,17 +46,17 @@ SkinnedPlayListTitleBar::SkinnedPlayListTitleBar(QWidget *parent)
     m_shade = new SkinnedButton(this, Skin::PL_BT_SHADE1_N, Skin::PL_BT_SHADE1_P, Skin::CUR_PWINBUT);
     connect(m_shade, &SkinnedButton::clicked, this, &SkinnedPlayListTitleBar::shade);
 
-    resize(275 * m_ratio, 20 * m_ratio);
-    setMinimumWidth(275 * m_ratio);
+    resize(skin()->scaled(275), skin()->scaled(20));
+    setMinimumWidth(skin()->scaled(275));
 
     readSettings();
     QSettings settings;
 #ifdef QMMP_WS_X11
     if(m_pl->useCompiz())
-        m_pl->setFixedSize(settings.value("Skinned/pl_size"_L1, QSize(m_ratio * 275, m_ratio * 116)).toSize());
+        m_pl->setFixedSize(settings.value("Skinned/pl_size"_L1, QSize(skin()->scaled(275), skin()->scaled(116))).toSize());
     else
 #endif
-        m_pl->resize (settings.value ("Skinned/pl_size"_L1, QSize(m_ratio * 275, m_ratio * 116)).toSize());
+        m_pl->resize (settings.value ("Skinned/pl_size"_L1, QSize(skin()->scaled(275), skin()->scaled(116))).toSize());
     if(settings.value ("Skinned/pl_shaded"_L1, false).toBool())
         shade();
     resize(m_pl->width(),height());
@@ -76,23 +76,23 @@ SkinnedPlayListTitleBar::~SkinnedPlayListTitleBar()
 void SkinnedPlayListTitleBar::updatePositions()
 {
     m_ratio = skin()->ratio();
-    int sx = (width() - 275 * m_ratio) / 25;
-    m_close->move(m_ratio * 264 + sx * 25, m_ratio * 3);
-    m_shade->move(m_ratio * 255 + sx * 25, m_ratio * 3);
+    int sx = (width() - skin()->scaled(275)) / 25;
+    m_close->move(skin()->scaled(264) + sx * 25, skin()->scaled(3));
+    m_shade->move(skin()->scaled(255) + sx * 25, skin()->scaled(3));
     if(m_shade2)
-        m_shade2->move(m_ratio * 255 + sx * 25, m_ratio * 3);
+        m_shade2->move(skin()->scaled(255) + sx * 25, skin()->scaled(3));
 }
 
 void SkinnedPlayListTitleBar::updatePixmap()
 {
-    int sx = ((m_shaded ? m_pl->width() : width()) - 275 * m_ratio) / 25;
-    QPixmap pixmap(275 * m_ratio + sx * 25, 20 * m_ratio);
+    int sx = ((m_shaded ? m_pl->width() : width()) - skin()->scaled(275)) / 25;
+    QPixmap pixmap(skin()->scaled(275) + sx * 25, skin()->scaled(20));
     QPainter paint;
     paint.begin(&pixmap);
     if(m_shaded)
     {
         paint.drawPixmap(0, 0, skin()->getPlPart(Skin::PL_TITLEBAR_SHADED2));
-        for (int i = 1; i < sx + 9 * m_ratio; i++)
+        for (int i = 1; i < sx + skin()->scaled(9); i++)
         {
             paint.drawPixmap(25 * i, 0, skin()->getPlPart(Skin::PL_TFILL_SHADED));
         }
@@ -101,31 +101,31 @@ void SkinnedPlayListTitleBar::updatePixmap()
     if(m_active)
     {
         if(m_shaded)
-            paint.drawPixmap(225 * m_ratio +sx * 25, 0, skin()->getPlPart(Skin::PL_TITLEBAR_SHADED1_A));
+            paint.drawPixmap(skin()->scaled(225) +sx * 25, 0, skin()->getPlPart(Skin::PL_TITLEBAR_SHADED1_A));
         else
         {
             paint.drawPixmap(0, 0, skin()->getPlPart(Skin::PL_CORNER_UL_A));
-            for (int i = 1; i < sx + 10 * m_ratio; i++)
+            for (int i = 1; i < sx + skin()->scaled(10); i++)
             {
                 paint.drawPixmap(25 * i, 0, skin()->getPlPart(Skin::PL_TFILL1_A));
             }
-            paint.drawPixmap((100 - 12) * m_ratio + 12 * sx, 0, skin()->getPlPart(Skin::PL_TITLEBAR_A));
-            paint.drawPixmap(250 * m_ratio + sx * 25, 0, skin()->getPlPart(Skin::PL_CORNER_UR_A));
+            paint.drawPixmap(skin()->scaled(100 - 12) + 12 * sx, 0, skin()->getPlPart(Skin::PL_TITLEBAR_A));
+            paint.drawPixmap(skin()->scaled(250) + sx * 25, 0, skin()->getPlPart(Skin::PL_CORNER_UR_A));
         }
     }
     else
     {
         if(m_shaded)
-            paint.drawPixmap(225 * m_ratio + sx * 25, 0, skin()->getPlPart(Skin::PL_TITLEBAR_SHADED1_I));
+            paint.drawPixmap(skin()->scaled(225) + sx * 25, 0, skin()->getPlPart(Skin::PL_TITLEBAR_SHADED1_I));
         else
         {
             paint.drawPixmap(0, 0, skin()->getPlPart(Skin::PL_CORNER_UL_I));
-            for (int i = 1; i < sx + 10 * m_ratio; i++)
+            for (int i = 1; i < sx + skin()->scaled(10); i++)
             {
                 paint.drawPixmap(25 * i, 0, skin()->getPlPart(Skin::PL_TFILL1_I));
             }
-            paint.drawPixmap((100 - 12) * m_ratio + 12 * sx, 0, skin()->getPlPart(Skin::PL_TITLEBAR_I));
-            paint.drawPixmap(250 * m_ratio + sx * 25, 0, skin()->getPlPart(Skin::PL_CORNER_UR_I));
+            paint.drawPixmap(skin()->scaled(100 - 12) + 12 * sx, 0, skin()->getPlPart(Skin::PL_TITLEBAR_I));
+            paint.drawPixmap(skin()->scaled(250) + sx * 25, 0, skin()->getPlPart(Skin::PL_CORNER_UR_I));
         }
     }
     if(m_shaded)
@@ -138,11 +138,11 @@ void SkinnedPlayListTitleBar::updatePixmap()
 #endif
         paint.setBrush(QBrush(col));
         paint.setPen(col);
-        paint.drawRect(8 * m_ratio, m_ratio, 235 * m_ratio + sx * 25, 11 * m_ratio);
+        paint.drawRect(skin()->scaled(8), m_ratio, skin()->scaled(235) + sx * 25, skin()->scaled(11));
         //draw text
         paint.setFont(m_font);
         paint.setPen(QString(skin()->getPLValue("normal")));
-        paint.drawText(9 * m_ratio, 11 * m_ratio, m_truncatedText);
+        paint.drawText(skin()->scaled(9), skin()->scaled(11), m_truncatedText);
     }
     paint.end();
     setPixmap(pixmap);
@@ -151,7 +151,7 @@ void SkinnedPlayListTitleBar::updatePixmap()
 void SkinnedPlayListTitleBar::resizeEvent(QResizeEvent *)
 {
     QFontMetrics metrics(m_font);
-    m_truncatedText = metrics.elidedText(m_text, Qt::ElideRight, width() - 35 * m_ratio);
+    m_truncatedText = metrics.elidedText(m_text, Qt::ElideRight, width() - skin()->scaled(35));
     updatePositions();
     updatePixmap();
 }
@@ -162,7 +162,7 @@ void SkinnedPlayListTitleBar::mousePressEvent(QMouseEvent* event)
     {
     case Qt::LeftButton:
         pos = event->pos();
-        if(m_shaded && (width() - 30 * m_ratio) < pos.x() && pos.x() < (width() - 22 * m_ratio))
+        if(m_shaded && (width() - skin()->scaled(30)) < pos.x() && pos.x() < (width() - skin()->scaled(22)))
         {
             m_resize = true;
             setCursor (Qt::SizeHorCursor);
@@ -194,20 +194,20 @@ void SkinnedPlayListTitleBar::mouseMoveEvent(QMouseEvent* event)
             WindowSystem::revertGravity(m_pl->winId());
 #endif
 
-        int dx = 25 * m_ratio;
-        int sx = ((event->position().x() - 275 * m_ratio) + 14) / dx;
+        int dx = skin()->scaled(25);
+        int sx = ((event->position().x() - skin()->scaled(275)) + 14) / dx;
         sx = qMax(sx, 0);
-        resize(275 * m_ratio + dx * sx, height());
+        resize(skin()->scaled(275) + dx * sx, height());
 
 #ifdef QMMP_WS_X11
         if(m_pl->useCompiz())
 
-            m_pl->setFixedSize(275 * m_ratio + dx * sx, m_pl->height());
+            m_pl->setFixedSize(skin()->scaled(275) + dx * sx, m_pl->height());
         else
 #endif
-            m_pl->resize(275 * m_ratio + dx * sx, m_pl->height());
+            m_pl->resize(skin()->scaled(275) + dx * sx, m_pl->height());
     }
-    else if(pos.x() < width() - 30*m_ratio)
+    else if(pos.x() < width() - skin()->scaled(30))
         Dock::instance()->move(m_pl, npos);
 }
 
@@ -230,7 +230,7 @@ void SkinnedPlayListTitleBar::readSettings()
 {
     QSettings settings;
     m_font.fromString(settings.value("Skinned/pl_font"_L1, QApplication::font().toString()).toString());
-    m_font.setPixelSize(12 * m_ratio);
+    m_font.setPixelSize(skin()->scaled(12));
 }
 
 void SkinnedPlayListTitleBar::updateSkin()
@@ -239,8 +239,8 @@ void SkinnedPlayListTitleBar::updateSkin()
     if(m_ratio != skin()->ratio())
     {
         m_ratio = skin()->ratio();
-        m_font.setPixelSize(12 * m_ratio);
-        setMinimumWidth(275 * m_ratio);
+        m_font.setPixelSize(skin()->scaled(12));
+        setMinimumWidth(skin()->scaled(275));
         updatePositions();
     }
     updatePixmap();
@@ -268,7 +268,7 @@ void SkinnedPlayListTitleBar::shade()
     showCurrent();
     update();
     if(m_align)
-        Dock::instance()->align(m_pl, m_shaded? -m_height + 14 * m_ratio: m_height - 14 * m_ratio);
+        Dock::instance()->align(m_pl, m_shaded? -m_height + skin()->scaled(14): m_height - skin()->scaled(14));
     updatePositions();
 }
 
@@ -288,6 +288,6 @@ void SkinnedPlayListTitleBar::showCurrent()
             m_text = QStringLiteral("%1. %2").arg(track->trackIndex() + 1).arg(m_formatter.format(track));
     }
     QFontMetrics metrics(m_font);
-    m_truncatedText = metrics.elidedText(m_text, Qt::ElideRight, width() -  35 * m_ratio);
+    m_truncatedText = metrics.elidedText(m_text, Qt::ElideRight, width() -  skin()->scaled(35));
     updatePixmap();
 }

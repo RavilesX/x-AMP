@@ -44,7 +44,7 @@ private:
    void init_spline(double * x, double * y, int n, double * y2);
    double eval_spline(double xa[], double ya[], double y2a[], int n, double x);
    void draw();
-   int m_ratio;
+   double m_ratio = 1.0;
 
 };
 

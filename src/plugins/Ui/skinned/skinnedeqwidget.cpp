@@ -86,14 +86,13 @@ SkinnedEqWidget::SkinnedEqWidget (QWidget *parent)
 
 void SkinnedEqWidget::updatePositions()
 {
-    int r = skin()->ratio();
-    m_preamp->move(21 * r, 38 * r);
-    m_on->move(14 * r, 18 * r);
-    m_autoButton->move(39 * r, 18 * r);
-    m_eqg->move(87 * r, 17 * r);
-    m_presetButton->move(217 * r, 18 * r);
+    m_preamp->move(skin()->scaled(21), skin()->scaled(38));
+    m_on->move(skin()->scaled(14), skin()->scaled(18));
+    m_autoButton->move(skin()->scaled(39), skin()->scaled(18));
+    m_eqg->move(skin()->scaled(87), skin()->scaled(17));
+    m_presetButton->move(skin()->scaled(217), skin()->scaled(18));
      for (int i = 0; i < 10; ++i)
-         m_sliders.at (i)->move((78+i * 18) * r, 38 * r);
+         m_sliders.at (i)->move(skin()->scaled(78 + i * 18), skin()->scaled(38));
 }
 
 void SkinnedEqWidget::changeEvent (QEvent * event)
@@ -122,12 +121,11 @@ void SkinnedEqWidget::updateSkin()
 void SkinnedEqWidget::setMimimalMode(bool b)
 {
     m_shaded = b;
-    int r = skin()->ratio();
 
     if(m_shaded)
-        setFixedSize(r * 275, r * 14);
+        setFixedSize(skin()->scaled(275), skin()->scaled(14));
     else
-        setFixedSize(r * 275, r * 116);
+        setFixedSize(skin()->scaled(275), skin()->scaled(116));
 
     updateMask();
 }
@@ -138,14 +136,13 @@ void SkinnedEqWidget::readSettings()
     QScreen *primaryScreen = QGuiApplication::primaryScreen();
     QRect availableGeometry = primaryScreen->availableGeometry();
     QPoint pos = settings.value("Skinned/eq_pos"_L1, QPoint(100, 216)).toPoint();
-    int r = skin()->ratio();
     //TODO QGuiApplication::screenAt
     const QList<QScreen *> screens = QGuiApplication::screens();
     auto it = std::find_if(screens.cbegin(), screens.cend(), [pos](QScreen *screen){ return screen->availableGeometry().contains(pos); });
     if(it != screens.cend())
         availableGeometry = (*it)->availableGeometry();
-    pos.setX(qBound(availableGeometry.left(), pos.x(), availableGeometry.right() - r * 275));
-    pos.setY(qBound(availableGeometry.top(), pos.y(), availableGeometry.bottom() - r * 116));
+    pos.setX(qBound(availableGeometry.left(), pos.x(), availableGeometry.right() - skin()->scaled(275)));
+    pos.setY(qBound(availableGeometry.top(), pos.y(), availableGeometry.bottom() - skin()->scaled(116)));
     move(pos); //geometry
     readEq();
     m_autoButton->setChecked(settings.value("Skinned/eq_auto"_L1, false).toBool());

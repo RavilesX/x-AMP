@@ -41,14 +41,14 @@ void SkinnedEqSlider::mousePressEvent(QMouseEvent *e)
         emit sliderMoved(m_value);
         m_old = m_value;
     }
-    else if(m_pos<e->position().y() && e->position().y() < m_pos + 11 * skin()->ratio())
+    else if(m_pos<e->position().y() && e->position().y() < m_pos + skin()->scaled(11))
     {
         press_pos = e->position().y() - m_pos;
     }
     else
     {
-        m_value = convert(qMax(qMin(height() - 12 * skin()->ratio(), qRound(e->position().y()) - 6 * skin()->ratio()), 0));
-        press_pos = 6 * skin()->ratio();
+        m_value = convert(qMax(qMin(height() - skin()->scaled(12), qRound(e->position().y()) - skin()->scaled(6)), 0));
+        press_pos = skin()->scaled(6);
         if(m_value != m_old)
         {
             emit sliderMoved(m_value);
@@ -70,7 +70,7 @@ void SkinnedEqSlider::mouseMoveEvent(QMouseEvent *e)
     {
         int po = e->position().y() - press_pos;
 
-        if(0 <= po && po <= height() - 12 * skin()->ratio())
+        if(0 <= po && po <= height() - skin()->scaled(12))
         {
             m_value = convert(po);
             draw();
@@ -112,7 +112,7 @@ void SkinnedEqSlider::updateSkin()
 
 void SkinnedEqSlider::draw(bool pressed)
 {
-    int p = int(std::ceil(double(m_value - m_min) * (height() - 12 * skin()->ratio()) / (m_max-m_min)));
+    int p = int(std::ceil(double(m_value - m_min) * (height() - skin()->scaled(12)) / (m_max-m_min)));
     m_pixmap = skin()->getEqSlider(27 - 27 * (m_value-m_min) / (m_max-m_min));
     QPainter paint(&m_pixmap);
     if(pressed)
@@ -125,7 +125,7 @@ void SkinnedEqSlider::draw(bool pressed)
 
 double SkinnedEqSlider::convert(int p)
 {
-    return (m_max - m_min) * p / (height() - 12 * skin()->ratio()) + m_min;
+    return (m_max - m_min) * p / (height() - skin()->scaled(12)) + m_min;
 }
 
 void SkinnedEqSlider::wheelEvent(QWheelEvent *e)

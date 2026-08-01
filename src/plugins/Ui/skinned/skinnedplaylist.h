@@ -129,7 +129,7 @@ private:
     SkinnedPlayListSlider *m_plslider;
     bool m_resize = false;
     bool m_update = false;
-    int m_ratio;
+    double m_ratio = 1.0;
     int m_height;
     bool m_shaded = false;
     PlayListManager *m_pl_manager;

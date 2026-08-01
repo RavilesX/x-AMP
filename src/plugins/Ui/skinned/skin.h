@@ -39,7 +39,17 @@ public:
     ~Skin();
 
     static Skin *instance();
-    int ratio() const;
+    /*!
+     * Scale factor of the skinned interface: 1.0, 1.5 (x-AMP zoom) or 2.0.
+     * Kept fractional; use scaled() to convert base-skin coordinates.
+     */
+    double ratio() const;
+    /*!
+     * Returns \b value (a coordinate or size in base skin pixels) scaled and
+     * rounded to the current factor. All geometry must go through this so
+     * that widget math and pixmap sizes round the same way.
+     */
+    int scaled(int value) const;
     QPixmap getMain() const;
     QPixmap getButton(uint bt) const;
     QCursor getCursor(uint cu) const;
@@ -285,7 +295,7 @@ private:
      * to load pixmap from default skin.
      */
     QPixmap *getDummyPixmap(const QString &name, const QString &fallback);
-    QPixmap scalePixmap(const QPixmap &pix, int ratio = 2);
+    QPixmap scalePixmap(const QPixmap &pix);
     static Skin *m_instance;
     QDir m_skin_dir;
     QHash<uint, QPixmap> m_buttons;
@@ -308,7 +318,7 @@ private:
     QList<QColor> m_vis_colors;
     QHash<uint, QColor> m_main_colors;
     bool m_use_cursors;
-    bool m_double_size;
+    double m_scale_factor = 1.0; //1.0, 1.5 or 2.0
     bool m_antialiasing;
 
     void loadMain();

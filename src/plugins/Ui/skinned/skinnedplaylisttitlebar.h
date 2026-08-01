@@ -67,7 +67,7 @@ private:
     SkinnedButton *m_shade2 = nullptr;
     bool m_shaded = false;
     bool m_align = false, m_resize = false;
-    int m_ratio;
+    double m_ratio = 1.0;
     int m_height;
     PlayListModel* m_model = nullptr;
     QString m_text;

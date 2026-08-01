@@ -26,7 +26,7 @@ SkinnedTitleBarControl::SkinnedTitleBarControl(QWidget *parent) : QWidget(parent
 {
     //setAutoFillBackground(true);
     m_ratio = Skin::instance()->ratio();
-    resize(m_ratio*57, m_ratio*10);
+    resize(Skin::instance()->scaled(57), Skin::instance()->scaled(10));
     connect(Skin::instance(), &Skin::skinChanged, this, &SkinnedTitleBarControl::updateSkin);
 }
 
@@ -36,17 +36,17 @@ void SkinnedTitleBarControl::mousePressEvent(QMouseEvent *)
 void SkinnedTitleBarControl::mouseReleaseEvent(QMouseEvent * event)
 {
     QPoint pt = event->pos();
-    if(QRect(0, 0, m_ratio * 8, m_ratio * 10).contains(pt))
+    if(QRect(0, 0, Skin::instance()->scaled(8), Skin::instance()->scaled(10)).contains(pt))
         emit previousClicked();
-    else if(QRect(m_ratio * 8, 0, m_ratio * 11, m_ratio * 10).contains(pt))
+    else if(QRect(Skin::instance()->scaled(8), 0, Skin::instance()->scaled(11), Skin::instance()->scaled(10)).contains(pt))
         emit playClicked();
-    else if(QRect(m_ratio * 19, 0, m_ratio * 10, m_ratio * 10).contains(pt))
+    else if(QRect(Skin::instance()->scaled(19), 0, Skin::instance()->scaled(10), Skin::instance()->scaled(10)).contains(pt))
         emit pauseClicked();
-    else if(QRect(m_ratio * 29, 0, m_ratio * 8, m_ratio * 10).contains(pt))
+    else if(QRect(Skin::instance()->scaled(29), 0, Skin::instance()->scaled(8), Skin::instance()->scaled(10)).contains(pt))
         emit stopClicked();
-    else if(QRect(m_ratio * 37, 0, m_ratio * 10, m_ratio * 10).contains(pt))
+    else if(QRect(Skin::instance()->scaled(37), 0, Skin::instance()->scaled(10), Skin::instance()->scaled(10)).contains(pt))
         emit nextClicked();
-    else if(QRect(m_ratio * 47, 0 ,m_ratio * 10, m_ratio * 10).contains(pt))
+    else if(QRect(Skin::instance()->scaled(47), 0 ,Skin::instance()->scaled(10), Skin::instance()->scaled(10)).contains(pt))
         emit ejectClicked();
 }
 
@@ -56,5 +56,5 @@ void SkinnedTitleBarControl::mouseMoveEvent(QMouseEvent*)
 void SkinnedTitleBarControl::updateSkin()
 {
     m_ratio = Skin::instance()->ratio();
-    resize(m_ratio * 57, m_ratio * 10);
+    resize(Skin::instance()->scaled(57), Skin::instance()->scaled(10));
 }

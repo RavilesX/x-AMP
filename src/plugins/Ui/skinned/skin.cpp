@@ -46,9 +46,12 @@ Skin::Skin(QObject *parent) : QObject(parent)
     m_instance = this;
     QSettings settings;
     QString path = settings.value("Skinned/skin_path"_L1, SkinReader::defaultSkinPath()).toString();
-    m_double_size = settings.value("Skinned/double_size"_L1, false).toBool();
+    bool doubleSize = settings.value("Skinned/double_size"_L1, false).toBool();
+    bool zoom150 = !doubleSize && settings.value("Skinned/zoom150"_L1, false).toBool();
+    m_scale_factor = doubleSize ? 2.0 : (zoom150 ? 1.5 : 1.0);
     m_antialiasing = settings.value("Skinned/antialiasing"_L1, false).toBool();
-    ACTION(SkinnedActionManager::WM_DOUBLE_SIZE)->setChecked(m_double_size);
+    ACTION(SkinnedActionManager::WM_DOUBLE_SIZE)->setChecked(doubleSize);
+    ACTION(SkinnedActionManager::WM_ZOOM_150)->setChecked(zoom150);
     ACTION(SkinnedActionManager::WM_ANTIALIASING)->setChecked(m_antialiasing);
     /* skin directories */
     QDir::root().mkpath(Qmmp::userDataPath() + u"/skins"_s);
@@ -85,9 +88,14 @@ Skin *Skin::instance()
     return m_instance;
 }
 
-int Skin::ratio() const
+double Skin::ratio() const
 {
-    return m_double_size ? 2 : 1;
+    return m_scale_factor;
+}
+
+int Skin::scaled(int value) const
+{
+    return qRound(value * m_scale_factor);
 }
 
 QPixmap Skin::getMain() const
@@ -194,7 +202,12 @@ void Skin::setSkin(const QString &path, bool force)
 {
     QSettings settings;
     m_use_cursors = settings.value("Skinned/skin_cursors"_L1, false).toBool();
-    m_double_size = ACTION(SkinnedActionManager::WM_DOUBLE_SIZE)->isChecked();
+    if(ACTION(SkinnedActionManager::WM_DOUBLE_SIZE)->isChecked())
+        m_scale_factor = 2.0;
+    else if(ACTION(SkinnedActionManager::WM_ZOOM_150)->isChecked())
+        m_scale_factor = 1.5;
+    else
+        m_scale_factor = 1.0;
     m_antialiasing = ACTION(SkinnedActionManager::WM_ANTIALIASING)->isChecked();
 #ifdef Q_OS_WIN
     if(Qmmp::isPortable() && path.startsWith(QApplication::applicationDirPath()))
@@ -262,7 +275,7 @@ void Skin::setSkin(const QString &path, bool force)
     loadRegion();
     loadCursors();
     loadColors();
-    if(m_double_size)
+    if(m_scale_factor > 1.0)
     {
         for(QPixmap &pixmap : m_buttons)
             pixmap = scalePixmap(pixmap);
@@ -938,7 +951,6 @@ QRegion Skin::createRegion(const QString &path, const QString &group) const
         numbers << str.split(QChar::Space, Qt::SkipEmptyParts);
 
     QStringList::const_iterator n = numbers.constBegin();
-    int r = m_double_size ? 2 : 1;
     for(int i = 0; i < numPoints.size(); ++i)
     {
         QList<int> lp;
@@ -951,7 +963,7 @@ QRegion Skin::createRegion(const QString &path, const QString &group) const
 
         for(int l = 0; l < lp.size(); l += 2)
         {
-            points << QPoint(lp.at(l) * r, lp.at(l + 1) * r);
+            points << QPoint(scaled(lp.at(l)), scaled(lp.at(l + 1)));
         }
         region = region.united(QRegion(QPolygon(points)));
     }
@@ -997,11 +1009,18 @@ QPixmap *Skin::getDummyPixmap(const QString &name, const QString &fallback)
     return nullptr;
 }
 
-QPixmap Skin::scalePixmap(const QPixmap &pix, int ratio)
+QPixmap Skin::scalePixmap(const QPixmap &pix)
 {
-    return pix.scaled(pix.width() * ratio, pix.height() * ratio,
-                      Qt::KeepAspectRatio,
-                      m_antialiasing ? Qt::SmoothTransformation : Qt::FastTransformation);
+    //x-AMP: at a fractional factor FastTransformation drops and duplicates
+    //rows, which looks broken; smooth scaling is forced there and the
+    //anti-aliasing toggle keeps meaning only for the integer 2x factor
+    //IgnoreAspectRatio on purpose: both dimensions already carry the same
+    //factor, and KeepAspectRatio would re-fit the rounded size and produce
+    //off-by-one pixmaps (413x174 requested -> 412x174) at fractional factors
+    bool fractional = m_scale_factor != qRound(m_scale_factor);
+    return pix.scaled(qRound(pix.width() * m_scale_factor), qRound(pix.height() * m_scale_factor),
+                      Qt::IgnoreAspectRatio,
+                      (m_antialiasing || fractional) ? Qt::SmoothTransformation : Qt::FastTransformation);
 }
 
 const QString Skin::findFile(const QString &name)

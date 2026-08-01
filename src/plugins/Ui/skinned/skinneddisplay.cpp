@@ -147,29 +147,28 @@ SkinnedDisplay::~SkinnedDisplay()
 
 void SkinnedDisplay::updatePositions()
 {
-    int r = skin()->ratio();
-    m_previous->move(r * 16, r * 88);
-    m_play->move(r * 39, r * 88);
-    m_pause->move(r * 62,  r * 88);
-    m_vis->move(r * 24, r * 43);
-    m_stop->move(r * 85,  r * 88);
-    m_next->move(r * 108, r * 88);
-    m_eject->move(r*136, r * 89);
-    m_posbar->move(r * 16, r * 72);
-    m_eqButton->move(r * 219, r * 58);
-    m_plButton->move(r * 241, r * 58);
-    m_repeatButton->move(r * 210, r * 89);
-    m_shuffleButton->move(r * 164, r * 89);
-    m_kbps->move(r * 111, r * 43);
-    m_freq->move(r * 156, r * 43);
-    m_text->resize(r * 154, r * 14);
-    m_text->move(r * 110, r * 23);
-    m_monoster->move(r * 212, r * 41);
-    m_playstatus->move(r * 24, r * 28);
-    m_volumeBar->move(r * 107, r * 57);
-    m_balanceBar->move(r * 177, r * 57);
-    m_timeIndicator->move(r * 34, r * 26);
-    m_aboutWidget->setGeometry(r * 247, r * 83, r * 20, r * 25);
+    m_previous->move(skin()->scaled(16), skin()->scaled(88));
+    m_play->move(skin()->scaled(39), skin()->scaled(88));
+    m_pause->move(skin()->scaled(62),  skin()->scaled(88));
+    m_vis->move(skin()->scaled(24), skin()->scaled(43));
+    m_stop->move(skin()->scaled(85),  skin()->scaled(88));
+    m_next->move(skin()->scaled(108), skin()->scaled(88));
+    m_eject->move(skin()->scaled(136), skin()->scaled(89));
+    m_posbar->move(skin()->scaled(16), skin()->scaled(72));
+    m_eqButton->move(skin()->scaled(219), skin()->scaled(58));
+    m_plButton->move(skin()->scaled(241), skin()->scaled(58));
+    m_repeatButton->move(skin()->scaled(210), skin()->scaled(89));
+    m_shuffleButton->move(skin()->scaled(164), skin()->scaled(89));
+    m_kbps->move(skin()->scaled(111), skin()->scaled(43));
+    m_freq->move(skin()->scaled(156), skin()->scaled(43));
+    m_text->resize(skin()->scaled(154), skin()->scaled(14));
+    m_text->move(skin()->scaled(110), skin()->scaled(23));
+    m_monoster->move(skin()->scaled(212), skin()->scaled(41));
+    m_playstatus->move(skin()->scaled(24), skin()->scaled(28));
+    m_volumeBar->move(skin()->scaled(107), skin()->scaled(57));
+    m_balanceBar->move(skin()->scaled(177), skin()->scaled(57));
+    m_timeIndicator->move(skin()->scaled(34), skin()->scaled(26));
+    m_aboutWidget->setGeometry(skin()->scaled(247), skin()->scaled(83), skin()->scaled(20), skin()->scaled(25));
 }
 
 void SkinnedDisplay::setTime (qint64 t)
@@ -233,12 +232,11 @@ void SkinnedDisplay::updateMask()
 void SkinnedDisplay::setMinimalMode(bool b)
 {
     m_shaded = b;
-    int r = skin()->ratio();
 
     if(m_shaded)
-         m_mw->setFixedSize(r * 275,r*14);
+         m_mw->setFixedSize(skin()->scaled(275),skin()->scaled(14));
     else
-         m_mw->setFixedSize(r * 275, r * 116);
+         m_mw->setFixedSize(skin()->scaled(275), skin()->scaled(116));
     updateMask();
 }
 

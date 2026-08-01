@@ -260,14 +260,14 @@ void SkinnedTextScroller::preparePixmap(const QString &text, bool scrollable)
     {
          int textWidth = m_bitmap ? QString(text + SCROLL_SEP).size() * 5
                                   : m_metrics->horizontalAdvance(text + SCROLL_SEP);
-         int count = 154 * m_ratio / textWidth + 1;
+         int count = m_skin->scaled(154) / textWidth + 1;
          int width = count * textWidth;
          QString fullText;
          for(int i = 0; i < count; ++i)
          {
              fullText.append(text + SCROLL_SEP);
          }
-         m_pixmap = QPixmap(width, 14 * m_ratio);
+         m_pixmap = QPixmap(width, m_skin->scaled(14));
          if(m_transparencyAction->isChecked())
              m_pixmap.fill(Qt::transparent);
          else
@@ -276,7 +276,7 @@ void SkinnedTextScroller::preparePixmap(const QString &text, bool scrollable)
          painter.setPen(m_color);
          painter.setFont(m_font);
          if(bitmap)
-             drawBitmapText (0, 10 * m_ratio, fullText, &painter, m_skin);
+             drawBitmapText (0, m_skin->scaled(10), fullText, &painter, m_skin);
          else
              painter.drawText (0, qMin(m_pixmap.height() / 2  + m_metrics->ascent() / 2, m_pixmap.height() - 2), fullText);
          m_x1 = 0;
@@ -284,7 +284,7 @@ void SkinnedTextScroller::preparePixmap(const QString &text, bool scrollable)
     }
     else
     {
-        m_pixmap = QPixmap(154 * m_ratio,15 * m_ratio);
+        m_pixmap = QPixmap(m_skin->scaled(154),m_skin->scaled(15));
         if(m_transparencyAction->isChecked())
             m_pixmap.fill(Qt::transparent);
         else
@@ -293,7 +293,7 @@ void SkinnedTextScroller::preparePixmap(const QString &text, bool scrollable)
         painter.setPen(m_color);
         painter.setFont(m_font);
         if(bitmap)
-            drawBitmapText (0, 10 * m_ratio, text, &painter, m_skin);
+            drawBitmapText (0, m_skin->scaled(10), text, &painter, m_skin);
         else
             painter.drawText (0, qMin(m_pixmap.height() / 2  + m_metrics->ascent() / 2, m_pixmap.height() - 2), text);
     }
@@ -324,7 +324,7 @@ void SkinnedTextScroller::updateText() //draw text according priority
     else
     {
         m_timer->stop();
-        m_pixmap = QPixmap(154 * m_ratio, 14 * m_ratio);
+        m_pixmap = QPixmap(m_skin->scaled(154), m_skin->scaled(14));
         m_pixmap.fill(Qt::transparent);
         m_scroll = false;
     }

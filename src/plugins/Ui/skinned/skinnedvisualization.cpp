@@ -156,18 +156,18 @@ void SkinnedVisualization::stop()
 
 void SkinnedVisualization::drawBackGround()
 {
-    m_bg = QPixmap (76 * m_ratio, 16 * m_ratio);
+    m_bg = QPixmap (m_skin->scaled(76), m_skin->scaled(16));
     if(m_transparentAction->isChecked())
     {
         m_bg.fill (Qt::transparent);
         return;
     }
     QPainter painter(&m_bg);
-    for(int x = 0; x < 76 * m_ratio; x += 2)
+    for(int x = 0; x < m_skin->scaled(76); x += 2)
     {
         painter.setPen(m_skin->getVisColor(0));
-        painter.drawLine(x + 1, 0, x + 1, 16 *m_ratio);
-        for(int y = 0; y < 16 *m_ratio; y += 2)
+        painter.drawLine(x + 1, 0, x + 1, m_skin->scaled(16));
+        for(int y = 0; y < m_skin->scaled(16); y += 2)
         {
             painter.setPen(m_skin->getVisColor(0));
             painter.drawPoint(x, y);
@@ -355,7 +355,7 @@ void SkinnedVisualization::readSettings()
         setVisual(new SkinnedScope);
     else
         setVisual(nullptr);
-    resize(76 * m_ratio, 16 * m_ratio);
+    resize(m_skin->scaled(76), m_skin->scaled(16));
     update();
 }
 
@@ -363,7 +363,7 @@ SkinnedAnalyzer::SkinnedAnalyzer()
 {
     SkinnedAnalyzer::clear();
     m_skin = Skin::instance();
-    m_size = QSize(76 * m_skin->ratio(), 16 * m_skin->ratio());
+    m_size = QSize(m_skin->scaled(76), m_skin->scaled(16));
 
     QSettings settings;
     settings.beginGroup("Skinned"_L1);
@@ -442,7 +442,10 @@ bool SkinnedAnalyzer::process(float *l)
 
 void SkinnedAnalyzer::draw (QPainter *p)
 {
-    int r = m_skin->ratio();
+    //x-AMP: r is fractional (1.0, 1.5 or 2.0); every coordinate is rounded
+    //individually and the extra filler pixel is drawn for any factor above
+    //1x, otherwise the point grid leaves gaps
+    double r = m_skin->ratio();
     if(m_lines)
         for(int j = 0; j < 75; ++j)
         {
@@ -454,16 +457,16 @@ void SkinnedAnalyzer::draw (QPainter *p)
                     p->setPen(m_skin->getVisColor(3 + (int(m_intern_vis_data[j]) - i)));
                 else
                     p->setPen(m_skin->getVisColor(18 - int(m_intern_vis_data[j])));
-                p->drawPoint(j * r, m_size.height() - r * i);
-                if(r == 2)
-                    p->drawPoint(j * r + 1, m_size.height() - r * i);
+                p->drawPoint(qRound(j * r), m_size.height() - qRound(r * i));
+                if(r > 1.0)
+                    p->drawPoint(qRound(j * r) + 1, m_size.height() - qRound(r * i));
             }
             p->setPen(m_skin->getVisColor(23));
             if(m_show_peaks)
             {
-                p->drawPoint(j * r, m_size.height() - r * m_peaks[j]);
-                if(r == 2)
-                    p->drawPoint (j * r + 1, m_size.height() - r * m_peaks[j]);
+                p->drawPoint(qRound(j * r), m_size.height() - qRound(r * m_peaks[j]));
+                if(r > 1.0)
+                    p->drawPoint (qRound(j * r) + 1, m_size.height() - qRound(r * m_peaks[j]));
             }
         }
     else
@@ -478,18 +481,18 @@ void SkinnedAnalyzer::draw (QPainter *p)
                 else
                     p->setPen(m_skin->getVisColor(18 - int(m_intern_vis_data[j])));
 
-                p->drawLine(j * 4 * r, m_size.height() - r * i, (j * 4 + 2) * r, m_size.height() - r * i);
-                if(r == 2)
-                    p->drawLine(j * 4 * r, m_size.height() - r * i +1, (j * 4 + 2) * r, m_size.height() - r * i + 1);
+                p->drawLine(qRound(j * 4 * r), m_size.height() - qRound(r * i), qRound((j * 4 + 2) * r), m_size.height() - qRound(r * i));
+                if(r > 1.0)
+                    p->drawLine(qRound(j * 4 * r), m_size.height() - qRound(r * i) + 1, qRound((j * 4 + 2) * r), m_size.height() - qRound(r * i) + 1);
             }
             p->setPen (m_skin->getVisColor (23));
             if(m_show_peaks)
             {
-                p->drawLine(j * 4 * r, m_size.height() - r * m_peaks[j],
-                             (j * 4 + 2) * r, m_size.height() - r * m_peaks[j]);
-                if(r == 2)
-                    p->drawLine(j * 4 * r, m_size.height() - r * m_peaks[j] + 1,
-                                 (j * 4 + 2) * r, m_size.height() - r * m_peaks[j] + 1);
+                p->drawLine(qRound(j * 4 * r), m_size.height() - qRound(r * m_peaks[j]),
+                             qRound((j * 4 + 2) * r), m_size.height() - qRound(r * m_peaks[j]));
+                if(r > 1.0)
+                    p->drawLine(qRound(j * 4 * r), m_size.height() - qRound(r * m_peaks[j]) + 1,
+                                 qRound((j * 4 + 2) * r), m_size.height() - qRound(r * m_peaks[j]) + 1);
             }
         }
 }
@@ -540,7 +543,7 @@ void SkinnedScope::draw(QPainter *p)
         if(h1 > h2)
             qSwap(h1, h2);
         p->setPen(m_skin->getVisColor(18 + qAbs(8 - h2)));
-        p->drawLine(i * m_ratio, h1 * m_ratio, (i + 1) * m_ratio, h2 * m_ratio);
+        p->drawLine(qRound(i * m_ratio), qRound(h1 * m_ratio), qRound((i + 1) * m_ratio), qRound(h2 * m_ratio));
     }
     for(int i = 0; i < 76; ++i)
         m_intern_vis_data[i] = 0;

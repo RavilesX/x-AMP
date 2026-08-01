@@ -37,15 +37,15 @@ void SkinnedVolumeBar::mousePressEvent(QMouseEvent *e)
 {
     m_moving = true;
     press_pos = e->position().x();
-    if(m_pos < e->position().x() && e->position().x() < m_pos + 11 * skin()->ratio())
+    if(m_pos < e->position().x() && e->position().x() < m_pos + skin()->scaled(11))
     {
         press_pos = e->position().x() - m_pos;
         emit sliderPressed();
     }
     else
     {
-        m_value = convert(qMax(qMin(width() - 18 * skin()->ratio(), qRound(e->position().x()) - 6 * skin()->ratio()), 0));
-        press_pos = 6*skin()->ratio();
+        m_value = convert(qMax(qMin(width() - skin()->scaled(18), qRound(e->position().x()) - skin()->scaled(6)), 0));
+        press_pos = skin()->scaled(6);
         emit sliderPressed();
         if (m_value != m_old)
             emit sliderMoved(m_value);
@@ -60,7 +60,7 @@ void SkinnedVolumeBar::mouseMoveEvent (QMouseEvent *e)
         int po = e->position().x();
         po = po - press_pos;
 
-        if(0 <= po && po <= width() - 18 * skin()->ratio())
+        if(0 <= po && po <= width() - skin()->scaled(18))
         {
             m_value = convert(po);
             draw();
@@ -100,18 +100,18 @@ void SkinnedVolumeBar::updateSkin()
 
 void SkinnedVolumeBar::draw(bool pressed)
 {
-    int p=int(ceil(double(m_value - m_min) * (width() - 18 * skin()->ratio()) / (m_max-m_min)));
+    int p=int(ceil(double(m_value - m_min) * (width() - skin()->scaled(18)) / (m_max-m_min)));
     m_pixmap = skin()->getVolumeBar(27 * (m_value-m_min) / (m_max-m_min));
     QPainter paint(&m_pixmap);
     if(pressed)
-        paint.drawPixmap(p, 1 * skin()->ratio(), skin()->getButton(Skin::BT_VOL_P));
+        paint.drawPixmap(p, skin()->scaled(1), skin()->getButton(Skin::BT_VOL_P));
     else
-        paint.drawPixmap(p, 1 * skin()->ratio(), skin()->getButton(Skin::BT_VOL_N));
+        paint.drawPixmap(p, skin()->scaled(1), skin()->getButton(Skin::BT_VOL_N));
     setPixmap(m_pixmap);
     m_pos = p;
 }
 
 int SkinnedVolumeBar::convert(int p)
 {
-    return int(ceil(double(m_max - m_min) * p / (width() - 18 * skin()->ratio()) + m_min));
+    return int(ceil(double(m_max - m_min) * p / (width() - skin()->scaled(18)) + m_min));
 }

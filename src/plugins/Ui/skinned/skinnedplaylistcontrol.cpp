@@ -34,17 +34,17 @@ SkinnedPlaylistControl::SkinnedPlaylistControl(QWidget *parent) : PixmapWidget(p
 void SkinnedPlaylistControl::mouseReleaseEvent(QMouseEvent *me)
 {
 	QPoint pt = me->pos();
-    if(QRect(4 * m_ratio, m_ratio, 7 * m_ratio, 7 * m_ratio).contains(pt))
+    if(QRect(skin()->scaled(4), m_ratio, skin()->scaled(7), skin()->scaled(7)).contains(pt))
 		emit previousClicked();
-    else if(QRect(12 * m_ratio, m_ratio, 7 * m_ratio, 7 * m_ratio).contains(pt))
+    else if(QRect(skin()->scaled(12), m_ratio, skin()->scaled(7), skin()->scaled(7)).contains(pt))
 		emit playClicked();
-    else if(QRect(21 * m_ratio, m_ratio, 7 * m_ratio, 7 * m_ratio).contains(pt))
+    else if(QRect(skin()->scaled(21), m_ratio, skin()->scaled(7), skin()->scaled(7)).contains(pt))
 		emit pauseClicked();
-    else if(QRect(31 * m_ratio, m_ratio, 7 * m_ratio,7 * m_ratio).contains(pt))
+    else if(QRect(skin()->scaled(31), m_ratio, skin()->scaled(7),skin()->scaled(7)).contains(pt))
 		emit stopClicked();
-    else if(QRect(40 * m_ratio, m_ratio, 7 * m_ratio, 7 * m_ratio).contains(pt))
+    else if(QRect(skin()->scaled(40), m_ratio, skin()->scaled(7), skin()->scaled(7)).contains(pt))
 		emit nextClicked();
-    else if(QRect(49 * m_ratio, m_ratio, 7 * m_ratio, 7 * m_ratio).contains(pt))
+    else if(QRect(skin()->scaled(49), m_ratio, skin()->scaled(7), skin()->scaled(7)).contains(pt))
 		emit ejectClicked();
 }
 

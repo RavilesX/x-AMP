@@ -56,15 +56,14 @@ SkinnedEqTitleBar::~SkinnedEqTitleBar()
 
 void SkinnedEqTitleBar::updatePositions()
 {
-     int r = skin()->ratio();
-     m_close->move(r * 264, r * 3);
-     m_shade->move(r * 254, r * 3);
+     m_close->move(skin()->scaled(264), skin()->scaled(3));
+     m_shade->move(skin()->scaled(254), skin()->scaled(3));
      if(m_volumeBar)
-         m_volumeBar->move(r * 61, r * 4);
+         m_volumeBar->move(skin()->scaled(61), skin()->scaled(4));
      if(m_balanceBar)
-         m_balanceBar->move(r * 164, r * 4);
+         m_balanceBar->move(skin()->scaled(164), skin()->scaled(4));
      if(m_shade2)
-         m_shade2->move(r * 254, r * 3);
+         m_shade2->move(skin()->scaled(254), skin()->scaled(3));
 }
 
 void SkinnedEqTitleBar::setActive(bool active)
@@ -102,7 +101,7 @@ void SkinnedEqTitleBar::mousePressEvent(QMouseEvent *event)
 
 void SkinnedEqTitleBar::mouseMoveEvent(QMouseEvent* event)
 {
-    if(m_pos.x() < width() - 30 * skin()->ratio())
+    if(m_pos.x() < width() - skin()->scaled(30))
     {
         QPoint npos = (event->globalPosition().toPoint() - m_pos);
         Dock::instance()->move(m_eq, npos);
@@ -122,21 +121,20 @@ void SkinnedEqTitleBar::mouseDoubleClickEvent(QMouseEvent *)
 void SkinnedEqTitleBar::shade()
 {
     m_shaded = !m_shaded;
-    int r = skin()->ratio();
 
     if(m_shaded)
     {
         setPixmap(skin()->getEqPart(Skin::EQ_TITLEBAR_SHADED_A));
         m_shade->hide();
         m_shade2 = new SkinnedButton(this, Skin::EQ_BT_SHADE2_N, Skin::EQ_BT_SHADE2_P, Skin::CUR_EQNORMAL);
-        m_shade2->move(r * 254, r * 3);
+        m_shade2->move(skin()->scaled(254), skin()->scaled(3));
         connect(m_shade2, &SkinnedButton::clicked, this, &SkinnedEqTitleBar::shade);
         m_shade2->show();
         m_volumeBar = new ShadedBar(this, Skin::EQ_VOLUME1, Skin::EQ_VOLUME2, Skin::EQ_VOLUME3);
-        m_volumeBar->move(r * 61, r * 4);
+        m_volumeBar->move(skin()->scaled(61), skin()->scaled(4));
         m_volumeBar->show();
         m_balanceBar = new ShadedBar(this, Skin::EQ_BALANCE1, Skin::EQ_BALANCE2, Skin::EQ_BALANCE3);
-        m_balanceBar->move(r * 164, r * 4);
+        m_balanceBar->move(skin()->scaled(164), skin()->scaled(4));
         m_balanceBar->setRange(-100, 100);
         m_balanceBar->show();
         SoundCore *core = SoundCore::instance();
@@ -160,7 +158,7 @@ void SkinnedEqTitleBar::shade()
     }
     qobject_cast<SkinnedEqWidget *>(m_eq)->setMimimalMode(m_shaded);
     if(m_align)
-        Dock::instance()->align(m_eq, m_shaded? -102 * r: 102 * r);
+        Dock::instance()->align(m_eq, m_shaded? -skin()->scaled(102): skin()->scaled(102));
 }
 
 void SkinnedEqTitleBar::updateSkin()

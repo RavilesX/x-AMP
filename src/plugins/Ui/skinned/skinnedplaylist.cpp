@@ -74,14 +74,14 @@ SkinnedPlayList::SkinnedPlayList(PlayListManager *manager, SkinnedMainWindow *pa
 #ifdef QMMP_WS_X11
     if(m_compiz)
     {
-        setFixedSize(275*m_ratio, 116*m_ratio);
+        setFixedSize(m_skin->scaled(275), m_skin->scaled(116));
     }
     else
 #endif
     {
-        resize (275*m_ratio, 116*m_ratio);
-        setSizeIncrement (25*m_ratio, 29*m_ratio);
-        setMinimumSize(275*m_ratio, 116*m_ratio);
+        resize (m_skin->scaled(275), m_skin->scaled(116));
+        setSizeIncrement (m_skin->scaled(25), m_skin->scaled(29));
+        setMinimumSize(m_skin->scaled(275), m_skin->scaled(116));
     }
 
     m_listWidget = new SkinnedListWidget (this);
@@ -150,41 +150,41 @@ SkinnedPlayList::~SkinnedPlayList()
 
 void SkinnedPlayList::updatePositions()
 {
-    int sx = (width() - 275 * m_ratio) / 25;
-    int sy = (height() - 116 * m_ratio) / 29;
+    int sx = (width() - m_skin->scaled(275)) / 25;
+    int sy = (height() - m_skin->scaled(116)) / 29;
     if(sx < 0 || sy < 0 || m_shaded) //skip shaded mode
         return;
 
-    m_titleBar->resize(275 * m_ratio + 25 * sx, 20 * m_ratio);
-    m_plslider->resize(20 * m_ratio, 58 * m_ratio + sy * 29);
+    m_titleBar->resize(m_skin->scaled(275) + 25 * sx, m_skin->scaled(20));
+    m_plslider->resize(m_skin->scaled(20), m_skin->scaled(58) + sy * 29);
 
-    int pl_x = 12 * m_ratio;
-    int pl_y = 20 * m_ratio;
-    int pl_w = 243 * m_ratio + 25 * sx;
-    int pl_h = 58 * m_ratio + 29 * sy;
+    int pl_x = m_skin->scaled(12);
+    int pl_y = m_skin->scaled(20);
+    int pl_w = m_skin->scaled(243) + 25 * sx;
+    int pl_h = m_skin->scaled(58) + 29 * sy;
 
     if(m_pl_selector)
     {
-        m_pl_selector->resize(243 * m_ratio + 25 * sx, m_pl_selector->height());
-        m_pl_selector->move(12 * m_ratio, 20 * m_ratio + 58 * m_ratio + 29 * sy - m_pl_selector->height());
+        m_pl_selector->resize(m_skin->scaled(243) + 25 * sx, m_pl_selector->height());
+        m_pl_selector->move(m_skin->scaled(12), m_skin->scaled(20) + m_skin->scaled(58) + 29 * sy - m_pl_selector->height());
         pl_h -= m_pl_selector->height();
     }
 
     m_listWidget->resize(pl_w, pl_h);
     m_listWidget->move(pl_x, pl_y);
 
-    m_buttonAdd->move(11 * m_ratio, 86 * m_ratio + 29 * sy);
-    m_buttonSub->move(40 * m_ratio, 86 * m_ratio + 29 * sy);
-    m_selectButton->move(70 * m_ratio, 86 * m_ratio + 29 * sy);
-    m_sortButton->move(99 * m_ratio, 86 * m_ratio + 29 * sy);
+    m_buttonAdd->move(m_skin->scaled(11), m_skin->scaled(86) + 29 * sy);
+    m_buttonSub->move(m_skin->scaled(40), m_skin->scaled(86) + 29 * sy);
+    m_selectButton->move(m_skin->scaled(70), m_skin->scaled(86) + 29 * sy);
+    m_sortButton->move(m_skin->scaled(99), m_skin->scaled(86) + 29 * sy);
 
-    m_pl_control->move(128 * m_ratio + sx * 25, 100 * m_ratio + 29 * sy);
-    m_playlistButton->move(228 * m_ratio + sx * 25, 86 * m_ratio + 29 * sy);
+    m_pl_control->move(m_skin->scaled(128) + sx * 25, m_skin->scaled(100) + 29 * sy);
+    m_playlistButton->move(m_skin->scaled(228) + sx * 25, m_skin->scaled(86) + 29 * sy);
 
-    m_length_totalLength->move(132 * m_ratio + sx * 25, 88 * m_ratio + 29 * sy);
-    m_current_time->move(191 * m_ratio + sx * 25, 101 * m_ratio + 29 * sy);
+    m_length_totalLength->move(m_skin->scaled(132) + sx * 25, m_skin->scaled(88) + 29 * sy);
+    m_current_time->move(m_skin->scaled(191) + sx * 25, m_skin->scaled(101) + 29 * sy);
 
-    m_plslider->move(255 * m_ratio + sx * 25, 20 * m_ratio);
+    m_plslider->move(m_skin->scaled(255) + sx * 25, m_skin->scaled(20));
     m_resizeWidget->move(width() - 25, height() - 29);
 }
 
@@ -342,22 +342,22 @@ void SkinnedPlayList::closeEvent (QCloseEvent *e)
 
 void SkinnedPlayList::paintEvent (QPaintEvent *)
 {
-    int sx = (width() - 275 * m_ratio) / 25;
-    int sy = (height() - 116 * m_ratio) / 29;
+    int sx = (width() - m_skin->scaled(275)) / 25;
+    int sy = (height() - m_skin->scaled(116)) / 29;
 
     QPainter paint(this);
-    drawPixmap (&paint, 0, 20 * m_ratio, m_skin->getPlPart(Skin::PL_LFILL));
-    for (int i = 1; i < sy + 2 * m_ratio; i++)
+    drawPixmap (&paint, 0, m_skin->scaled(20), m_skin->getPlPart(Skin::PL_LFILL));
+    for (int i = 1; i < sy + m_skin->scaled(2); i++)
     {
-        drawPixmap (&paint, 0, 20 * m_ratio + 29 * i, m_skin->getPlPart(Skin::PL_LFILL));
+        drawPixmap (&paint, 0, m_skin->scaled(20) + 29 * i, m_skin->getPlPart(Skin::PL_LFILL));
     }
-    drawPixmap (&paint, 0, 78 * m_ratio + 29 * sy, m_skin->getPlPart(Skin::PL_LSBAR));
+    drawPixmap (&paint, 0, m_skin->scaled(78) + 29 * sy, m_skin->getPlPart(Skin::PL_LSBAR));
 
     for (int i = 0; i < sx; i++)
     {
-        drawPixmap(&paint, 125 * m_ratio + i * 25, 78 * m_ratio + sy * 29, m_skin->getPlPart(Skin::PL_SFILL1));
+        drawPixmap(&paint, m_skin->scaled(125) + i * 25, m_skin->scaled(78) + sy * 29, m_skin->getPlPart(Skin::PL_SFILL1));
     }
-    drawPixmap(&paint, 125 * m_ratio + sx * 25, 78 * m_ratio + sy * 29, m_skin->getPlPart(Skin::PL_RSBAR));
+    drawPixmap(&paint, m_skin->scaled(125) + sx * 25, m_skin->scaled(78) + sy * 29, m_skin->getPlPart(Skin::PL_RSBAR));
 
 }
 
@@ -387,21 +387,21 @@ void SkinnedPlayList::mouseMoveEvent (QMouseEvent *e)
 {
     if(m_resize)
     {
-        int dx = m_ratio * 25;
-        int dy = m_ratio * 29;
+        int dx = m_skin->scaled(25);
+        int dy = m_skin->scaled(29);
 
-        int sx = ((e->position().x() - 275 * m_ratio) + 14) / dx;
-        int sy = ((e->position().y() - 116 * m_ratio) + 14) / dy;
+        int sx = ((e->position().x() - m_skin->scaled(275)) + 14) / dx;
+        int sy = ((e->position().y() - m_skin->scaled(116)) + 14) / dy;
 
         sx = qMax(sx, 0);
         sy = qMax(sy, 0);
 
 #ifdef QMMP_WS_X11
         if(m_compiz)
-            setFixedSize(275 * m_ratio + dx * sx, 116 * m_ratio + dy * sy);
+            setFixedSize(m_skin->scaled(275) + dx * sx, m_skin->scaled(116) + dy * sy);
         else
 #endif
-            resize(275 * m_ratio + dx * sx, 116 * m_ratio + dy * sy);
+            resize(m_skin->scaled(275) + dx * sx, m_skin->scaled(116) + dy * sy);
 
 
 #ifdef QMMP_WS_X11
@@ -468,8 +468,8 @@ void SkinnedPlayList::readSettings()
         auto it = std::find_if(screens.cbegin(), screens.cend(), [pos](QScreen *screen){ return screen->availableGeometry().contains(pos); });
         if(it != screens.cend())
             availableGeometry = (*it)->availableGeometry();
-        pos.setX(qBound(availableGeometry.left(), pos.x(), availableGeometry.right() - m_ratio * 275));
-        pos.setY(qBound(availableGeometry.top(), pos.y(), availableGeometry.bottom() - m_ratio * 116));
+        pos.setX(qBound(availableGeometry.left(), pos.x(), availableGeometry.right() - m_skin->scaled(275)));
+        pos.setY(qBound(availableGeometry.top(), pos.y(), availableGeometry.bottom() - m_skin->scaled(116)));
         move(pos); //position
         m_update = true;
     }
@@ -680,11 +680,11 @@ void SkinnedPlayList::setMinimalMode(bool b)
         if(m_shaded)
         {
             m_height = height();
-            setFixedSize(qMax(width(), 275 * m_ratio), 14 * m_ratio);
+            setFixedSize(qMax(width(), m_skin->scaled(275)), m_skin->scaled(14));
         }
         else
         {
-            setFixedSize(qMax(width(), 275 * m_ratio), qMax(m_height, 116 * m_ratio));
+            setFixedSize(qMax(width(), m_skin->scaled(275)), qMax(m_height, m_skin->scaled(116)));
         }
     }
     else
@@ -693,15 +693,15 @@ void SkinnedPlayList::setMinimalMode(bool b)
         if(m_shaded)
         {
             m_height = height();
-            setSizeIncrement(25 * m_ratio, 1);
-            setMinimumSize(275 * m_ratio, 14 * m_ratio);
-            resize(width(), 14 * m_ratio);
+            setSizeIncrement(m_skin->scaled(25), 1);
+            setMinimumSize(m_skin->scaled(275), m_skin->scaled(14));
+            resize(width(), m_skin->scaled(14));
         }
         else
         {
-            setMinimumSize(275 * m_ratio, 116 * m_ratio);
+            setMinimumSize(m_skin->scaled(275), m_skin->scaled(116));
             resize(width(), m_height);
-            setSizeIncrement(25 * m_ratio, 29 * m_ratio);
+            setSizeIncrement(m_skin->scaled(25), m_skin->scaled(29));
         }
     }
     updatePositions();

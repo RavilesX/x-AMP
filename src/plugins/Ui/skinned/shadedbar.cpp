@@ -32,9 +32,9 @@ ShadedBar::ShadedBar(QWidget *parent, uint slider1, uint slider2, uint slider3) 
     m_skin = Skin::instance();
     m_ratio = m_skin->ratio();
     if(slider1 == Skin::EQ_VOLUME1)
-        resize(m_ratio * 97, m_ratio * 7);
+        resize(m_skin->scaled(97), m_skin->scaled(7));
     else
-        resize(m_ratio * 42, m_ratio * 7);
+        resize(m_skin->scaled(42), m_skin->scaled(7));
     connect(m_skin, &Skin::skinChanged, this, &ShadedBar::updateSkin);
     draw();
 }
@@ -101,9 +101,9 @@ void ShadedBar::updateSkin()
 {
     m_ratio = m_skin->ratio();
     if(m_slider1 == Skin::EQ_VOLUME1)
-        resize(m_ratio * 97, m_ratio * 7);
+        resize(m_skin->scaled(97), m_skin->scaled(7));
     else
-        resize(m_ratio * 42, m_ratio * 7);
+        resize(m_skin->scaled(42), m_skin->scaled(7));
     draw();
 }
 
@@ -115,7 +115,7 @@ void ShadedBar::draw()
         m_pixmap = m_skin->getEqPart(m_slider2);
     else
         m_pixmap = m_skin->getEqPart(m_slider3);
-    m_pos = int(ceil(double(m_value-m_min) * (width() - 3 * m_ratio) / (m_max-m_min)));
+    m_pos = int(ceil(double(m_value-m_min) * (width() - m_skin->scaled(3)) / (m_max-m_min)));
     update();
 }
 

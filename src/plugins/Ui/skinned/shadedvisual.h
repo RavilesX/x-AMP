@@ -61,7 +61,7 @@ private:
     float m_left_buffer[QMMP_VISUAL_NODE_SIZE];
     float m_right_buffer[QMMP_VISUAL_NODE_SIZE];
     double m_l, m_r;
-    int m_ratio;
+    double m_ratio = 1.0;
     bool m_running = false;
 
 };
