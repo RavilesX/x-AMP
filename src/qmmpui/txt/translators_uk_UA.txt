@@ -1,0 +1,111 @@
+Бразильська Портуґальська
+    Бруно Ґонсалвес
+    Клаос Ласерда
+    Гейтор Тюрі Баррейрос Барбоса <hthury@gmail.com>
+    Вітор Перейра
+
+Болгарська:
+    Кирило Кирилов
+    Мирослав Міхов
+
+Китайська традиційна:
+    Космос Чен
+    lon <lon83129@126.com>
+    Джефф Гуан
+
+Китайська спрощена:
+    lon <lon83129@126.com>
+    mabier
+    Мінґконґ Бай
+    Мінґе Ван
+
+Чеська:
+    Jaroslav Lichtblau
+    Карел Вольний <kvolny@redhat.com>
+
+Нідерландська:
+    Гаймен Штоффельс
+    Рональд Уйтермарк <ronald645@gmail.com>
+
+Фінська:
+    Іржі Ґренроос
+    Кіммо Куджансуу
+
+Французька:
+    Адрієн Віньєрон — VRad <adrienvigneron@ml1.net>
+    Себастьян Аперґіс-Трамонті (Маддінґе)
+    Станіслас Целлер <uncensored.assault@gmail.com>
+
+Ґалісійська:
+    Деліо Докампо Кордейро
+    Оскар Перейра <oscarpereira1989@gmail.com>
+
+Німецька:
+    Етторе Аталан
+    Стефан Келлінґ <stefankoelling.ext@googlemail.com>
+    Панайотіс Пападопулос <pano_90@gmx.net>
+
+Грецька:
+    Димитріос Ґлентадакіс
+
+Гебрейська(іврит):
+    Genghis Khan <genghiskhan@gmx.ca>
+
+Угорська:
+    Немет Ґабор <sutee84@freemail.hu>
+
+Індонезійська:
+    Андіка Трівідада
+    Вантойо <wantoyek@gmail.com>
+
+Італійська:
+    Джан Паоло Ренелло <emmerkar@gmail.com>
+    Луїджі Тоскано
+
+Японська:
+    Ryota Shimamoto <liangtai.s16@gmail.com>
+
+Казахська:
+    Бауржан Муфтахідінов <baurthefirst@gmail.com>
+
+Корейська:
+   Юнґ Хі Лі <daemul72@gmail.com>
+
+Литовська:
+    Альґірдас Буткус <butkus.algirdas@gmail.com>
+
+Польська:
+    Marek Adamski
+    Даніель Кравчик
+    Ґжегож Ґібас <amigib@gmail.com>
+
+Портуґальська:
+    Серґіо Маркес <smarquespt@gmail.com>
+
+Російська:
+    Олексій Логінов <loginov.alex.valer.gmail.com>
+    Ілля Котов <forkotov02@ya.ru>
+    Andrei Stepanov
+    Віктор Єругін
+
+Сербська:
+    Младен Пеякович <pejakm@autistici.org>
+
+Словацька:
+    Ян Дановський <dagsoftware@yahoo.com>
+
+Еспанська:
+    Богдан Шуба
+    Фелікс Медрано <xukosky@yahoo.es>
+    Джоел Барріос <darkshram@gmail.com>
+
+Swedish:
+    Luna Jernberg <droidbittin@gmail.com>
+
+Турецька:
+    Мустафа ҐУНАЙ <mustafagunay@pgmail.com>
+    Більґесу Ґунґор <h.ibrahim.gungor@gmail.com>
+    Uğur KUYU
+
+Українська солов'їна:
+    Геннадій Моцьо <drool@altlinux.ru>, Микола Ткач <chistomov@gmail.com>

@@ -1,0 +1,12 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=@CMAKE_INSTALL_PREFIX@
+libdir=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@
+includedir=@QMMP_INCLUDE_DIR@
+plugindir=@CMAKE_INSTALL_PREFIX@/@PLUGIN_DIR@
+
+Name: qmmp@APP_NAME_SUFFIX@
+Description: qmmp core library
+Version: @QMMP_VERSION@
+Requires: Qt6Core Qt6Gui Qt6Widgets
+Libs: -L${libdir} -lqmmp@APP_NAME_SUFFIX@
+Cflags: -I${includedir}

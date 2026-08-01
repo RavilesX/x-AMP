@@ -1,0 +1,60 @@
+/***************************************************************************
+ *   Copyright (C) 2016-2026 by Ilya Kotov                                 *
+ *   forkotov02@ya.ru                                                      *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
+ ***************************************************************************/
+
+#include "replaygainreader.h"
+
+ReplayGainReader::ReplayGainReader(AVFormatContext *ic)
+{
+    AVDictionaryEntry *t = nullptr;
+
+    while((t = av_dict_get(ic->metadata, "REPLAYGAIN_ALBUM_GAIN", t, 0)))
+        setValue(Qmmp::REPLAYGAIN_ALBUM_GAIN, QString::fromLatin1(t->value));
+
+    t = nullptr;
+
+    while((t = av_dict_get(ic->metadata, "REPLAYGAIN_ALBUM_PEAK", t, 0)))
+        setValue(Qmmp::REPLAYGAIN_ALBUM_PEAK, QString::fromLatin1(t->value));
+
+    t = nullptr;
+
+    while((t = av_dict_get(ic->metadata, "REPLAYGAIN_TRACK_GAIN", t, 0)))
+        setValue(Qmmp::REPLAYGAIN_TRACK_GAIN, QString::fromLatin1(t->value));
+
+    t = nullptr;
+
+    while((t = av_dict_get(ic->metadata, "REPLAYGAIN_TRACK_PEAK", t, 0)))
+        setValue(Qmmp::REPLAYGAIN_TRACK_PEAK, QString::fromLatin1(t->value));
+}
+
+QMap <Qmmp::ReplayGainKey, double> ReplayGainReader::replayGainInfo() const
+{
+    return m_values;
+}
+
+void ReplayGainReader::setValue(Qmmp::ReplayGainKey key, QString value)
+{
+    value.remove(u" dB"_s);
+    if(value.isEmpty())
+        return;
+    bool ok;
+    double v = value.toDouble(&ok);
+    if(ok)
+        m_values[key] = v;
+}

@@ -1,0 +1,67 @@
+/***************************************************************************
+ *   Copyright (C) 2017-2026 by Ilya Kotov                                  *
+ *   forkotov02@ya.ru                                                      *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
+ ***************************************************************************/
+
+#ifndef METADATAFORMATTERMENU_H
+#define METADATAFORMATTERMENU_H
+
+#include <QMenu>
+#include "qmmpui_export.h"
+
+class QAction;
+
+/*! @brief The MetaDataFormatterMenu provided menu with frequently encountered templates.
+ * @author Ilya Kotov <forkotov02@ya.ru>
+ */
+class QMMPUI_EXPORT MetaDataFormatterMenu : public QMenu
+{
+    Q_OBJECT
+public:
+
+    /*!
+     * This enum describes menu type.
+     */
+    enum Type
+    {
+        TITLE_MENU = 0,        /*!< Title. */
+        GROUP_MENU,            /*!< Group. */
+        GROUP_EXTRA_ROW_MENU,  /*!< Extra row of group. */
+        COLUMN_MENU            /*!< Playlist column. */
+    };
+
+    /*!
+     * Object contstructor.
+     * \param type Meny type.
+     * \param parent Parent widget.
+     */
+    explicit MetaDataFormatterMenu(Type type, QWidget *parent = nullptr);
+
+signals:
+    /*!
+     * Emitted when user acticates menu item.
+     * \param pattern Template of the activated item.
+     */
+    void patternSelected(const QString &pattern);
+
+private:
+    MetaDataFormatterMenu() = delete;
+
+};
+
+#endif // METADATAFORMATTERMENU_H

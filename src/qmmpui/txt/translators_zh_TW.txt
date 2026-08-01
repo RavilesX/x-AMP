@@ -1,0 +1,113 @@
+巴西葡萄牙語：
+    Bruno Gonçalves
+    Klaos Lacerda
+    Heitor Thury Barreiros Barbosa <hthury@gmail.com>
+    Vitor Pereira
+
+保加利亞語：
+    Kiril Kirilov
+    Miroslav Mihov
+
+繁體中文：
+    Edouard.J.K Li <edouardlicn@gmail.com>
+    Cosmos Chen
+    lon <lon83129@126.com>
+    Jeff Huang
+
+簡體中文：
+    lon <lon83129@126.com>
+    mabier
+    Mingcong Bai
+    Mingye Wang
+
+捷克語：
+    Jaroslav Lichtblau
+    Karel Volný <kvolny@redhat.com>
+
+荷蘭語：
+    Heimen Stoffels
+    Ronald Uitermark <ronald645@gmail.com>
+
+芬蘭語：
+    Jiri Grönroos
+    Kimmo Kujansuu
+
+法語：
+    Nicolas PARLANT
+    Adrien Vigneron - VRad <adrienvigneron@ml1.net>
+    Sébastien Aperghis-Tramoni (maddingue)
+    Stanislas Zeller <uncensored.assault@gmail.com>
+
+加利西亞語：
+    Delio Docampo Cordeiro
+    Óscar Pereira <oscarpereira1989@gmail.com>
+
+德語：
+    Ettore Atalan
+    Stefan Koelling <stefankoelling.ext@googlemail.com>
+    Panagiotis Papadopoulos <pano_90@gmx.net>
+
+希臘語：
+    Dimitrios Glentadakis
+
+希伯來語：
+    Genghis Khan <genghiskhan@gmx.ca>
+
+匈牙利語：
+    Németh Gábor <sutee84@freemail.hu>
+
+印尼語：
+    Andika Triwidada
+    Wantoyo <wantoyek@gmail.com>
+
+義大利語：
+    Gian Paolo Renello <emmerkar@gmail.com>
+    Luigi Toscano
+
+日本語：
+    Ryota Shimamoto <liangtai.s16@gmail.com>
+
+哈薩克語：
+    Baurzhan Muftakhidinov <baurthefirst@gmail.com>
+
+韓語:
+   Jung Hee Lee <daemul72@gmail.com>
+
+立陶宛語：
+    Algirdas Butkus <butkus.algirdas@gmail.com>
+
+波蘭語：
+    Marek Adamski
+    Daniel Krawczyk
+    Grzegorz Gibas <amigib@gmail.com>
+
+葡萄牙語：
+    Sérgio Marques <smarquespt@gmail.com>
+
+俄語：
+    Alexey Loginov <loginov.alex.valer.gmail.com>
+    Ilya Kotov <forkotov02@ya.ru>
+    Andrei Stepanov
+    Viktor Eruhin
+
+塞爾維亞語：
+    Mladen Pejaković <pejakm@autistici.org>
+
+斯洛伐克語：
+    Ján Ďanovský <dagsoftware@yahoo.com>
+
+西班牙語：
+    Bohdan Shuba
+    Félix Medrano <xukosky@yahoo.es>
+    Joel Barrios <darkshram@gmail.com>
+
+瑞典語：
+    Luna Jernberg <droidbittin@gmail.com>
+
+土耳其語：
+    Mustafa GUNAY <mustafagunay@pgmail.com>
+    Bilgesu Güngör <h.ibrahim.gungor@gmail.com>
+    Uğur KUYU
+
+烏克蘭語：
+    Gennadi Motsyo <drool@altlinux.ru>

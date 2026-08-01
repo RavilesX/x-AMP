@@ -1,0 +1,115 @@
+ブラジルポルトガル語:
+    Bruno Gonçalves
+    Klaos Lacerda
+    Heitor Thury Barreiros Barbosa <hthury@gmail.com>
+    Vitor Pereira
+
+ブルガリア語 :
+    Kiril Kirilov
+    Miroslav Mihov
+
+繁体字中国語 :
+    Edouard.J.K Li <edouardlicn@gmail.com>
+    Cosmos Chen
+    lon <lon83129@126.com>
+    Jeff Huang
+
+簡体字中国語 :
+    lon <lon83129@126.com>
+    mabier
+    Mingcong Bai
+    Mingye Wang
+    Rain Ding
+
+チェコ語 :
+    Jaroslav Lichtblau
+    Karel Volný <kvolny@redhat.com>
+
+オランダ語 :
+    Heimen Stoffels
+    Ronald Uitermark <ronald645@gmail.com>
+
+フィンランド語 :
+    Jiri Grönroos
+    Kimmo Kujansuu
+
+フランス語 :
+    Nicolas PARLANT
+    Adrien Vigneron - VRad <adrienvigneron@ml1.net>
+    Sébastien Aperghis-Tramoni (maddingue)
+    Stanislas Zeller <uncensored.assault@gmail.com>
+
+ガリシア語 :
+    Delio Docampo Cordeiro
+    Óscar Pereira <oscarpereira1989@gmail.com>
+
+ドイツ語 :
+    Ettore Atalan
+    Stefan Koelling <stefankoelling.ext@googlemail.com>
+    Panagiotis Papadopoulos <pano_90@gmx.net>
+
+ギリシャ語 :
+    Dimitrios Glentadakis
+
+ヘブライ語 :
+    Genghis Khan <genghiskhan@gmx.ca>
+
+ハンガリー語 :
+    Németh Gábor <sutee84@freemail.hu>
+
+インドネシア語 :
+    Andika Triwidada
+    Wantoyo <wantoyek@gmail.com>
+
+イタリア語 :
+    Gian Paolo Renello <emmerkar@gmail.com>
+    Luigi Toscano
+
+日本語 :
+    Ryota Shimamoto <liangtai.s16@gmail.com>
+    coolvitto <coolvitto.hateblo.jp>
+
+カザフ語 :
+    Baurzhan Muftakhidinov <baurthefirst@gmail.com>
+
+韓国語 :
+   Jung Hee Lee <daemul72@gmail.com>
+
+リトアニア語 :
+    Algirdas Butkus <butkus.algirdas@gmail.com>
+
+ポーランド語 :
+    Marek Adamski
+    Daniel Krawczyk
+    Grzegorz Gibas <amigib@gmail.com>
+
+ポルトガル語 :
+    Sérgio Marques <smarquespt@gmail.com>
+
+ロシア語 :
+    Alexey Loginov <loginov.alex.valer.gmail.com>
+    Илья Котов (Ilya Kotov) <forkotov02@ya.ru>
+    Andrei Stepanov
+    Viktor Eruhin
+
+セルビア語 :
+    Mladen Pejaković <pejakm@autistici.org>
+
+スロバキア語 :
+    Ján Ďanovský <dagsoftware@yahoo.com>
+
+スペイン語 :
+    Bohdan Shuba
+    Félix Medrano <xukosky@yahoo.es>
+    Joel Barrios <darkshram@gmail.com>
+
+スウェーデン語 :
+    Luna Jernberg <droidbittin@gmail.com>
+
+トルコ語 :
+    Mustafa GUNAY <mustafagunay@pgmail.com>
+    Bilgesu Güngör <h.ibrahim.gungor@gmail.com>
+    Uğur KUYU
+
+ウクライナ語 :
+    Gennadi Motsyo <drool@altlinux.ru>

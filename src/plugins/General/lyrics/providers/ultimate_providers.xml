@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lyricproviders>
+  <provider name="azlyrics.com" title="{artist} LYRICS - {title}" url="https://www.azlyrics.com/lyrics/{artist}/{title}.html">
+    <urlFormat replace=" ._@,;&amp;\/()'&quot;-" with=""/>
+    <extract>
+      <item begin="&lt;!-- Usage of azlyrics.com content by any third-party lyrics provider is prohibited by our licensing agreement. Sorry about that. --&gt;" end="&lt;/div&gt;"/>
+    </extract>
+    <exclude>
+      <item tag="&lt;B&gt;"/>
+      <item begin="&lt;i&gt;[" end="]&lt;/i&gt;"/>
+      <item begin="[" end="]"/>
+    </exclude>
+    <invalidIndicator value="&lt;h1&gt;Welcome to AZLyrics!&lt;/h1&gt;"/>
+  </provider>
+  <provider name="bollywoodlyrics.com (Bollywood songs)" title="{title} Song Lyrics - BollywoodLyrics.com" url="https://www.bollywoodlyrics.com/lyric/{Title}">
+    <urlFormat replace=" _@;\/&quot;'()[]" with="-"/>
+    <urlFormat replace="?" with=""/>
+    <extract>
+      <item begin="&lt;div class=&quot;entry-content&quot;&gt;" end="&lt;/div&gt;"/>
+    </extract>
+    <invalidIndicator value="Couldn't find that page."/>
+  </provider>
+  <provider name="darklyrics.com" title ="{ARTIST} LYRICS - &quot;{title}&quot; ({year}) album"  url="http://www.darklyrics.com/lyrics/{artist2}/{album2}.html">
+    <extract>
+      <item begin="&lt;h3&gt;&lt;a name=&quot;{track}&quot;&gt;{track}. {Title2}&lt;/a&gt;&lt;/h3&gt;&lt;br /&gt;" end="&lt;h3&gt;"/>
+    </extract>
+    <extract>
+      <item begin="&lt;h3&gt;&lt;a name=&quot;{track}&quot;&gt;{track}. {Title2}&lt;/a&gt;&lt;/h3&gt;&lt;br /&gt;" end="&lt;div class=&quot;thanks&quot;&gt;"/>
+    </extract>
+    <invalidIndicator value="The page you requested was not found on DarkLyrics.com."/>
+  </provider>
+  <provider name="elyrics.net" title="{title} Lyrics - {artist}" url="https://www.elyrics.net/read/{a}/{artist}-lyrics/{title}-lyrics.html">
+    <urlFormat replace=" _@;&amp;\/&quot;" with="-"/>
+    <urlFormat replace="'" with="_"/>
+    <extract>
+      <item tag="&lt;div id='inlyr'&gt;"/>
+    </extract>
+    <exclude>
+      <item tag="&lt;strong&gt;"/>
+      <item tag="&lt;em&gt;"/>
+    </exclude>
+    <invalidIndicator value="Page not Found"/>
+  </provider>
+  <!-- <provider name="Encyclopaedia Metallum" title="{title Lyrics - {artist}" url="https://www.metal-archives.com/search/ajax-advanced/searching/songs/?songTitle={title}&amp;bandName={artist}&amp;ExactBandMatch=1">
+    <extract>
+      <item url="http://www.metal-archives.com/release/ajax-view-lyrics/id/{id}"/>
+      <item begin="id=\&quot;lyricsLink_" end="&quot;"/>
+    </extract>
+    <invalidIndicator value="&quot;iTotalRecords&quot;: 0"/>
+    <invalidIndicator value="lyrics not available"/>
+  </provider> -->
+  <provider name="genius.com" url="https://genius.com/{Artist}-{title}-lyrics">
+    <urlFormat replace=",._@!#%^*+;\/&quot;'()[]" with=""/>
+    <urlFormat replace=" :" with="-"/>
+    <!-- When $ is used as the dollar sign it is omitted from the url
+         When $ is used instead of 's',
+         in some cases it is replaced by 's'(Too $hort -> too-short)
+         in other cases it is omitted ($uicideboy$ -> uicideboy)
+         I chose to omit it though, in some cases it's gonna be problematic -->
+    <urlFormat replace="$" with=""/>
+    <urlFormat replace="ÄÂÀÁÃäâàáã" with="a"/>
+    <urlFormat replace="ËÊÈÉëêèé" with="e"/>
+    <urlFormat replace="ÏÌïì" with="i"/>
+    <urlFormat replace="ÖÔÒÓÕöôòóõ" with="o"/>
+    <urlFormat replace="ÜŪÙÚüūùú" with="u"/>
+    <urlFormat replace="ŸÝÿý" with="y"/>
+    <urlFormat replace="Ññ" with="n"/>
+    <urlFormat replace="Çç" with="c"/>
+    <urlFormat replace="ß" with="ss"/>
+    <urlFormat replace="&amp;" with="and"/>
+    <extract>
+      <item begin="&lt;div data-lyrics-container=&quot;true&quot; class=&quot;Lyrics__Container-sc-a49d8432-1 fBKwZw&quot;&gt;" end="&lt;div class=&quot;RightSidebar__Container-sc-e6620a93-0 gktaHH&quot;&gt;"/>
+    </extract>
+    <exclude>
+      <item begin="&lt;!--" end="--&gt;"/>
+      <item begin="&lt;div" end="/div&gt;"/>
+      <item begin="&lt;/div" end="&gt;"/>
+    </exclude>
+  </provider>   
+  <provider name="letras.mus.br" title="" url="https://www.letras.mus.br/winamp.php?musica={title}&amp;artista={artist}">
+    <urlFormat replace="_@,;&amp;\/&quot;" with="_"/>
+    <urlFormat replace=" " with="+"/>
+    <extract>
+      <item begin="&lt;/div&gt;" end="&lt;/div&gt;"/>
+    </extract>
+    <invalidIndicator value="Verifique se o nome do seu arquivo e sua"/>
+  </provider>
+  <!-- <provider name="lyrics.com" title="{artist} - {title} Lyrics" url="https://www.lyrics.com/redirsong.php?str={title}-lyrics-{artist}">
+    <urlFormat replace=" _@,;&amp;\/&quot;" with="-"/>
+    <urlFormat replace="'." with=""/>
+    <extract>
+      <item tag="&lt;pre id=&quot;lyric-body-text&quot; class=&quot;lyric-body&quot; dir=&quot;ltr&quot; data-lang=&quot;en&quot;&gt;"/>
+    </extract>
+    <exclude>
+      <item begin="&lt;a style" end="&lt;/a&gt;"/>
+    </exclude>
+    <invalidIndicator value="Click to search for the Lyrics on Lyrics.com"/>
+    <invalidIndicator value="we do not have the lyric for this song"/>
+  </provider> -->
+  <provider name="lyricsmania.com" title="{artist} - {title} Lyrics" url="https://www.lyricsmania.com/{title}_lyrics_{artist}.html">
+    <urlFormat replace=" _@;&amp;\/&quot;'." with="_"/>
+    <extract>
+      <item begin="&lt;div class=&quot;lyrics-body&quot;&gt;" end="&lt;/div&gt; &lt;div" />
+    </extract>
+    <exclude>
+      <item begin="&lt;a href=" end="/a&gt;"/>
+      <item tag="&lt;div id=&quot;video-musictory&quot;&gt;"/>
+    </exclude>
+    <invalidIndicator value="The lyrics you requested is not in our archive yet,"/>
+  </provider>
+  <provider name="lyricsmode.com" title="{artist} - {title} lyrics" url="https://www.lyricsmode.com/lyrics/{a}/{artist}/{title}.html">
+    <urlFormat replace=" ._@,;&amp;\/&quot;" with="_"/>
+    <extract>
+      <item tag="&lt;div id=&quot;lyrics_text&quot; class=&quot;js-new-text-select&quot; style=&quot;position: relative;&quot;&gt;"/>
+    </extract>
+    <exclude>
+      <item begin="&lt;a class=" end="/a&gt;"/>
+      <item begin="&lt;div class=" end="&gt;"/>
+    </exclude>
+    <invalidIndicator value="Sorry, we have no"/>
+  </provider>
+  <!-- <provider name="lyricsreg.com" title="{title} lyrics {artist}" url="https://www.lyricsreg.com/lyrics/{artist}/{title}/">
+    <urlFormat replace=" _@,;&amp;\/&quot;" with="+"/>
+    <urlFormat replace="'." with=""/>
+    <extract>
+      <item begin="&lt;div class=&quot;lyrics_above_ad&quot;&gt;" end="&lt;div class=&quot;lyrics_below_ad2&quot;&gt;"/>
+    </extract>
+    <exclude>
+      <item tag="&lt;script&gt;"/>
+    </exclude>
+    <invalidIndicator value="Page not Found"/>
+  </provider> -->
+  <provider name="lyriki.com" title="" url="https://www.lyriki.com/{Artist}:{Title}">
+    <urlFormat replace=" _@,;&amp;\/&quot;" with="_"/>
+    <urlFormat replace="." with=""/>
+    <extract>
+      <item begin="&lt;/table&gt;" end="&lt;div class=&quot;printfooter&quot;&gt;"/>
+      <item tag="&lt;p&gt;"/>
+    </extract>
+  </provider>
+  <provider name="musixmatch.com" title="{artist} - {title} lyrics | Musixmatch" url="https://www.musixmatch.com/lyrics/{Artist}/{Title}">
+    <urlFormat replace=" _@;\/&quot;'()[]" with="-"/>
+    <urlFormat replace="?" with=""/>
+    <extract>
+      <item begin="&lt;span id=&quot;lyrics-html&quot;" end="&lt;/span&gt;"/>
+    </extract>
+    <exclude>
+      <item begin=" data-reactid=&quot;" end="&quot;&gt;"/>
+    </exclude>
+    <invalidIndicator value="We couldn't find that page."/>
+  </provider>
+  <provider name="seekalyric.com" title="{artist} - {title} Lyrics" url="https://www.seekalyric.com/song/{Artist}/{Title}">
+    <urlFormat replace=" _@,;&amp;\/'&quot;" with="-"/>
+    <urlFormat replace="." with=""/>
+    <extract>
+      <item tag="&lt;div id=&quot;contentt&quot; style=&quot;FONT-SIZE: 13px;&quot;&gt;"/>
+    </extract>
+  </provider>
+  <provider name="songlyrics.com" title="{title} LYRICS - {artist}" url="https://www.songlyrics.com/{artist}/{title}-lyrics/">
+    <urlFormat replace=" ._@,;&amp;\/&quot;" with="-"/>
+    <urlFormat replace="'" with="_"/>
+    <extract>
+      <item tag="&lt;div id=&quot;songLyricsDiv-outer&quot;&gt;"/>
+    </extract>
+    <invalidIndicator value="Sorry, we have no"/>
+    <invalidIndicator value="This is an upcoming album and we do not have the"/>
+  </provider>
+  <provider name="tekstowo.pl (Original lyric language)" title="{artist} - {title} - tekst" url="https://www.tekstowo.pl/piosenka,{artist},{title}.html">
+    <urlFormat replace=" _@,;&amp;\/'&quot;." with="_"/>
+    <extract>
+      <item begin="&lt;div class=&quot;song-text&quot;&gt;" end="&lt;a href=&quot;javascript:;&quot;"/>
+    </extract>
+    <extract>
+      <item tag="&lt;div class=&quot;tlumaczenie&quot;&gt;"/>
+    </extract>
+    <exclude>
+      <item begin="&lt;h2&gt;" end="&lt;/h2&gt;&lt;br /&gt;"/>
+    </exclude>
+  </provider>
+  <provider name="tekstowo.pl (Translated to Polish)" title="{artist} - {title} - tekst" url="https://www.tekstowo.pl/piosenka,{artist},{title}.html">
+    <urlFormat replace=" _@,;&amp;\/'&quot;." with="_"/>
+    <extract>
+      <item begin="&lt;div id=&quot;translation&quot; class=" end="&lt;a href="/>
+    </extract>
+    <exclude>
+      <item begin="&quot;id-" end="&quot;&gt;"/>
+    </exclude>
+  </provider>
+  <provider name="vagalume.com.br" title="{title} de {artist} no VAGALUME" url="https://vagalume.com.br/{artist}/{title}.html">
+    <urlFormat replace=" _@,;&amp;\/'&quot;." with="-"/>
+    <extract>
+      <item tag="&lt;div id=lyrics&gt;"/>
+    </extract>
+  </provider>
+</lyricproviders>

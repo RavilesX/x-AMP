@@ -1,0 +1,60 @@
+/***************************************************************************
+ *   Copyright (C) 2006-2026 by Ilya Kotov                                 *
+ *   forkotov02@ya.ru                                                      *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
+ ***************************************************************************/
+#ifndef SKINNEDPLAYLISTSLIDER_H
+#define SKINNEDPLAYLISTSLIDER_H
+
+#include <QWidget>
+
+class Skin;
+/**
+    @author Ilya Kotov <forkotov02@ya.ru>
+*/
+class SkinnedPlayListSlider : public QWidget
+{
+Q_OBJECT
+public:
+    SkinnedPlayListSlider(QWidget *parent = nullptr);
+
+    ~SkinnedPlayListSlider();
+
+public slots:
+    void setPos(int pos, int max);
+
+signals:
+    void sliderMoveRequest(int);
+
+private slots:
+    void updateSkin();
+
+private:
+    int convert(int);   // value = convert(position)
+    void paintEvent(QPaintEvent*) override;
+    void mousePressEvent(QMouseEvent*) override;
+    void mouseReleaseEvent(QMouseEvent*) override;
+    void mouseMoveEvent(QMouseEvent*) override;
+
+    Skin *m_skin;
+    bool m_moving = false, m_pressed = false;
+    int m_press_pos = 0;
+    int m_min = 0, m_max = 0, m_value = 0, m_pos = 0;
+
+};
+
+#endif

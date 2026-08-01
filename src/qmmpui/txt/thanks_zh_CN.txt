@@ -1,0 +1,31 @@
+鸣谢：
+
+    Adria Arrufat <swiftscythe@gmail.com> - 问题报告
+    Adrian Knoth <adi@drcomp.erfurt.thur.de> - JACK 插件修正、问题报告
+    Anton Petrusevich <casus@casus.us> - 随机播放功能改善
+    Avihay Baratz <avihayb@gmail.com> - 自动停止功能、问题修正
+    Brice Videau <brice.videau@gmail.com> - 问题修正
+    Cristian Rodríguez <judas.iscariote@gmail.com> - scrobbler 修正
+    Csaba Hruska <csaba.hruska@gmail.com> - FFmpeg 插件修正
+    Dmitry Kostin <kostindima@gmail.com> - iso.wv 支持
+    Dmitry Misharov <Dmitry.Misharov@gmail.com> - 专辑 艺术家标签支持
+    Evgeny Gleyzerman <evgley@gmail.com> - cue 分析改进
+    Ferdinand Vesely <erdofves@gmail.com> - scrobbler 功能改进
+    Gennadi Motsyo <drool@altlinux.ru> - 问题报告
+    Hon Jen Yee (PCMan) <pcman.tw@gmail.com> - 优化
+    Vadim Kalinnikov <moose@ylsoftware.com> - 项目运行平台提供
+    Erik Ölsar <erlk.ozlr@gmail.com> - 皮肤化光标，用户界面改进
+    Funda Wang <fundawang@gmail.com> - cmake 文件修正
+    Ivan Ponomarev ivantrue@gmail.com - QtMultimedia 输出，MacOS X 端口
+    Karel Volný <kvolny@redhat.com> - 多种修正
+    Makis Kalofolias <makskafl@gmail.com> - EAC3、DTS 及杜比、真高清支持
+    Michail Zheludkov <zheludkovm@mail.ru> - FFmpeg 插件修正
+    Michał Grosicki <grosik88@o2.pl> - ALSA 插件修正
+    Panagiotis Papadopoulos <pano_90@gmx.net> -用户界面修正，问题报告
+    Pino Toscano <toscano.pino@tiscali.it> - 多平台运行补丁
+    yota Shimamoto <liangtai.s16@gmail.com> - FreeBSD 补丁
+    Sebastian Pipping <webmaster@hartwork.org> - bs2b 补丁
+    Stefan Koelling <stefankoelling.ext@googlemail.com> - 若干构建修复
+    Thomas Peri - 图形界面改善
+    Ville Skyttä - ModPlug 插件改进
+    Yaakov Selkowitz <yselkowitz@gmail.com> - cygwin 补丁

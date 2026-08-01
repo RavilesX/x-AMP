@@ -1,0 +1,36 @@
+include(../../plugins.pri)
+
+TARGET = $$PLUGINS_PREFIX/Input/ffmpeg
+
+HEADERS += decoderffmpegfactory.h \
+    decoder_ffmpeg.h \
+    ffmpegmetadatamodel.h \
+    ffmpegsettingsdialog.h \
+    replaygainreader.h \
+    decoder_ffmpegcue.h \
+    decoder_ffmpegm4b.h
+
+SOURCES += decoder_ffmpeg.cpp \
+    decoderffmpegfactory.cpp \
+    ffmpegmetadatamodel.cpp \
+    ffmpegsettingsdialog.cpp \
+    replaygainreader.cpp \
+    decoder_ffmpegcue.cpp \
+    decoder_ffmpegm4b.cpp
+
+FORMS += \
+    ffmpegsettingsdialog.ui
+
+RESOURCES = translations/translations.qrc
+
+DEFINES += __STDC_CONSTANT_MACROS
+
+unix {
+    target.path = $$PLUGIN_DIR/Input
+    INSTALLS += target
+    PKGCONFIG += libavcodec libavformat libavutil taglib
+}
+
+win32 {
+    LIBS += -lavcodec.dll -lavformat.dll -lavutil.dll -ltag.dll
+}

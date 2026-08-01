@@ -1,0 +1,31 @@
+感謝:
+
+    Adria Arrufat <swiftscythe@gmail.com> - 錯誤報告
+    Adrian Knoth <adi@drcomp.erfurt.thur.de> - JACK 插件修正, 錯誤報告
+    Anton Petrusevich <casus@casus.us> - random playback 改進
+    Avihay Baratz <avihayb@gmail.com> - auto stop feature, 錯誤修正
+    Brice Videau <brice.videau@gmail.com> - 錯誤修正
+    Cristian Rodríguez <judas.iscariote@gmail.com> - scrobbler修正
+    Csaba Hruska <csaba.hruska@gmail.com> - FFmpeg 插件修正
+    Dmitry Kostin <kostindima@gmail.com> - iso.wv support
+    Dmitry Misharov <Dmitry.Misharov@gmail.com> - album artist tag support
+    Evgeny Gleyzerman <evgley@gmail.com> - cue parsing改進
+    Ferdinand Vesely <erdofves@gmail.com> - scrobbler改進
+    Gennadi Motsyo <drool@altlinux.ru> - 錯誤報告
+    Hon Jen Yee (PCMan) <pcman.tw@gmail.com> - 優化
+    Vadim Kalinnikov <moose@ylsoftware.com> - project hosting
+    Erik Ölsar <erlk.ozlr@gmail.com> - skinned cursors, ui優化
+    Funda Wang <fundawang@gmail.com> - cmake files修正
+    Ivan Ponomarev ivantrue@gmail.com - QtMultimedia output, MacOS X port
+    Karel Volný <kvolny@redhat.com> - 多項修正
+    Makis Kalofolias <makskafl@gmail.com> - EAC3, DTS, and Dolby TrueHD support
+    Michail Zheludkov <zheludkovm@mail.ru> - FFmpeg 插件修正
+    Michał Grosicki <grosik88@o2.pl> - ALSA 插件修正
+    Panagiotis Papadopoulos <pano_90@gmx.net> - ui fixes, 錯誤報告
+    Pino Toscano <toscano.pino@tiscali.it> - portability 補丁
+    Ryota Shimamoto <liangtai.s16@gmail.com> - FreeBSD 補丁
+    Sebastian Pipping <webmaster@hartwork.org> - bs2b 補丁
+    Stefan Koelling <stefankoelling.ext@googlemail.com> - some build修正
+    Thomas Perl - gui 改進
+    Ville Skyttä - ModPlug 插件改進
+    Yaakov Selkowitz <yselkowitz@gmail.com> - cygwin補丁

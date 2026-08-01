@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="cs">
+<context>
+    <name>Converter</name>
+    <message>
+        <location filename="../converter.cpp" line="125"/>
+        <location filename="../converter.cpp" line="226"/>
+        <source>Cancelled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../converter.cpp" line="140"/>
+        <location filename="../converter.cpp" line="208"/>
+        <source>Error</source>
+        <translation>Chyba</translation>
+    </message>
+    <message>
+        <location filename="../converter.cpp" line="176"/>
+        <source>Converting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../converter.cpp" line="237"/>
+        <source>Encoding</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../converter.cpp" line="275"/>
+        <source>Finished</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ConverterDialog</name>
+    <message>
+        <location filename="../converterdialog.ui" line="14"/>
+        <source>Audio Converter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.ui" line="44"/>
+        <source>Progress</source>
+        <translation>Postup</translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.ui" line="49"/>
+        <source>State</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.ui" line="63"/>
+        <source>Output directory:</source>
+        <translation>Výstupní adresář:</translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.ui" line="80"/>
+        <source>Output file name:</source>
+        <translation>Výstupní soubor:</translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.ui" line="97"/>
+        <source>Preset:</source>
+        <translation>Předvolba:</translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.ui" line="114"/>
+        <source>Overwrite existing files</source>
+        <translation>Přepsat stávající soubory</translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.ui" line="124"/>
+        <source>Convert</source>
+        <translation>Konvertovat</translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.ui" line="131"/>
+        <source>Stop</source>
+        <translation>Zastavit</translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.cpp" line="116"/>
+        <source>Choose a directory</source>
+        <translation>Vyberte adresář</translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.ui" line="39"/>
+        <source>Title</source>
+        <translation>Název</translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.cpp" line="205"/>
+        <source>Create a Copy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.cpp" line="136"/>
+        <location filename="../converterdialog.cpp" line="358"/>
+        <location filename="../converterdialog.cpp" line="365"/>
+        <source>Error</source>
+        <translation>Chyba</translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.cpp" line="141"/>
+        <source>Waiting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.cpp" line="203"/>
+        <source>Create</source>
+        <translation>Vytvořit</translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.cpp" line="204"/>
+        <source>Edit</source>
+        <translation>Upravit</translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.cpp" line="206"/>
+        <source>Delete</source>
+        <translation>Odstranit</translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.cpp" line="358"/>
+        <source>Unable to execute &quot;%1&quot;. Program not found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../converterdialog.cpp" line="365"/>
+        <source>Process &quot;%1&quot; finished with error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ConverterFactory</name>
+    <message>
+        <location filename="../converterfactory.cpp" line="28"/>
+        <source>Converter Plugin</source>
+        <translation>Modul konvertoru</translation>
+    </message>
+    <message>
+        <location filename="../converterfactory.cpp" line="49"/>
+        <source>About Converter Plugin</source>
+        <translation>O modulu konvertoru</translation>
+    </message>
+    <message>
+        <location filename="../converterfactory.cpp" line="50"/>
+        <source>Qmmp Converter Plugin</source>
+        <translation>Modul Qmmp pro konverzi</translation>
+    </message>
+    <message>
+        <location filename="../converterfactory.cpp" line="51"/>
+        <source>This plugin converts supported audio files to other file formats using external command-line encoders</source>
+        <translation>Tento modul konvertuje podporované zvukové soubory do jiných formátů pomocí externích kodérů</translation>
+    </message>
+    <message>
+        <location filename="../converterfactory.cpp" line="53"/>
+        <source>Written by: Ilya Kotov &lt;forkotov02@ya.ru&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ConverterHelper</name>
+    <message>
+        <location filename="../converterhelper.cpp" line="33"/>
+        <source>Convert</source>
+        <translation>Konvertovat</translation>
+    </message>
+    <message>
+        <location filename="../converterhelper.cpp" line="34"/>
+        <source>Meta+C</source>
+        <translation>Meta+C</translation>
+    </message>
+</context>
+<context>
+    <name>ConverterPresetEditor</name>
+    <message>
+        <location filename="../converterpreseteditor.ui" line="14"/>
+        <source>Preset Editor</source>
+        <translation type="unfinished">Editor předvoleb</translation>
+    </message>
+    <message>
+        <location filename="../converterpreseteditor.ui" line="29"/>
+        <source>General</source>
+        <translation type="unfinished">Obecné</translation>
+    </message>
+    <message>
+        <location filename="../converterpreseteditor.ui" line="35"/>
+        <source>Name:</source>
+        <translation type="unfinished">Název:</translation>
+    </message>
+    <message>
+        <location filename="../converterpreseteditor.ui" line="45"/>
+        <source>Extension:</source>
+        <translation type="unfinished">Přípona:</translation>
+    </message>
+    <message>
+        <location filename="../converterpreseteditor.ui" line="58"/>
+        <source>Command</source>
+        <translation type="unfinished">Příkaz</translation>
+    </message>
+    <message>
+        <location filename="../converterpreseteditor.ui" line="77"/>
+        <source>Options</source>
+        <translation type="unfinished">Možnosti</translation>
+    </message>
+    <message>
+        <location filename="../converterpreseteditor.ui" line="83"/>
+        <source>Write tags</source>
+        <translation type="unfinished">Zapsat tagy</translation>
+    </message>
+    <message>
+        <location filename="../converterpreseteditor.ui" line="90"/>
+        <source>Convert to 16 bit</source>
+        <translation type="unfinished">Konvertovat na 16 bitů</translation>
+    </message>
+</context>
+<context>
+    <name>PresetEditor</name>
+    <message>
+        <location filename="../converterpreseteditor.cpp" line="40"/>
+        <source>%1 (Read Only)</source>
+        <translation>%1 (pouze pro čtení)</translation>
+    </message>
+    <message>
+        <location filename="../converterpreseteditor.cpp" line="73"/>
+        <source>Output file</source>
+        <translation>Výstupní soubor</translation>
+    </message>
+    <message>
+        <location filename="../converterpreseteditor.cpp" line="74"/>
+        <source>Input file</source>
+        <translation>Vstupní soubor</translation>
+    </message>
+</context>
+</TS>

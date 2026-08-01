@@ -1,0 +1,533 @@
+/***************************************************************************
+ *   Copyright (C) 2006-2026 by Ilya Kotov                                 *
+ *   forkotov02@ya.ru                                                      *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
+ ***************************************************************************/
+
+#include <QSettings>
+#include <QThread>
+#include <QtMath>
+#include <spa/param/props.h>
+#include "outputpipewire.h"
+
+#if !PW_CHECK_VERSION(0, 3, 33)
+#define PW_KEY_NODE_RATE "node.rate"
+#endif
+
+#if !PW_CHECK_VERSION(1, 0, 4)
+#include <time.h>
+static uint64_t pw_stream_get_nsec(struct pw_stream *stream)
+{
+    Q_UNUSED(stream);
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return SPA_TIMESPEC_TO_NSEC(&ts);
+}
+#endif
+
+#if !PW_CHECK_VERSION(0, 3, 50)
+static inline int pw_stream_get_time_n(struct pw_stream * stream,
+                                       struct pw_time * time, size_t size)
+{
+    Q_UNUSED(size);
+    return pw_stream_get_time(stream, time);
+}
+#endif
+
+OutputPipeWire *OutputPipeWire::instance = nullptr;
+VolumePipeWire *OutputPipeWire::volumeControl = nullptr;
+
+constexpr qint64 pipewireBufferSize = 500; //ms
+
+OutputPipeWire::OutputPipeWire(): Output()
+{
+   m_pw_channels = {
+        { Qmmp::CHAN_NULL, SPA_AUDIO_CHANNEL_NA  },
+        { Qmmp::CHAN_FRONT_CENTER, SPA_AUDIO_CHANNEL_MONO  },
+        { Qmmp::CHAN_FRONT_LEFT, SPA_AUDIO_CHANNEL_FL  },
+        { Qmmp::CHAN_FRONT_RIGHT, SPA_AUDIO_CHANNEL_FR  },
+        { Qmmp::CHAN_REAR_LEFT, SPA_AUDIO_CHANNEL_RL  },
+        { Qmmp::CHAN_REAR_RIGHT, SPA_AUDIO_CHANNEL_RR  },
+        { Qmmp::CHAN_FRONT_CENTER, SPA_AUDIO_CHANNEL_FC  },
+        { Qmmp::CHAN_LFE, SPA_AUDIO_CHANNEL_LFE  },
+        { Qmmp::CHAN_SIDE_LEFT, SPA_AUDIO_CHANNEL_SL  },
+        { Qmmp::CHAN_SIDE_RIGHT, SPA_AUDIO_CHANNEL_SR  },
+        { Qmmp::CHAN_REAR_CENTER, SPA_AUDIO_CHANNEL_RC  }
+    };
+
+   pw_init(nullptr, nullptr);
+   instance = this;
+}
+
+OutputPipeWire::~OutputPipeWire()
+{
+    uninitialize();
+    pw_deinit();
+    instance = nullptr;
+}
+
+void OutputPipeWire::onStateChanged (void *data, enum pw_stream_state old,
+                                     enum pw_stream_state state, const char *error)
+{
+    Q_UNUSED(old);
+    Q_UNUSED(error);
+
+    OutputPipeWire *o = static_cast<OutputPipeWire *>(data);
+
+    if(o->m_ignoreStateChange)
+        return;
+
+    if(state == PW_STREAM_STATE_UNCONNECTED ||
+            state == PW_STREAM_STATE_PAUSED ||
+            state == PW_STREAM_STATE_STREAMING)
+    {
+        pw_thread_loop_signal(o->m_loop, false);
+
+        if(state == PW_STREAM_STATE_STREAMING && volumeControl)
+            instance->setMuted(volumeControl->isMuted());
+    }
+}
+
+bool OutputPipeWire::initialize(quint32 freq, ChannelMap map, Qmmp::AudioFormat format)
+{
+    static const pw_core_events coreEvents = {
+        .version = PW_VERSION_CORE_EVENTS,
+        .done = OutputPipeWire::onCoreEventDone
+    };
+
+    static const pw_registry_events registryEvents = {
+        .version = PW_VERSION_REGISTRY_EVENTS,
+        .global = OutputPipeWire::onRegistryEventGlobal
+    };
+
+    static const struct pw_stream_events streamEvents = {
+        .version = PW_VERSION_STREAM_EVENTS,
+        .state_changed = OutputPipeWire::onStateChanged,
+        .process = OutputPipeWire::onProcess,
+        .drained = OutputPipeWire::onDrained
+    };
+
+    if(!(m_loop = pw_thread_loop_new("pipewire-main-loop", nullptr)))
+    {
+        qCWarning(plugin, "unable to create main loop");
+        return false;
+    }
+
+    if (!(m_context = pw_context_new(pw_thread_loop_get_loop(m_loop), nullptr, 0)))
+    {
+        qCWarning(plugin, "unable to create context");
+        return false;
+    }
+
+    if(!(m_core = pw_context_connect(m_context, nullptr, 0)))
+    {
+        qCWarning(plugin, "unable to connect context");
+        return false;
+    }
+    pw_core_add_listener(m_core, &m_coreListener, &coreEvents, this);
+
+    if(!(m_registry = pw_core_get_registry(m_core, PW_VERSION_REGISTRY, 0)))
+    {
+        qCWarning(plugin, "unable to get registry interface");
+        return false;
+    }
+    pw_registry_add_listener(m_registry, &m_registryListener, &registryEvents, this);
+
+    m_coreInitSeq = pw_core_sync(m_core, PW_ID_CORE, m_coreInitSeq);
+
+    if(pw_thread_loop_start(m_loop) != 0)
+    {
+        qCWarning(plugin, "unable to start loop");
+        return false;
+    }
+
+    pw_thread_loop_lock(m_loop);
+    while(!m_inited)
+    {
+        if(pw_thread_loop_timed_wait(m_loop, 2) != 0)
+            break;
+    }
+    pw_thread_loop_unlock(m_loop);
+
+    if(!m_inited || !m_hasSinks)
+    {
+        qCWarning(plugin, "unable to initialize loop");
+        return false;
+    }
+
+    m_stride = AudioParameters::sampleSize(format) * map.count();
+    m_frames = pipewireBufferSize * 48000 / 1000 ;
+    m_bufferSize = m_frames * m_stride;
+    m_buffer = new unsigned char[m_bufferSize];
+
+    pw_properties *props = pw_properties_new(PW_KEY_MEDIA_TYPE, "Audio",
+                                             PW_KEY_MEDIA_CATEGORY, "Playback",
+                                             PW_KEY_MEDIA_ROLE, "Music",
+                                             PW_KEY_MEDIA_ICON_NAME, "qmmp",
+                                             nullptr);
+    pw_properties_setf(props, PW_KEY_NODE_RATE, "1/%u", freq);
+    pw_properties_setf(props, PW_KEY_NODE_LATENCY, "%u/%u", m_frames, freq);
+
+    pw_thread_loop_lock(m_loop);
+
+    if (!(m_stream = pw_stream_new(m_core, "Playback", props)))
+    {
+        qCWarning(plugin, "unable to create stream");
+        pw_thread_loop_unlock(m_loop);
+        return false;
+    }
+
+    m_streamListener = {};
+    pw_stream_add_listener(m_stream, &m_streamListener, &streamEvents, this);
+
+    uint8_t buffer[1024];
+    spa_pod_builder b = {
+        .data = buffer,
+        .size = sizeof(buffer)
+    };
+
+    spa_audio_info_raw info = {
+        .format = SPA_AUDIO_FORMAT_F32,
+        .flags = SPA_AUDIO_FLAG_NONE,
+        .rate = freq,
+        .channels = static_cast<unsigned int>(map.count())
+    };
+
+    switch (format)
+    {
+        case Qmmp::PCM_S8:
+            info.format = SPA_AUDIO_FORMAT_S8;
+            break;
+        case Qmmp::PCM_S16LE:
+            info.format = SPA_AUDIO_FORMAT_S16_LE;
+            break;
+        case Qmmp::PCM_S24LE:
+            info.format = SPA_AUDIO_FORMAT_S24_32_LE;
+            break;
+        case Qmmp::PCM_S32LE:
+            info.format = SPA_AUDIO_FORMAT_S32_LE;
+            break;
+        case Qmmp::PCM_FLOAT:
+            info.format = SPA_AUDIO_FORMAT_F32_LE;
+            break;
+        default:
+            info.format = SPA_AUDIO_FORMAT_S16_LE;
+    }
+
+    for(int i = 0; i < map.count(); i++)
+        info.position[i] = m_pw_channels[map.value(i)];
+
+    const spa_pod *params[2];
+    params[0] = spa_format_audio_raw_build(
+                &b,
+                SPA_PARAM_EnumFormat,
+                &info
+                );
+    /*params[1] = static_cast<spa_pod *>(spa_pod_builder_add_object(
+                                                &b,
+                                                SPA_TYPE_OBJECT_ParamBuffers, SPA_PARAM_Buffers,
+                                                SPA_PARAM_BUFFERS_size, m_bufferSize)
+                                                );*/
+
+
+
+    pw_stream_flags streamFlags = static_cast<pw_stream_flags>(PW_STREAM_FLAG_AUTOCONNECT |
+                                                               PW_STREAM_FLAG_MAP_BUFFERS |
+                                                               PW_STREAM_FLAG_RT_PROCESS);
+
+    if(pw_stream_connect(m_stream, PW_DIRECTION_OUTPUT, PW_ID_ANY, streamFlags, params, 1) != 0)
+    {
+        pw_thread_loop_unlock(m_loop);
+        qCDebug(plugin, "unable to connect stream");
+        return false;
+    }
+
+    Output::configure(freq, map, format);
+    pw_thread_loop_unlock(m_loop);
+    qCDebug(plugin, "ready");
+    return true;
+}
+
+qint64 OutputPipeWire::latency()
+{
+    quint32 freq = sampleRate();
+    qint64 delayMs = (m_buffer_at + m_spaBufferSize) / m_stride * 1000 / freq;
+    struct pw_time ts;
+
+    if(pw_stream_get_time_n(m_stream, &ts, sizeof(ts)) == 0) //1.1.0
+    {
+        delayMs -= qBound(0LL, qint64(pw_stream_get_nsec(m_stream) - ts.now) / SPA_NSEC_PER_MSEC, delayMs); //1.1.0
+        delayMs += ts.queued * SPA_MSEC_PER_SEC / freq;
+#if PW_CHECK_VERSION(0, 3, 50)
+        delayMs += ts.buffered * SPA_MSEC_PER_SEC / freq;
+#endif
+        if(ts.rate.denom > 0)
+        {
+            delayMs += ts.delay * SPA_MSEC_PER_SEC * ts.rate.num / ts.rate.denom;
+        }
+    }
+
+    return delayMs;
+}
+
+qint64 OutputPipeWire::writeAudio(unsigned char *data, qint64 maxSize)
+{
+    pw_thread_loop_lock(m_loop);
+
+    if(m_buffer_at == m_bufferSize)
+    {
+        if (pw_thread_loop_timed_wait(m_loop, 1) != 0)
+        {
+            pw_thread_loop_unlock(m_loop);
+            return 0;
+        }
+    }
+
+    qint64 size = qMin(qint64(m_bufferSize - m_buffer_at), maxSize);
+    memcpy(m_buffer + m_buffer_at, data, size);
+    m_buffer_at += size;
+    pw_thread_loop_unlock(m_loop);
+    return size;
+}
+
+void OutputPipeWire::drain()
+{
+    pw_thread_loop_lock(m_loop);
+    if(m_buffer_at > 0)
+        pw_thread_loop_timed_wait(m_loop, 2);
+
+    pw_stream_flush(m_stream, true);
+    pw_thread_loop_timed_wait(m_loop, 2);
+    pw_thread_loop_unlock(m_loop);
+}
+
+void OutputPipeWire::reset()
+{
+    pw_thread_loop_lock(m_loop);
+    m_buffer_at = 0;
+    //m_spaBufferSize = 0;
+    pw_thread_loop_unlock(m_loop);
+    pw_stream_flush(m_stream, false);
+}
+
+void OutputPipeWire::suspend()
+{
+    pw_thread_loop_lock(m_loop);
+    pw_stream_set_active(m_stream, false);
+    pw_thread_loop_unlock(m_loop);
+}
+
+void OutputPipeWire::resume()
+{
+    pw_thread_loop_lock(m_loop);
+    pw_stream_set_active(m_stream, true);
+    pw_thread_loop_unlock(m_loop);
+}
+
+void OutputPipeWire::setMuted(bool mute)
+{
+    setVolume(mute ? VolumeSettings() : volumeControl->volume());
+}
+
+void OutputPipeWire::setVolume(const VolumeSettings &v)
+{
+    pw_thread_loop_lock(m_loop);
+
+    float* values = new float[channels()];
+
+    if(channels() == 2)
+    {
+        values[0] = float(v.left) / 100.0;
+        values[1] = float(v.right) / 100.0;
+    }
+    else
+    {
+        for(int i = 0; i < channels(); ++i)
+            values[i] = float(qMax(v.left, v.right)) / 100.0;
+    }
+
+    pw_stream_set_control(m_stream, SPA_PROP_channelVolumes, channels(), values, 0);
+    delete [] values;
+    pw_thread_loop_unlock(m_loop);
+}
+
+void OutputPipeWire::uninitialize()
+{
+    if(m_stream)
+    {
+
+        pw_thread_loop_lock(m_loop);
+        m_ignoreStateChange = true;
+        pw_stream_disconnect(m_stream);
+        pw_stream_destroy(m_stream);
+        m_ignoreStateChange = false;
+        m_stream = nullptr;
+        pw_thread_loop_unlock(m_loop);
+
+    }
+
+    if(m_loop)
+        pw_thread_loop_stop(m_loop);
+
+    if(m_registry)
+    {
+        pw_proxy_destroy(reinterpret_cast<pw_proxy *>(m_registry));
+        m_registry = nullptr;
+    }
+
+    if(m_core)
+    {
+        pw_core_disconnect(m_core);
+        m_core = nullptr;
+    }
+
+    if(m_context)
+    {
+        pw_context_destroy(m_context);
+        m_context = nullptr;
+    }
+
+    if(m_loop)
+    {
+        pw_thread_loop_destroy(m_loop);
+        m_loop = nullptr;
+    }
+
+    if(m_buffer)
+    {
+        delete [] m_buffer;
+        m_buffer = nullptr;
+    }
+}
+
+//callbacks
+void OutputPipeWire::onProcess(void *data)
+{
+    OutputPipeWire *o = static_cast<OutputPipeWire *>(data);
+
+    if(!o->m_buffer_at)
+    {
+        pw_thread_loop_signal(o->m_loop, false);
+        return;
+    }
+
+    struct pw_buffer *b = pw_stream_dequeue_buffer(o->m_stream);
+    struct spa_buffer *buf = b->buffer;
+
+    uint32_t size = qMin(buf->datas[0].maxsize, uint32_t(o->m_buffer_at));
+    o->m_spaBufferSize = size;
+    memcpy(buf->datas[0].data, o->m_buffer, size);
+    o->m_buffer_at -= size;
+    memmove(o->m_buffer, o->m_buffer + size, o->m_buffer_at);
+
+    b->buffer->datas[0].chunk->offset = 0;
+    b->buffer->datas[0].chunk->size = size;
+    b->buffer->datas[0].chunk->stride = o->m_stride;
+
+    pw_stream_queue_buffer(o->m_stream, b);
+    pw_thread_loop_signal(o->m_loop, false);
+}
+
+void OutputPipeWire::onDrained(void *data)
+{
+    OutputPipeWire *o = static_cast<OutputPipeWire *>(data);
+    pw_thread_loop_signal(o->m_loop, false);
+    qCDebug(plugin, "drained");
+}
+
+void OutputPipeWire::onCoreEventDone(void *data, uint32_t id, int seq)
+{
+    OutputPipeWire *o = static_cast<OutputPipeWire *>(data);
+
+    if (id == PW_ID_CORE && seq == o->m_coreInitSeq)
+    {
+        spa_hook_remove(&o->m_registryListener);
+        spa_hook_remove(&o->m_coreListener);
+
+        o->m_inited = true;
+        pw_thread_loop_signal(o->m_loop, false);
+    }
+}
+
+void OutputPipeWire::onRegistryEventGlobal(void *data, uint32_t id, uint32_t permissions, const char *type, uint32_t version, const spa_dict *props)
+{
+    Q_UNUSED(id)
+    Q_UNUSED(permissions)
+    Q_UNUSED(version)
+
+    OutputPipeWire *o = static_cast<OutputPipeWire *>(data);
+
+    if (qstrcmp(type, PW_TYPE_INTERFACE_Node) != 0)
+        return;
+
+    auto media_class = spa_dict_lookup(props, PW_KEY_MEDIA_CLASS);
+    if (!media_class)
+        return;
+
+    if (qstrcmp(media_class, "Audio/Sink") != 0)
+        return;
+
+    o->m_hasSinks = true;
+
+    o->m_coreInitSeq = pw_core_sync(o->m_core, PW_ID_CORE, o->m_coreInitSeq);
+}
+
+//volume control
+VolumePipeWire::VolumePipeWire()
+{
+    QSettings settings;
+    m_volume.left = settings.value("OutputPipeWire/left_volume"_L1, 100).toInt();
+    m_volume.right = settings.value("OutputPipeWire/right_volume"_L1, 100).toInt();
+    OutputPipeWire::volumeControl = this;
+}
+
+VolumePipeWire::~VolumePipeWire()
+{
+    QSettings settings;
+    settings.setValue("OutputPipeWire/left_volume"_L1, m_volume.left);
+    settings.setValue("OutputPipeWire/right_volume"_L1, m_volume.right);
+    OutputPipeWire::volumeControl = nullptr;
+}
+
+void VolumePipeWire::setVolume(const VolumeSettings &vol)
+{
+    if(OutputPipeWire::instance)
+        OutputPipeWire::instance->setVolume(vol);
+    m_volume = vol;
+}
+
+VolumeSettings VolumePipeWire::volume() const
+{
+    return m_volume;
+}
+
+bool VolumePipeWire::isMuted() const
+{
+    return m_muted;
+}
+
+void VolumePipeWire::setMuted(bool mute)
+{
+    if(OutputPipeWire::instance)
+        OutputPipeWire::instance->setMuted(mute);
+    m_muted = mute;
+}
+
+Volume::VolumeFlags VolumePipeWire::flags() const
+{
+    return Volume::IsMuteSupported | Volume::HasNotifySignal;
+}

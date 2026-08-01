@@ -1,0 +1,25 @@
+[Desktop Entry]
+X-KDE-Solid-Predicate=[ StorageVolume.ignored == false AND OpticalDisc.availableContent & 'Audio' ]
+Type=Service
+Actions=open;
+
+[Desktop Action open]
+Name=Open with Qmmp
+Name[de]=Mit Qmmp öffnen
+Name[el]=Άνοιγμα με το Qmmp
+Name[es]=Abrir con Qmmp
+Name[fi]=Avaa Qmmp:llä
+Name[fr]=Ouvrir avec Qmmp
+Name[gl_ES]=Abrir con Qmmp
+Name[it]=Apri con Qmmp
+Name[ja]=Qmmp で開く
+Name[ko]=Qmmp로 열기
+Name[nl]=Openen met Qmmp
+Name[pl_PL]=Otwórz za pomocą Qmmp
+Name[pt]=Abrir com Qmmp
+Name[ru]=Открыть с помощью Qmmp
+Name[tr]=Qmmp ile aç
+Name[zh_CN]=使用 Qmmp 打开
+Name[zh_TW]=用Qmmp打開
+Exec=qmmp cdda://%d
+Icon=qmmp

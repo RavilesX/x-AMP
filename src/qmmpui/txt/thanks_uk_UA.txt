@@ -1,0 +1,31 @@
+Подяки:
+
+    Адрія Арруфат <swiftscythe@gmail.com> — повідомлення про хиби
+    Адріан Кнот <adi@drcomp.erfurt.thur.de> — виправлення у втулці JACK, повідомлення про хиби
+    Антон Петрусевич <casus@casus.us> — поліпшення випадкового відтворення
+    Авіхай Баратц <avihayb@gmail.com> — параметри автозупинки, виправлення вад
+    Брайс Відо &lt;brice.videau@gmail.com&gt; — виправлення помилок
+    Крістіан Родріґес <judas.iscariote@gmail.com> — виправлення помилок у втулці scrobbler
+    Чаба Груська <csaba.hruska@gmail.com> — виправлення у втулці FFmpeg
+    Дмитро Костін <kostindima@gmail.com> — підтримка iso.wv
+    Дмитро Мішаров <Dmitry.Misharov@gmail.com> — підтримка теґу "виконавець альбому"
+    Євген Ґлейзерман <evgley@gmail.com> — поліпшення підтримки cue
+    Фердинанд Веселий <erdofves@gmail.com> — поліпшення втулка scrobbler
+    Геннадій Моцьо <drool@altlinux.ru> — повідомлення про помилки
+    Hon Jen Yee (PCMan) <pcman.tw@gmail.com> — оптимізація
+    Вадим Калинников <moose@ylsoftware.com> — гоcтинґ проєкту
+    Ерік Ольсар <erlk.ozlr@gmail.com> — растрові вказівники, поліпшення в інтерфейсі користувача
+    Funda Wang <fundawang@gmail.com> — виправлення файлів cmake
+    Іван Пономарьов ivantrue@gmail.com — вивід через QtMultimedia, порт для MacOS X
+    Карел Вольний <kvolny@redhat.com> — різні виправлення
+    Макіс Калофоліас <makskafl@gmail.com> — підтримка EAC3, DTS і Dolby TrueHD
+    Михайло Желудков <zheludkovm@mail.ru> — виправлення у втулці FFmpeg
+    Міхал Гросіцький <grosik88@o2.pl> — виправлення у втулці ALSA
+    Панайотіс Пападопулос <pano_90@gmx.net> — поліпшення в інтерфейсі користувача, повідомлення про помилки
+    Pino Toscano <toscano.pino@tiscali.it> — поліпшення кросплатформовости
+    Ryota Shimamoto <liangtai.s16@gmail.com> — виправлення для підтримки FreeBSD
+    Себастьян Піппінґ <webmaster@hartwork.org> — латки bs2b
+    Стефан Келлінґ <stefankoelling.ext@googlemail.com> — виправлення збірки
+    Томас Перл — поліпшення графічного інтерфейсу
+    Ville Skyttä — поліпшення втулка modplug
+    Яков Селковіц <yselkowitz@gmail.com> — підтримка cygwin

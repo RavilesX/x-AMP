@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="it">
+<context>
+    <name>Library</name>
+    <message>
+        <location filename="../library.cpp" line="63"/>
+        <source>Library</source>
+        <translation>Libreria</translation>
+    </message>
+    <message>
+        <location filename="../library.cpp" line="64"/>
+        <source>Alt+L</source>
+        <translation>Alt+L</translation>
+    </message>
+    <message>
+        <location filename="../library.cpp" line="70"/>
+        <source>Update library</source>
+        <translation>Aggiorna libreria</translation>
+    </message>
+    <message>
+        <location filename="../library.cpp" line="192"/>
+        <location filename="../library.cpp" line="193"/>
+        <source>Unknown</source>
+        <translation>Sconosciuto</translation>
+    </message>
+</context>
+<context>
+    <name>LibraryFactory</name>
+    <message>
+        <location filename="../libraryfactory.cpp" line="33"/>
+        <source>Media Library Plugin</source>
+        <translation>Estensione della libreria multimediale</translation>
+    </message>
+    <message>
+        <location filename="../libraryfactory.cpp" line="38"/>
+        <source>Library</source>
+        <translation>Libreria</translation>
+    </message>
+    <message>
+        <location filename="../libraryfactory.cpp" line="38"/>
+        <source>Ctrl+1</source>
+        <translation>Ctrl+1</translation>
+    </message>
+    <message>
+        <location filename="../libraryfactory.cpp" line="84"/>
+        <source>About Media Library Plugin</source>
+        <translation>Informazioni sull&apos;estensione della libreria multimediale</translation>
+    </message>
+    <message>
+        <location filename="../libraryfactory.cpp" line="85"/>
+        <source>Qmmp Media Library Plugin</source>
+        <translation>Estensione della libreria multimediale per Qmmp</translation>
+    </message>
+    <message>
+        <location filename="../libraryfactory.cpp" line="86"/>
+        <source>This plugin represents a database to store music files tags for a fast access</source>
+        <translation>Questa estensione rappresenta una banca dati per memorizzare le etichette dei file musicali per un accesso rapido</translation>
+    </message>
+    <message>
+        <location filename="../libraryfactory.cpp" line="87"/>
+        <source>Written by: Ilya Kotov &lt;forkotov02@ya.ru&gt;</source>
+        <translation>Autore: Ilya Kotov &lt;forkotov02@ya.ru&gt;</translation>
+    </message>
+</context>
+<context>
+    <name>LibraryModel</name>
+    <message>
+        <location filename="../librarymodel.cpp" line="206"/>
+        <source>%1 - %2</source>
+        <translation>%1 - %2</translation>
+    </message>
+    <message>
+        <location filename="../librarymodel.cpp" line="356"/>
+        <source>Error</source>
+        <translation>Errore</translation>
+    </message>
+    <message>
+        <location filename="../librarymodel.cpp" line="356"/>
+        <source>Unable to connect to database</source>
+        <translation>Impossibile collegarsi alla banca dati</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../librarymodel.cpp" line="377"/>
+        <source>%n day(s)</source>
+        <translation>
+            <numerusform>%n giorno</numerusform>
+            <numerusform>%n giorni</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../librarymodel.cpp" line="378"/>
+        <source>%n hour(s)</source>
+        <translation>
+            <numerusform>%n ora</numerusform>
+            <numerusform>%n ore</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../librarymodel.cpp" line="379"/>
+        <source>%n minute(s)</source>
+        <translation>
+            <numerusform>%n minuto</numerusform>
+            <numerusform>%n minuti</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../librarymodel.cpp" line="380"/>
+        <source>%n second(s)</source>
+        <translation>
+            <numerusform>%n secondo</numerusform>
+            <numerusform>%n secondi</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../librarymodel.cpp" line="384"/>
+        <source>%1 %2 %3 %4</source>
+        <comment>days hours minutes seconds</comment>
+        <translation>%1 %2 %3 %4</translation>
+    </message>
+    <message>
+        <location filename="../librarymodel.cpp" line="386"/>
+        <source>%1 %2 %3</source>
+        <comment>hours minutes seconds</comment>
+        <translation>%1 %2 %3</translation>
+    </message>
+    <message>
+        <location filename="../librarymodel.cpp" line="388"/>
+        <source>%1 %2</source>
+        <comment>minutes seconds</comment>
+        <translation>%1 %2</translation>
+    </message>
+    <message>
+        <location filename="../librarymodel.cpp" line="391"/>
+        <source>Number of tracks: &lt;b&gt;%1&lt;/b&gt;</source>
+        <translation>Numero di tracce: &lt;b&gt;%1&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="../librarymodel.cpp" line="392"/>
+        <source>Number of albums: &lt;b&gt;%1&lt;/b&gt;</source>
+        <translation>Numero di album: &lt;b&gt;%1&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="../librarymodel.cpp" line="393"/>
+        <source>Number of artists: &lt;b&gt;%1&lt;/b&gt;</source>
+        <translation>Numero di artisti: &lt;b&gt;%1&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="../librarymodel.cpp" line="394"/>
+        <source>Total duration: &lt;b&gt;%1&lt;/b&gt;</source>
+        <translation>Durata totale: &lt;b&gt;%1&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="../librarymodel.cpp" line="397"/>
+        <source>Library Information</source>
+        <translation>Informazioni sulla libreria</translation>
+    </message>
+</context>
+<context>
+    <name>LibrarySettingsDialog</name>
+    <message>
+        <location filename="../librarysettingsdialog.ui" line="14"/>
+        <source>Media Library Settings</source>
+        <translation>Impostazioni della libreria multimediale</translation>
+    </message>
+    <message>
+        <location filename="../librarysettingsdialog.ui" line="39"/>
+        <source>Recreate database</source>
+        <translation>Ricrea banca dati</translation>
+    </message>
+    <message>
+        <location filename="../librarysettingsdialog.ui" line="46"/>
+        <source>Show album year</source>
+        <translation>Mostra anno dell&apos;album</translation>
+    </message>
+    <message>
+        <location filename="../librarysettingsdialog.ui" line="55"/>
+        <source>Add</source>
+        <translation>Aggiungi</translation>
+    </message>
+    <message>
+        <location filename="../librarysettingsdialog.ui" line="66"/>
+        <source>Remove</source>
+        <translation>Rimuovi</translation>
+    </message>
+    <message>
+        <location filename="../librarysettingsdialog.ui" line="95"/>
+        <source>List of directories for scanning:</source>
+        <translation>Elenco delle cartelle da controllare:</translation>
+    </message>
+    <message>
+        <location filename="../librarysettingsdialog.cpp" line="65"/>
+        <source>Select Directories for Scanning</source>
+        <translation>Seleziona le cartelle da controllare</translation>
+    </message>
+</context>
+<context>
+    <name>LibraryWidget</name>
+    <message>
+        <location filename="../librarywidget.cpp" line="51"/>
+        <source>&amp;Add to Playlist</source>
+        <translation>&amp;Aggiungi alla playlist</translation>
+    </message>
+    <message>
+        <location filename="../librarywidget.cpp" line="52"/>
+        <source>Replace Playlist</source>
+        <translation>Sostituisci playlist</translation>
+    </message>
+    <message>
+        <location filename="../librarywidget.cpp" line="53"/>
+        <source>&amp;View Track Details</source>
+        <translation>&amp;Vedi i dettagli della traccia</translation>
+    </message>
+    <message>
+        <location filename="../librarywidget.cpp" line="55"/>
+        <source>Quick Search</source>
+        <translation>Ricerca rapida</translation>
+    </message>
+    <message>
+        <location filename="../librarywidget.cpp" line="56"/>
+        <source>&amp;Library Information</source>
+        <translation>Informazioni sulla &amp;libreria</translation>
+    </message>
+    <message>
+        <location filename="../librarywidget.cpp" line="90"/>
+        <source>Scanning directories...</source>
+        <translation>Analisi delle cartelle...</translation>
+    </message>
+    <message>
+        <location filename="../librarywidget.ui" line="14"/>
+        <source>Media Library</source>
+        <translation>Libreria multimediale</translation>
+    </message>
+</context>
+</TS>
