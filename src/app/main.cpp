@@ -64,7 +64,9 @@ int main(int argc, char *argv[])
     //using XWayland for skinned user interface
     if(qEnvironmentVariable("XDG_SESSION_TYPE") == QLatin1String("wayland") && !qEnvironmentVariableIsSet("QT_QPA_PLATFORM"))
     {
-        QSettings settings(QStringLiteral("qmmp"), QStringLiteral("qmmp"));
+        //x-AMP: must match the names set on QApplication below; this runs
+        //before it exists, so they are spelled out here
+        QSettings settings(QStringLiteral("xamp"), QStringLiteral("xamp"));
         if(settings.value(QStringLiteral("Ui/current_plugin")).toString() == QLatin1String("skinned"))
             qputenv("QT_QPA_PLATFORM", "xcb");
     }
@@ -72,8 +74,10 @@ int main(int argc, char *argv[])
 #endif
 
     QApplication a(argc, argv);
-    a.setApplicationName(u"qmmp"_s);
-    a.setOrganizationName(u"qmmp"_s);
+    //x-AMP: organizationName drives Qmmp::configDir(), cacheDir() and
+    //userDataPath() on Unix, keeping x-AMP out of the system qmmp's config
+    a.setApplicationName(u"xamp"_s);
+    a.setOrganizationName(u"xamp"_s);
     QIcon icon;
     icon.addFile(u":/16x16/qmmp.png"_s);
     icon.addFile(u":/32x32/qmmp.png"_s);

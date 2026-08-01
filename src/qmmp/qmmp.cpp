@@ -104,7 +104,9 @@ QString Qmmp::pluginPath()
     QByteArray path = qgetenv("QMMP_PLUGINS");
     if(!path.isEmpty())
         return QString::fromLocal8Bit(path);
-    QString fallbackPath = QStringLiteral("%1/../lib/qmmp-" STR(QMMP_VERSION_MAJOR) "." STR(QMMP_VERSION_MINOR)).arg(qApp->applicationDirPath());
+    //x-AMP: keep the relocated-tree fallback in step with PLUGIN_DIR, which
+    //carries APP_NAME_SUFFIX
+    QString fallbackPath = QStringLiteral("%1/../lib/qmmp-" STR(QMMP_VERSION_MAJOR) "." STR(QMMP_VERSION_MINOR) APP_NAME_SUFFIX).arg(qApp->applicationDirPath());
 
 #if defined(Q_OS_WIN) && !defined(Q_OS_CYGWIN)
     QDir dir(fallbackPath);

@@ -95,10 +95,12 @@ else(SVN_VERSION)
     execute_process(COMMAND find ${CMAKE_CURRENT_SOURCE_DIR} -name *.ts -print0 COMMAND xargs -0 ${QT_LRELEASE_EXECUTABLE} -silent)
 endif(SVN_VERSION)
 
-set(PLUGIN_DIR "${CMAKE_INSTALL_LIBDIR}/qmmp-${QMMP_VERSION_MAJOR}.${QMMP_VERSION_MINOR}" CACHE STRING "plugin path")
+#x-AMP: installs alongside upstream qmmp; everything user-visible is suffixed
+set(APP_NAME_SUFFIX "-xamp")
+
+set(PLUGIN_DIR "${CMAKE_INSTALL_LIBDIR}/qmmp-${QMMP_VERSION_MAJOR}.${QMMP_VERSION_MINOR}${APP_NAME_SUFFIX}" CACHE STRING "plugin path")
 option(USE_SKINNED "standard skinned user interface" ON)
 option(USE_DIR_ASSOC "inode/directory mime type association" ON)
-#set(APP_NAME_SUFFIX "-1")
 
 get_target_property(QtGui_enabled_features Qt6::Gui QT_ENABLED_PUBLIC_FEATURES)
 if("xcb" IN_LIST QtGui_enabled_features)

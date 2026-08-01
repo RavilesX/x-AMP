@@ -54,10 +54,12 @@
 #include <sys/stat.h>
 #endif
 
+//x-AMP: distinct from upstream qmmp, otherwise launching one hands its
+//command line to the other's running instance
 #ifdef Q_OS_WIN
-#define UDS_PATH QStringLiteral("qmmp")
+#define UDS_PATH QStringLiteral("xamp")
 #else
-#define UDS_PATH QStringLiteral("/tmp/qmmp.sock.%1").arg(getuid())
+#define UDS_PATH QStringLiteral("/tmp/xamp.sock.%1").arg(getuid())
 #endif
 
 #ifdef Q_OS_UNIX
