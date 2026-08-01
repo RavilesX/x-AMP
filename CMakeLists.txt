@@ -146,31 +146,31 @@ add_custom_command(
     COMMAND ${CMAKE_MAKE_PROGRAM}
     ARGS -C ${CMAKE_CURRENT_BINARY_DIR} clean
     COMMAND find
-    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "CMakeCache.txt" | xargs rm -rf
+    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "CMakeCache.txt" -exec rm -rf {} +
     COMMAND find
-    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "CMakeFiles" | xargs rm -rf
+    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "CMakeFiles" -prune -exec rm -rf {} +
     COMMAND find
-    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "Makefile" | xargs rm -rf
+    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "Makefile" -exec rm -rf {} +
     COMMAND find
-    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name \"*.cmake\" | xargs rm -rf
+    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name \"*.cmake\" -exec rm -rf {} +
     COMMAND find
-    ARGS ${CMAKE_CURRENT_SOURCE_DIR} -name "*.qm" | xargs rm -rf
+    ARGS ${CMAKE_CURRENT_SOURCE_DIR} -name "*.qm" -exec rm -rf {} +
     COMMAND find
-    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "*.pc" | xargs rm -rf
+    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "*.pc" -exec rm -rf {} +
     COMMAND find
-    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "*.depends" | xargs rm -rf
+    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "*.depends" -exec rm -rf {} +
     COMMAND find
-    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "*.cxx_parameters" | xargs rm -rf
+    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "*.cxx_parameters" -exec rm -rf {} +
     COMMAND find
-    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "moc_*.cpp" | xargs rm -rf
+    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "moc_*.cpp" -exec rm -rf {} +
     COMMAND find
-    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "qrc_*.cxx" | xargs rm -rf
+    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "qrc_*.cxx" -exec rm -rf {} +
     COMMAND find
-    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "*_automoc.cpp" | xargs rm -rf
+    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name "*_automoc.cpp" -exec rm -rf {} +
     COMMAND rm
     ARGS -rf ${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt
     COMMAND find
-    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name *_automoc.dir | xargs rm -rf
+    ARGS ${CMAKE_CURRENT_BINARY_DIR} -name *_automoc.dir -prune -exec rm -rf {} +
     COMMAND rm
     ARGS -rf ${CMAKE_CURRENT_BINARY_DIR}/doc/html .qt config.tests build.ninja .ninja_deps
     TARGET  distclean
