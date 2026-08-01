@@ -60,8 +60,8 @@ GenericName[zh_CN]=音乐播放器
 GenericName[zh_TW]=音訊播放器
 Keywords=player;audio;video;multimedia;
 Keywords[fr]=lecteur;audio;vidéo;multimédia;
-Exec=qmmp-xamp %F
-Icon=qmmp-xamp
+Exec=xamp %F
+Icon=xamp
 Terminal=false
 Type=Application
 Categories=AudioVideo;Player;Audio;Qt;
@@ -77,7 +77,7 @@ Name[sr]=Пусти
 Name[sr@Ijekavian]=Пусти
 Name[sr@ijekavianlatin]=Pusti
 Name[sr@latin]=Pusti
-Exec=qmmp-xamp --no-start --play
+Exec=xamp --no-start --play
 
 [Desktop Action Pause]
 Name=Pause
@@ -87,7 +87,7 @@ Name[sr]=Паузирај
 Name[sr@Ijekavian]=Паузирај
 Name[sr@ijekavianlatin]=Pauziraj
 Name[sr@latin]=Pauziraj
-Exec=qmmp-xamp --no-start --pause
+Exec=xamp --no-start --pause
 
 [Desktop Action Stop]
 Name=Stop
@@ -97,7 +97,7 @@ Name[sr]=Заустави
 Name[sr@Ijekavian]=Заустави
 Name[sr@ijekavianlatin]=Zaustavi
 Name[sr@latin]=Zaustavi
-Exec=qmmp-xamp --no-start --stop
+Exec=xamp --no-start --stop
 
 [Desktop Action Previous]
 Name=Previous
@@ -107,7 +107,7 @@ Name[sr]=Претходна
 Name[sr@Ijekavian]=Претходна
 Name[sr@ijekavianlatin]=Prethodna
 Name[sr@latin]=Prethodna
-Exec=qmmp-xamp --no-start --previous
+Exec=xamp --no-start --previous
 
 [Desktop Action Next]
 Name=Next
@@ -117,4 +117,4 @@ Name[sr]=Следећа
 Name[sr@Ijekavian]=Сљедећа
 Name[sr@ijekavianlatin]=Sljedeća
 Name[sr@latin]=Sledeća
-Exec=qmmp-xamp --no-start --next
+Exec=xamp --no-start --next

@@ -49,7 +49,7 @@ void EffectBs2bFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About BS2B Effect Plugin"),
                        u"<p>"_s +
-                       tr("This is the Qmmp plugin version of Boris Mikhaylov's headphone DSP "
+                       tr("This is the x-AMP plugin version of Boris Mikhaylov's headphone DSP "
                           "effect \"Bauer stereophonic-to-binaural\", abbreviated bs2b.") +
                        u"</p><p>"_s +
                        tr("Visit %1 for more details").arg(u"<a href=\"https://bs2b.sourceforge.net/\">https://bs2b.sourceforge.net/</a>"_s) +

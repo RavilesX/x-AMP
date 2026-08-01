@@ -170,7 +170,7 @@ void StreamWindow::on_updatePushButton_clicked()
 {
     QNetworkRequest request;
     request.setUrl(QUrl(u"https://dir.xiph.org/yp.xml"_s));
-    request.setRawHeader("User-Agent", QStringLiteral("qmmp/%1").arg(Qmmp::strVersion()).toLatin1());
+    request.setRawHeader("User-Agent", QStringLiteral("xamp/%1").arg(Qmmp::strVersion()).toLatin1());
     m_requestReply = m_http->get(request);
     m_ui->statusLabel->setText(tr("Receiving"));
     m_ui->statusLabel->show();

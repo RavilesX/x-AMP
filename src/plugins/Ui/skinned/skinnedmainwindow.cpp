@@ -497,5 +497,5 @@ void SkinnedMainWindow::keyPressEvent(QKeyEvent *ke)
 
 void SkinnedMainWindow::restoreWindowTitle()
 {
-    setWindowTitle(tr("Qmmp"));
+    setWindowTitle(tr("x-AMP"));
 }

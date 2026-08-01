@@ -151,7 +151,7 @@ void LyricsWidget::onRequestFinished(QNetworkReply *reply)
             {
                 QNetworkRequest request;
                 request.setUrl(content);
-                request.setRawHeader("User-Agent", QStringLiteral("qmmp/%1").arg(Qmmp::strVersion()).toLatin1());
+                request.setRawHeader("User-Agent", QStringLiteral("xamp/%1").arg(Qmmp::strVersion()).toLatin1());
                 m_tasks << m_http->get(request);
                 m_tasks.last()->setProperty("provider", provider->name());
                 provider->skipRules(true);
@@ -217,7 +217,7 @@ void LyricsWidget::on_refreshButton_clicked()
             QString url = provider->getUrl(m_info);
             QNetworkRequest request;
             request.setUrl(url);
-            request.setRawHeader("User-Agent", QStringLiteral("qmmp/%1").arg(Qmmp::strVersion()).toLatin1());
+            request.setRawHeader("User-Agent", QStringLiteral("xamp/%1").arg(Qmmp::strVersion()).toLatin1());
             m_tasks << m_http->get(request);
             m_tasks.last()->setProperty("provider", provider->name());
             provider->skipRules(false);

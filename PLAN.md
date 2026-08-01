@@ -41,6 +41,7 @@ Hecho:
 - [x] `CLAUDE.md` con arquitectura y guía de plugins.
 - [x] **Fase 1 — línea base que compila.**
 - [x] **Fase 2 — rebranding e instalación paralela.**
+- [x] **Fase 2b — leyendas visibles: comando `xamp`, interfaz «x-AMP».**
 - [x] **Fase 3 — integración continua.**
 
 Lo tocado del código de Qmmp hasta ahora: dos arreglos de build (Fase 1) y el
@@ -150,9 +151,12 @@ El código ya trae el mecanismo `APP_NAME_SUFFIX`, que renombra binario, librer�
 
 **Esquema de nombres acordado** — sufijo `-xamp`:
 
+> **Revisado después:** el binario y los assets pasaron de `qmmp-xamp` a `xamp`.
+> Ver «Fase 2b — leyendas» más abajo. La tabla refleja el estado final.
+
 | Cosa | Antes | Después |
 |---|---|---|
-| Binario | `qmmp` | `qmmp-xamp` |
+| Binario | `qmmp` | `xamp` |
 | Librerías | `libqmmp.so`, `libqmmpui.so` | `libqmmp-xamp.so`, `libqmmpui-xamp.so` |
 | Config | `~/.config/qmmp` | `~/.config/xamp` |
 | Datos | `share/qmmp` | `share/qmmp-xamp` |
@@ -207,8 +211,8 @@ Checklist:
    ahí el sufijo está en el destino, no en el origen.
 
 4. **Contenido de los `.desktop` y del metainfo** — aparte del nombre de
-   archivo hay que tocar el contenido: `Name`, `Exec=qmmp %F` → `qmmp-xamp %F`,
-   `Icon=qmmp` → `qmmp-xamp`, y las 5 acciones `Exec=qmmp --no-start …`. En el
+   archivo hay que tocar el contenido: `Name`, `Exec=qmmp %F` → `xamp %F`,
+   `Icon=qmmp` → `xamp`, y las 5 acciones `Exec=qmmp --no-start …`. En el
    metainfo, el `<id>` debe coincidir con el nombre de archivo instalado.
 
 5. **Directorio de configuración** — [src/app/main.cpp:75-76](src/app/main.cpp#L75-L76):
@@ -268,7 +272,7 @@ Checklist:
   `XDG_*_HOME` redirigido crea `config/xamp`, `data/xamp` y `cache/xamp`.
 - `strings -el` confirma en los binarios: socket `/tmp/xamp.sock.%1`,
   nombre de aplicación `xamp`, servicio `org.mpris.MediaPlayer2.xamp`,
-  `DesktopEntry` = `qmmp-xamp`.
+  `DesktopEntry` = `xamp`.
 - `desktop-file-validate` limpio en los 3 `.desktop` de `applications/`.
   El de `solid/actions/` da 2 errores y 1 aviso, **idénticos en upstream**: es
   una acción de KDE Solid (`Type=Service`), no un desktop entry estándar, y la
@@ -278,6 +282,90 @@ Checklist:
 
 Pendiente de comprobar a mano: instalar de verdad con `sudo make -C build
 install` y ver los dos reproductores corriendo a la vez.
+
+## Fase 2b — Leyendas visibles ✅ hecha
+
+La Fase 2 dejó el binario como `qmmp-xamp` y toda la interfaz diciendo «Qmmp».
+Corregido: **el nombre visible es `x-AMP`, el comando es `xamp`, y en ninguna
+leyenda aparece «qmmp»**.
+
+Dos identificadores en CMake, y la separación es intencionada:
+
+- `APP_BINARY_NAME` = `xamp` — lo que el usuario teclea o ve en disco:
+  ejecutable, `xamp.desktop`, `xamp.png`.
+- `APP_NAME_SUFFIX` = `-xamp` — solo artefactos internos: `libqmmp-xamp.so`,
+  `lib/qmmp-2.4-xamp`, `share/qmmp-xamp`, `qmmp-xamp.pc`. Ahí el prefijo
+  `qmmp` se conserva a propósito: documenta el linaje y abarata los merges.
+
+En texto, la forma es **x-AMP**; `xamp` queda para comando e identificadores
+técnicos (socket, MPRIS, dir de config).
+
+### Lo que había que cambiar
+
+85 cadenas visibles: 76 en `tr()` de `.cpp` y 9 en `<string>` de `.ui`.
+
+**⚠️ `Qmmp` es también el namespace y prefijo de clases** (`Qmmp::strVersion`,
+`QmmpSettings`, `QmmpFileDialog`). Un search-and-replace rompe la compilación.
+Hay que sustituir *solo dentro de literales entrecomillados* — partir cada
+línea por `"` y tocar únicamente los segmentos impares. En los `.ui`, solo los
+elementos `<string>`: `<class>QmmpFileDialog</class>` es código que genera
+`uic`.
+
+**Dos cadenas deben seguir diciendo Qmmp:** la línea de copyright de upstream
+en [aboutdialog.cpp](src/qmmpui/aboutdialog.cpp) —es su atribución, no nuestra
+para reescribir— y la nota «Based on Qmmp» de
+[qmmpstarter.cpp](src/app/qmmpstarter.cpp).
+
+### Dos bugs reales, no cosmética
+
+1. **x-AMP escribía en la configuración de Qmmp.**
+   [qmmpstarter.cpp](src/app/qmmpstarter.cpp), rama de Wayland: un tercer
+   `QSettings(u"qmmp", u"qmmp")` codificado a mano que *borraba* una clave —
+   en `~/.config/qmmp/`, o sea en los ajustes del reproductor del sistema.
+2. **La migración de config se relanzaba en cada arranque.** El código
+   comprobaba `configDir()/qmmp.conf`, pero `QSettings` deriva el nombre del
+   archivo del `applicationName`, que ahora es `xamp.conf`. La comprobación
+   miraba un archivo que jamás existiría.
+
+Ambos son consecuencia del rebranding de la Fase 2: buscar
+`QSettings(QStringLiteral("qmmp")` es lo que los destapa.
+
+### Lo que apuntaba a upstream
+
+Misma clase de problema que el metainfo, y no estaba en el plan:
+
+- `--help` imprimía *Home page* y *Bug tracker* apuntando a qmmp.ylsoftware.com
+  y al tracker de SourceForge de Qmmp. Ahora van al repo del fork, con una
+  línea «Based on Qmmp» que conserva el crédito.
+- MPRIS `Identity` devolvía `"Qmmp"`: es lo que muestra el control multimedia
+  del panel del escritorio.
+- Las notificaciones de KDE se anunciaban como `Qmmp` y pedían el icono
+  `qmmp-simple`, que ya no existía con ese nombre.
+- El *user-agent* HTTP y el `<creator>` de las listas XSPF guardadas.
+- El inhibidor de suspensión se identificaba como `qmmp` ante el escritorio.
+
+### Coste asumido
+
+Las cadenas están en `tr()` y los 30 `.ts` indexan por el texto inglés
+original, así que **esas líneas concretas caen a inglés en los 30 idiomas**
+hasta regenerar las traducciones con `utils/update_ts.sh` y traducirlas. Se ve
+al ejecutar: `Usage: xamp [options] [files]` sale en inglés aunque el resto de
+la ayuda esté en español. Inevitable en cualquier rebranding de texto.
+
+### Verificación
+
+- Build limpio, 0 warnings, sin regresión de plugins contra la baseline.
+- Instalado: `bin/xamp`, `xamp.desktop`, `xamp-dir/-enqueue/-opencda.desktop`,
+  iconos `xamp.png` y `xamp{,-simple}.svgz`. Ningún archivo instalado se llama
+  `qmmp*` sin sufijo; cero rutas en común con el paquete del sistema.
+- `--version` → `x-AMP version: 2.4.0-dev`; `--help` → `Usage: xamp …` y URLs
+  del fork.
+- Compilados en los binarios: `org.mpris.MediaPlayer2.xamp`, `Identity` =
+  `x-AMP`, `DesktopEntry` = `xamp`, socket `/tmp/xamp.sock.%1`, y en
+  `libqmmpui`: «About x-AMP», «x-AMP Settings», «(c) %1 x-AMP contributors».
+- Arrancado con `XDG_*` redirigido: crea `~/.config/xamp/**xamp.conf**`, que
+  es lo que confirma el arreglo nº 2.
+- `desktop-file-validate` y `appstreamcli validate` en verde.
 
 ## Fase 3 — Integración continua ✅ hecha
 

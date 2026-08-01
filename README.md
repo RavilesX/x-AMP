@@ -45,7 +45,7 @@ Al terminar la configuración, CMake imprime un resumen con los plugins realment
 cmake -B build -DUSE_JACK:BOOL=FALSE
 ```
 
-x-AMP se instala **junto a Qmmp**, sin pisarlo: el ejecutable es `qmmp-xamp`, las librerías llevan el sufijo `-xamp` y la configuración vive en `~/.config/xamp`. Los dos reproductores pueden estar instalados y ejecutándose a la vez.
+x-AMP se instala **junto a Qmmp**, sin pisarlo: el ejecutable es `xamp`, las librerías internas llevan el sufijo `-xamp` y la configuración vive en `~/.config/xamp`. Los dos reproductores pueden estar instalados y ejecutándose a la vez.
 
 La lista exacta de paquetes de desarrollo para Ubuntu/Mint está en [PLAN.md](PLAN.md) y es la misma que usa el workflow de [integración continua](.github/workflows/build.yml).
 

@@ -48,7 +48,7 @@ QDialog *UDisksFactory::createSettings(QWidget *parent)
 void UDisksFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About UDisks Plugin"),
-                       tr("Qmmp UDisks Plugin") + QChar::LineFeed +
+                       tr("x-AMP UDisks Plugin") + QChar::LineFeed +
                        tr("This plugin provides removable devices detection using UDisks") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }

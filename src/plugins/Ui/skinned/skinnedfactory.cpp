@@ -59,8 +59,8 @@ QObject *SkinnedFactory::SkinnedFactory::create()
 
 void SkinnedFactory::showAbout(QWidget *parent)
 {
-    QMessageBox::about (parent, tr("About Qmmp Skinned User Interface"),
-                        tr("Qmmp Skinned User Interface")+QChar::LineFeed+
+    QMessageBox::about (parent, tr("About x-AMP Skinned User Interface"),
+                        tr("x-AMP Skinned User Interface")+QChar::LineFeed+
                         tr("Simple user interface with Winamp-2.x/XMMS skins support") + QChar::LineFeed +
                         tr("Written by:")+QChar::LineFeed+
                         tr("Vladimir Kuznetsov <vovanec@gmail.com>")+QChar::LineFeed+

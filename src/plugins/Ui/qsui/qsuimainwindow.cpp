@@ -932,7 +932,7 @@ void QSUiMainWindow::editStatusBar()
 
 void QSUiMainWindow::restoreWindowTitle()
 {
-    setWindowTitle(tr("Qmmp"));
+    setWindowTitle(tr("x-AMP"));
 }
 
 void QSUiMainWindow::onListChanged(int flags)

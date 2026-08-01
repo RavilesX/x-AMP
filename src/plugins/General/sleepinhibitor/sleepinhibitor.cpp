@@ -50,7 +50,7 @@ void SleepInhibitor::inhibit()
 
     static const QString method = QStringLiteral("Inhibit");
     static const QString what = QStringLiteral("sleep:idle");
-    static const QString who  = QStringLiteral("qmmp");
+    static const QString who  = QStringLiteral("x-AMP");
     static const QString why  = QStringLiteral("Playing audio");
     static const QString mode = QStringLiteral("block");
     QDBusReply<QDBusUnixFileDescriptor> fd = m_interface->call(method, what, who, why, mode);

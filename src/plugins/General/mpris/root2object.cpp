@@ -48,7 +48,7 @@ bool Root2Object::canRaise() const
 
 QString Root2Object::desktopEntry() const
 {
-    return u"qmmp-xamp"_s;
+    return u"xamp"_s;
 }
 
 bool Root2Object::hasTrackList() const
@@ -57,7 +57,8 @@ bool Root2Object::hasTrackList() const
 }
 QString Root2Object::identity() const
 {
-    return u"Qmmp"_s;
+    //shown by MPRIS clients, e.g. the desktop panel's media controls
+    return u"x-AMP"_s;
 }
 
 QStringList Root2Object::supportedMimeTypes() const

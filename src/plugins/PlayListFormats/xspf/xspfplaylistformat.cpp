@@ -121,7 +121,7 @@ QByteArray XSPFPlaylistFormat::encode(const QList<PlayListTrack*> &files, const 
     xml.writeStartElement("playlist"_L1);
     xml.writeAttribute("version"_L1, "1"_L1);
     xml.writeAttribute("xmlns"_L1, u"http://xspf.org/ns/0/"_s);
-    xml.writeTextElement("creator"_L1, u"qmmp-"_s + Qmmp::strVersion());
+    xml.writeTextElement("creator"_L1, u"xamp-"_s + Qmmp::strVersion());
     xml.writeStartElement("trackList"_L1);
 
     int counter = 1;

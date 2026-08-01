@@ -96,7 +96,7 @@ QDialog *DecoderCDAudioFactory::createSettings(QWidget *parent)
 void DecoderCDAudioFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About CD Audio Plugin"),
-                       tr("Qmmp CD Audio Plugin") + QChar::LineFeed +
+                       tr("x-AMP CD Audio Plugin") + QChar::LineFeed +
 #ifdef WITH_LIBCDDB
                        tr("Compiled against libcdio-%1 and libcddb-%2").arg(QLatin1StringView(CDIO_VERSION),
                                                                             QLatin1StringView(CDDB_VERSION)) +

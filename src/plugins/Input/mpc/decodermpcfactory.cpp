@@ -112,7 +112,7 @@ QDialog *DecoderMPCFactory::createSettings(QWidget *)
 void DecoderMPCFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Musepack Audio Plugin"),
-                       tr("Qmmp Musepack Audio Plugin") + QChar::LineFeed +
+                       tr("x-AMP Musepack Audio Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

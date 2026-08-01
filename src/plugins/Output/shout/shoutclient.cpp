@@ -49,7 +49,7 @@ void ShoutClient::readSettings()
     shout_set_host(m_shout_conn, settings.value(u"host"_s, u"127.0.0.1"_s).toString().toLatin1().constData());
     shout_set_port(m_shout_conn, settings.value(u"port"_s, 8000).toInt());
     shout_set_password(m_shout_conn, settings.value(u"passw"_s, u"hackme"_s).toString().toLatin1().constData());
-    shout_set_mount(m_shout_conn, QStringLiteral("/%1").arg(settings.value(u"mount"_s, u"qmmp.out"_s).toString()).
+    shout_set_mount(m_shout_conn, QStringLiteral("/%1").arg(settings.value(u"mount"_s, u"xamp.out"_s).toString()).
                     toLatin1().constData());
     shout_set_meta(m_shout_conn, SHOUT_META_NAME, settings.value(u"name"_s).toString().toLatin1().constData());
     shout_set_meta(m_shout_conn, SHOUT_META_URL, settings.value(u"url"_s).toString().toLatin1().constData());

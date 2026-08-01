@@ -72,7 +72,7 @@
   <url type="bugtracker">https://github.com/RavilesX/x-AMP/issues</url>
   <url type="homepage">https://github.com/RavilesX/x-AMP</url>
   <project_group>none</project_group>
-  <launchable type="desktop-id">qmmp-xamp.desktop</launchable>
+  <launchable type="desktop-id">xamp.desktop</launchable>
   <developer id="io.github.ravilesx">
     <name>x-AMP contributors</name>
   </developer>

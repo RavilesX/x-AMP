@@ -50,7 +50,7 @@ QDialog *HTTPInputFactory::createSettings(QWidget *parent)
 void HTTPInputFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About HTTP Transport Plugin"),
-                       tr("Qmmp HTTP Transport Plugin") + QChar::LineFeed +
+                       tr("x-AMP HTTP Transport Plugin") + QChar::LineFeed +
                        tr("Compiled against libcurl-%1").arg(QLatin1StringView(LIBCURL_VERSION)) + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }

@@ -164,7 +164,7 @@ QDialog *DecoderArchiveFactory::createSettings(QWidget *)
 void DecoderArchiveFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Archive Reader Plugin"),
-                       tr("Qmmp Archive Reader Plugin") + QChar::LineFeed +
+                       tr("x-AMP Archive Reader Plugin") + QChar::LineFeed +
                        tr("Compiled against:") + QChar::LineFeed +
                        QStringLiteral("libarchive-") + QStringLiteral(ARCHIVE_VERSION_ONLY_STRING) + QChar::LineFeed +
                        QStringLiteral("TagLib-%1.%2.%3\n").arg(TAGLIB_MAJOR_VERSION).arg(TAGLIB_MINOR_VERSION).arg(TAGLIB_PATCH_VERSION) +

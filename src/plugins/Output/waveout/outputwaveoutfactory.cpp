@@ -59,7 +59,7 @@ QDialog *OutputWaveOutFactory::createSettings(QWidget *parent)
 void OutputWaveOutFactory::showAbout(QWidget *parent)
 {
    QMessageBox::about (parent, tr("About WaveOut Output Plugin"),
-                        tr("Qmmp WaveOut Output Plugin") + QChar::LineFeed+
+                        tr("x-AMP WaveOut Output Plugin") + QChar::LineFeed+
                         tr("Written by: Ilya Kotov <forkotov02@ya.ru>") + QChar::LineFeed +
                         tr("Based on aacDECdrop player"));
 }

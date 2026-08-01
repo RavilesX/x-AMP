@@ -315,7 +315,7 @@ void DecoderSndFileFactory::showAbout(QWidget *parent)
     char version [128] = { 0 };
     sf_command (nullptr, SFC_GET_LIB_VERSION, version, sizeof (version)) ;
     QMessageBox::about(parent, tr("About Sndfile Audio Plugin"),
-                       tr("Qmmp Sndfile Audio Plugin") + QChar::LineFeed +
+                       tr("x-AMP Sndfile Audio Plugin") + QChar::LineFeed +
                        tr("Compiled against:") + QChar::LineFeed +
                        QString::fromLatin1(version) + QChar::LineFeed +
                        QStringLiteral("TagLib-%1.%2.%3\n").arg(TAGLIB_MAJOR_VERSION).arg(TAGLIB_MINOR_VERSION).arg(TAGLIB_PATCH_VERSION) +

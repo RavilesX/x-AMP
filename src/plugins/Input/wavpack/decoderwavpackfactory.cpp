@@ -175,7 +175,7 @@ QDialog *DecoderWavPackFactory::createSettings(QWidget *)
 void DecoderWavPackFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About WavPack Audio Plugin"),
-                       tr("Qmmp WavPack Audio Plugin") + QChar::LineFeed +
+                       tr("x-AMP WavPack Audio Plugin") + QChar::LineFeed +
                        tr("WavPack library version: %1").arg(QString::fromLatin1(WavpackGetLibraryVersionString())) +
                        QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));

@@ -47,7 +47,7 @@ QDialog *StatusIconFactory::createSettings(QWidget *parent)
 void StatusIconFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Status Icon Plugin"),
-                       tr("Qmmp Status Icon Plugin") + QChar::LineFeed +
+                       tr("x-AMP Status Icon Plugin") + QChar::LineFeed +
                        tr("Written by:") + QChar::LineFeed +
                        tr("Ilya Kotov <forkotov02@ya.ru>") + QChar::LineFeed +
                        tr("Artur Guzik <a.guzik88@gmail.com>"));

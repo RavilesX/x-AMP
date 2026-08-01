@@ -21,5 +21,5 @@ Name[ru]=Открыть с помощью x-AMP
 Name[tr]=x-AMP ile aç
 Name[zh_CN]=使用 x-AMP 打开
 Name[zh_TW]=用x-AMP打開
-Exec=qmmp-xamp cdda://%d
-Icon=qmmp-xamp
+Exec=xamp cdda://%d
+Icon=xamp

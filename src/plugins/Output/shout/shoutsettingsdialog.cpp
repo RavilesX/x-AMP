@@ -32,7 +32,7 @@ ShoutSettingsDialog::ShoutSettingsDialog(QWidget *parent) :
     settings.beginGroup(u"Shout"_s);
     m_ui->hostLineEdit->setText(settings.value(u"host"_s, u"127.0.0.1"_s).toString());
     m_ui->portSpinBox->setValue(settings.value(u"port"_s, 8000).toInt());
-    m_ui->mountPointLineEdit->setText(settings.value(u"mount"_s, u"qmmp.out"_s).toString());
+    m_ui->mountPointLineEdit->setText(settings.value(u"mount"_s, u"xamp.out"_s).toString());
     m_ui->userLineEdit->setText(settings.value(u"user"_s, u"source"_s).toString());
     m_ui->passwLineEdit->setText(settings.value(u"passw"_s, u"hackme"_s).toString());
     m_ui->publicCheckBox->setChecked(settings.value(u"public"_s, false).toBool());

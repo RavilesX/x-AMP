@@ -47,7 +47,7 @@ QDialog *CoverManagerFactory::createSettings(QWidget *)
 void CoverManagerFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Cover Manager Plugin"),
-                       tr("Qmmp Cover Manager Plugin") + QChar::LineFeed +
+                       tr("x-AMP Cover Manager Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

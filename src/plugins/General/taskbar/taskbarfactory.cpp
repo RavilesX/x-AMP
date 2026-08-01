@@ -47,7 +47,7 @@ QDialog *TaskbarFactory::createSettings(QWidget *parent)
 void TaskbarFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Taskbar Plugin"),
-                       tr("Qmmp Taskbar Plugin")+QChar::LineFeed+
+                       tr("x-AMP Taskbar Plugin")+QChar::LineFeed+
                        tr("This plugin adds support for progress indicator in the Windows taskbar")+QChar::LineFeed+
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>") + QChar::LineFeed +
                        tr("Based on QtWinExtras module of the Qt Toolkit") + QChar::LineFeed +

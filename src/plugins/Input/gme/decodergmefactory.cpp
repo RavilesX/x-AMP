@@ -97,7 +97,7 @@ QDialog *DecoderGmeFactory::createSettings(QWidget *parent)
 void DecoderGmeFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About GME Audio Plugin"),
-                       tr("Qmmp GME Audio Plugin") + QChar::LineFeed +
+                       tr("x-AMP GME Audio Plugin") + QChar::LineFeed +
                        tr("This plugin uses Game_Music_Emu library to play game music files") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }

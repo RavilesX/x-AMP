@@ -82,7 +82,7 @@ QDialog *LibraryFactory::createSettings(QWidget *parent)
 void LibraryFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Media Library Plugin"),
-                       tr("Qmmp Media Library Plugin") + QChar::LineFeed +
+                       tr("x-AMP Media Library Plugin") + QChar::LineFeed +
                        tr("This plugin represents a database to store music files tags for a fast access") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }

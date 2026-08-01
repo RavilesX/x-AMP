@@ -48,7 +48,7 @@ QDialog *RDetectFactory::createSettings(QWidget *parent)
 void RDetectFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about (parent, tr("About Volume Detection Plugin"),
-                        tr("Qmmp Removable Volume Detection Plugin") + QChar::LineFeed +
+                        tr("x-AMP Removable Volume Detection Plugin") + QChar::LineFeed +
                         tr("This plugin provides removable volume detection") + QChar::LineFeed +
                         tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }

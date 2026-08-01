@@ -67,7 +67,7 @@ FileDialog* QmmpFileDialogFactory::create()
 FileDialogProperties QmmpFileDialogFactory::properties() const
 {
     FileDialogProperties properties;
-    properties.name = tr("Qmmp File Dialog");
+    properties.name = tr("x-AMP File Dialog");
     properties.shortName = "qmmp_dialog"_L1;
     properties.hasAbout = true;
     properties.modal = false;
@@ -76,8 +76,8 @@ FileDialogProperties QmmpFileDialogFactory::properties() const
 
 void QmmpFileDialogFactory::showAbout(QWidget *parent)
 {
-    QMessageBox::about(parent, tr("About Qmmp File Dialog"),
-                       tr("Qmmp File Dialog") + QChar::LineFeed +
+    QMessageBox::about(parent, tr("About x-AMP File Dialog"),
+                       tr("x-AMP File Dialog") + QChar::LineFeed +
                        tr("Written by:\n"
                           "Vladimir Kuznetsov <vovanec@gmail.com>\n"
                           "Ilya Kotov <forkotov02@ya.ru>") + QChar::LineFeed +

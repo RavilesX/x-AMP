@@ -101,7 +101,7 @@ QDialog *DecoderAACFactory::createSettings(QWidget *)
 void DecoderAACFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About AAC Audio Plugin"),
-                       tr("Qmmp AAC Audio Plugin") + QChar::LineFeed +
+                       tr("x-AMP AAC Audio Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

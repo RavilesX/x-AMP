@@ -47,7 +47,7 @@ QDialog *SleepInhibitFactory::createSettings(QWidget *parent)
 void SleepInhibitFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Sleep Mode Inhibit Plugin"),
-                       tr("Qmmp Sleep Mode Inhibit Plugin")+QChar::LineFeed+
+                       tr("x-AMP Sleep Mode Inhibit Plugin")+QChar::LineFeed+
                        tr("This plugin inhibits sleep mode while audio playback") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }

@@ -53,7 +53,7 @@ QDialog *OutputPulseAudioFactory::createSettings(QWidget *parent)
 void OutputPulseAudioFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About PulseAudio Output Plugin"),
-                       tr("Qmmp PulseAudio Output Plugin") + QChar::LineFeed +
+                       tr("x-AMP PulseAudio Output Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

@@ -48,7 +48,7 @@ QDialog *VisualProjectMFactory::createSettings(QWidget *parent)
 void VisualProjectMFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about (parent, tr("About ProjectM Visual Plugin"),
-                        tr("Qmmp ProjectM Visual Plugin") + QChar::LineFeed +
+                        tr("x-AMP ProjectM Visual Plugin") + QChar::LineFeed +
                         tr("This plugin adds projectM visualization") + QChar::LineFeed +
                         tr("Written by: Ilya Kotov <forkotov02@ya.ru>") + QChar::LineFeed +
                         tr("Based on libprojectM-qt library"));

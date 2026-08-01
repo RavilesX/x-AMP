@@ -46,8 +46,8 @@ QDialog *EffectLADSPAFactory::createSettings(QWidget *parent)
 
 void EffectLADSPAFactory::showAbout(QWidget *parent)
 {
-    QMessageBox::about(parent, tr("About LADSPA Host for Qmmp"),
-                       tr("LADSPA Host for Qmmp") + QChar::LineFeed +
+    QMessageBox::about(parent, tr("About LADSPA Host for x-AMP"),
+                       tr("LADSPA Host for x-AMP") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>") + QChar::LineFeed +
                        tr("Based on the LADSPA Host for BMP") + QChar::LineFeed +
                        tr("BMP-ladspa developers:") + QChar::LineFeed +

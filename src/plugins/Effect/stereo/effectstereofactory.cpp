@@ -47,7 +47,7 @@ QDialog *EffectStereoFactory::createSettings(QWidget *parent)
 void EffectStereoFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Extra Stereo Plugin"),
-                       tr("Qmmp Extra Stereo Plugin") + QChar::LineFeed +
+                       tr("x-AMP Extra Stereo Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>") + QChar::LineFeed +
                        tr("Based on the Extra Stereo Plugin for Xmms by Johan Levin"));
 }

@@ -48,7 +48,7 @@ QDialog *MPRISFactory::createSettings(QWidget *)
 void MPRISFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About MPRIS Plugin"),
-                       tr("Qmmp MPRIS Plugin") + QChar::LineFeed +
+                       tr("x-AMP MPRIS Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

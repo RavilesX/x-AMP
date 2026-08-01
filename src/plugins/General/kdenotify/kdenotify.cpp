@@ -114,10 +114,10 @@ QList<QVariant> KdeNotify::prepareNotification()
         return QList<QVariant>();
     }
     QList<QVariant> args;
-    args.append(u"Qmmp"_s); //app-name
+    args.append(u"x-AMP"_s); //app-name
     args.append(m_currentNotifyId); //replaces-id;
     args.append(m_imagesDir + u"/app-icon.png"_s);  //app-icon(path to icon on disk)
-    args.append(tr("Qmmp now playing:")); //summary (notification title)
+    args.append(tr("x-AMP now playing:")); //summary (notification title)
 
     MetaDataFormatter f(m_template);
     QString body = f.format(info);
@@ -173,7 +173,7 @@ void KdeNotify::onVolumeChanged(int percent)
                                                       QStringLiteral("/org/kde/osdService"),
                                                       QStringLiteral("org.kde.osdService"),
                                                       QStringLiteral("mediaPlayerVolumeChanged"));
-    msg.setArguments({ percent, u"Qmmp"_s, u"qmmp-simple"_s });
+    msg.setArguments({ percent, u"x-AMP"_s, u"xamp-simple"_s });
     QDBusConnection::sessionBus().asyncCall(msg);
 }
 

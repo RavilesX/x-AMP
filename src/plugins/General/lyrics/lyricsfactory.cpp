@@ -66,7 +66,7 @@ QDialog *LyricsFactory::createSettings(QWidget *parent)
 void LyricsFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Lyrics Plugin"),
-                       tr("Qmmp Lyrics Plugin") + QChar::LineFeed +
+                       tr("x-AMP Lyrics Plugin") + QChar::LineFeed +
                        tr("This plugin retrieves lyrics from LyricWiki") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>") + QChar::LineFeed +
                        tr("Based on Ultimate Lyrics script by Vladimir Brkic <vladimir_brkic@yahoo.com>")

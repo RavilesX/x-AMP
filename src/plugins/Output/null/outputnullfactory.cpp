@@ -53,7 +53,7 @@ QDialog *OutputNullFactory::createSettings(QWidget *parent)
 void OutputNullFactory::showAbout(QWidget *parent)
 {
    QMessageBox::about (parent, tr("About Null Output Plugin"),
-                       tr("Qmmp Null Output Plugin") + QChar::LineFeed +
+                       tr("x-AMP Null Output Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

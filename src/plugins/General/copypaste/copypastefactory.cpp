@@ -46,7 +46,7 @@ QDialog *CopyPasteFactory::createSettings(QWidget *)
 void CopyPasteFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Copy/Paste Plugin"),
-                       tr("Qmmp Copy/Paste Plugin") + QChar::LineFeed +
+                       tr("x-AMP Copy/Paste Plugin") + QChar::LineFeed +
                        tr("This plugin allows one to copy selected tracks from one playlist to another") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }

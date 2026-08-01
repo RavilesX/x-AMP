@@ -276,7 +276,7 @@ QDialog *DecoderFLACFactory::createSettings(QWidget *)
 void DecoderFLACFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About FLAC Audio Plugin"),
-                       tr("Qmmp FLAC Audio Plugin") + QChar::LineFeed +
+                       tr("x-AMP FLAC Audio Plugin") + QChar::LineFeed +
                        tr("Compiled against:") + QChar::LineFeed +
                        tr("FLAC, API version: %1").arg(FLAC_API_VERSION_CURRENT) + QChar::LineFeed +
                        QStringLiteral("TagLib-%1.%2.%3\n").arg(TAGLIB_MAJOR_VERSION).arg(TAGLIB_MINOR_VERSION).arg(TAGLIB_PATCH_VERSION) +

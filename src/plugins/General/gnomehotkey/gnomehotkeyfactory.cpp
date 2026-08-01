@@ -48,7 +48,7 @@ QDialog *GnomeHotkeyFactory::createSettings(QWidget *parent)
 void GnomeHotkeyFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Gnome Hotkey Plugin"),
-                       tr("Qmmp Gnome Hotkey Plugin") + QChar::LineFeed +
+                       tr("x-AMP Gnome Hotkey Plugin") + QChar::LineFeed +
                        tr("This plugin adds support of the GNOME/Cinnamon hotkeys") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }

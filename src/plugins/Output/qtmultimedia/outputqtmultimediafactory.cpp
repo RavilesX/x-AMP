@@ -54,7 +54,7 @@ QDialog *OutputQtMultimediaFactory::createSettings(QWidget* parent)
 void OutputQtMultimediaFactory::showAbout(QWidget *parent)
 {
    QMessageBox::about(parent, tr("About Qt Multimedia Output Plugin"),
-                       tr("Qmmp Qt Multimedia Output Plugin") + QChar::LineFeed +
+                       tr("x-AMP Qt Multimedia Output Plugin") + QChar::LineFeed +
                            tr("Written by: Ivan Ponomarev <ivantrue@gmail.com>"));
 }
 

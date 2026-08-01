@@ -53,7 +53,7 @@ QDialog *OutputOSSFactory::createSettings(QWidget *parent)
 void OutputOSSFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About OSS Output Plugin"),
-                       tr("Qmmp OSS Output Plugin") + QChar::LineFeed +
+                       tr("x-AMP OSS Output Plugin") + QChar::LineFeed +
                        tr("Written by: Yuriy Zhuravlev <slalkerg@gmail.com>") + QChar::LineFeed +
                        tr("Based on code by: Brad Hughes <bhughes@trolltech.com>"));
 }

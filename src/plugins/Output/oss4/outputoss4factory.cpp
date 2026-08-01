@@ -53,7 +53,7 @@ QDialog *OutputOSS4Factory::createSettings(QWidget* parent)
 void OutputOSS4Factory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About OSS4 Output Plugin"),
-                       tr("Qmmp OSS4 Output Plugin") + QChar::LineFeed +
+                       tr("x-AMP OSS4 Output Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

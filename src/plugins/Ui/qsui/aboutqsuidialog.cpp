@@ -39,8 +39,8 @@ AboutQSUIDialog::~AboutQSUIDialog()
 QString AboutQSUIDialog::loadAbout()
 {
     QString text = u"<head><META content=\"text/html; charset=UTF-8\"></head>"_s;
-    text.append(u"<h3>"_s + tr("Qmmp Simple User Interface (QSUI)") + u"</h3>"_s);
-    text.append(tr("Qmmp version: <b>%1</b>").arg(Qmmp::strVersion()));
+    text.append(u"<h3>"_s + tr("x-AMP Simple User Interface (QSUI)") + u"</h3>"_s);
+    text.append(tr("x-AMP version: <b>%1</b>").arg(Qmmp::strVersion()));
     text.append(u"<p>"_s + tr("Simple user interface based on standard widgets set.") + u"</p>"_s);
     text.append(u"<b>"_s + tr("Developers:") + u"</b>"_s);
     text.append(u"<p>"_s + tr("Ilya Kotov <forkotov02@ya.ru>") + u"</p>"_s);

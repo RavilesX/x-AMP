@@ -152,7 +152,7 @@ private:
     QUrl redirectUrl, url;
     QNetworkReply *downloadReply = nullptr;
     QNetworkReply *checkReply = nullptr;
-    QByteArray userAgent = QStringLiteral("qmmp/%1").arg(Qmmp::strVersion()).toLatin1();
+    QByteArray userAgent = QStringLiteral("xamp/%1").arg(Qmmp::strVersion()).toLatin1();
     QPointer<PlayListModel> model;
 };
 

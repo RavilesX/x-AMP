@@ -59,7 +59,7 @@ QDialog *HotkeyFactory::createSettings(QWidget *parent)
 void HotkeyFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Global Hotkey Plugin"),
-                       tr("Qmmp Global Hotkey Plugin") + QChar::LineFeed +
+                       tr("x-AMP Global Hotkey Plugin") + QChar::LineFeed +
                        tr("This plugin adds support for multimedia keys or global key combinations") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }

@@ -48,7 +48,7 @@ QDialog *ListenBrainzFactory::createSettings(QWidget *parent)
 void ListenBrainzFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About ListenBrainz Plugin"),
-                       tr("Qmmp ListenBrainz Plugin") + QChar::LineFeed +
+                       tr("x-AMP ListenBrainz Plugin") + QChar::LineFeed +
                        tr("This plugin submits listen history to ListenBrainz server") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }

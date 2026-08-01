@@ -46,7 +46,7 @@ QDialog *BatchTagEditorFactory::createSettings(QWidget *)
 void BatchTagEditorFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Tag Editor Plugin"),
-                       tr("Qmmp Tag Editor Plugin") + QChar::LineFeed +
+                       tr("x-AMP Tag Editor Plugin") + QChar::LineFeed +
                        tr("This plugin allows for batch editing of tags") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }

@@ -47,7 +47,7 @@ QDialog *VisualAnalyzerFactory::createSettings(QWidget *parent)
 void VisualAnalyzerFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Analyzer Visual Plugin"),
-                       tr("Qmmp Analyzer Visual Plugin") + QChar::LineFeed +
+                       tr("x-AMP Analyzer Visual Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

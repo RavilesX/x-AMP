@@ -53,7 +53,7 @@ QDialog *OutputPipeWireFactory::createSettings(QWidget *parent)
 void OutputPipeWireFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About PipeWire Output Plugin"),
-                       tr("Qmmp PipeWire Output Plugin") + QChar::LineFeed +
+                       tr("x-AMP PipeWire Output Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

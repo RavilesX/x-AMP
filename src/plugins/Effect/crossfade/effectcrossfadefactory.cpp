@@ -48,7 +48,7 @@ QDialog *EffectCrossfadeFactory::createSettings(QWidget *parent)
 void EffectCrossfadeFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Crossfade Plugin"),
-                       tr("Qmmp Crossfade Plugin") + QChar::LineFeed +
+                       tr("x-AMP Crossfade Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

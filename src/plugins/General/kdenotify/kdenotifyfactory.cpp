@@ -47,7 +47,7 @@ QDialog *KdeNotifyFactory::createSettings(QWidget *parent)
 void KdeNotifyFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About KDE Notification Plugin"),
-                       tr("KDE notification plugin for Qmmp") + u"<br>Artur Guzik &lt;a.guzik88@gmail.com&gt;"_s);
+                       tr("KDE notification plugin for x-AMP") + u"<br>Artur Guzik &lt;a.guzik88@gmail.com&gt;"_s);
 }
 
 QString KdeNotifyFactory::translation() const

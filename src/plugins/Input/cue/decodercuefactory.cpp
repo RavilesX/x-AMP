@@ -79,7 +79,7 @@ QDialog *DecoderCUEFactory::createSettings(QWidget *parent)
 void DecoderCUEFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About CUE Audio Plugin"),
-                       tr("Qmmp CUE Audio Plugin") + QChar::LineFeed +
+                       tr("x-AMP CUE Audio Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

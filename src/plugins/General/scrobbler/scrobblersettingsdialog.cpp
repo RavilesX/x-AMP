@@ -109,7 +109,7 @@ void ScrobblerSettingsDialog::processTokenResponse(int error)
 
         QMessageBox::information(this, tr("Message"),
                                  tr("1. Wait for browser startup") + QChar::LineFeed +
-                                 tr("2. Allow Qmmp to scrobble tracks to your %1 account").arg(name) + QChar::LineFeed +
+                                 tr("2. Allow x-AMP to scrobble tracks to your %1 account").arg(name) + QChar::LineFeed +
                                  tr("3. Press \"OK\""));
         auth->getSession();
     }

@@ -126,7 +126,7 @@ QDialog *DecoderVorbisFactory::createSettings(QWidget *)
 void DecoderVorbisFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Ogg Vorbis Audio Plugin"),
-                       tr("Qmmp Ogg Vorbis Audio Plugin") + QChar::LineFeed +
+                       tr("x-AMP Ogg Vorbis Audio Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>") + QChar::LineFeed +
                        tr("Source code based on mq3 project")
                        );

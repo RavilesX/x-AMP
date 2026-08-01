@@ -53,7 +53,7 @@ QDialog *OutputALSAFactory::createSettings(QWidget *parent)
 void OutputALSAFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about (parent, tr("About ALSA Output Plugin"),
-                        tr("Qmmp ALSA Output Plugin") + QChar::LineFeed +
+                        tr("x-AMP ALSA Output Plugin") + QChar::LineFeed +
                         tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

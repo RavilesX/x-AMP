@@ -82,8 +82,16 @@ jobs:
         run: |
           make -C build install DESTDIR="$PWD/stage"
           echo "Installed files: $(find stage -type f -o -type l | wc -l)"
-          echo "Without the -xamp suffix (metainfo is the only expected one):"
-          find stage -type f -o -type l | grep -v -- '-xamp' || true
+          # Nothing installed may be named plain "qmmp*": that is what would
+          # collide with the upstream package. Internal artefacts carry the
+          # -xamp suffix, user-facing ones are named xamp.
+          strays=$(find stage -type f -o -type l | grep -E '/qmmp[^/]*$' | grep -v -- '-xamp' || true)
+          if [ -n "$strays" ]; then
+            echo "Unsuffixed files that would collide with upstream qmmp:"
+            echo "$strays"
+            exit 1
+          fi
+          echo "No colliding file names."
 
       # appstreamcli exits non-zero on warnings, not just errors, so this step
       # is stricter than it looks. That is deliberate: the metadata is small

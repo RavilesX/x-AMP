@@ -95,8 +95,15 @@ else(SVN_VERSION)
     execute_process(COMMAND find ${CMAKE_CURRENT_SOURCE_DIR} -name *.ts -print0 COMMAND xargs -0 ${QT_LRELEASE_EXECUTABLE} -silent)
 endif(SVN_VERSION)
 
-#x-AMP: installs alongside upstream qmmp; everything user-visible is suffixed
+#x-AMP: installs alongside upstream qmmp. APP_NAME_SUFFIX keeps the internal
+#artefacts apart (libqmmp-xamp.so, lib/qmmp-2.4-xamp, share/qmmp-xamp); the
+#qmmp prefix there is deliberate, it documents the lineage and keeps the diff
+#against upstream small.
 set(APP_NAME_SUFFIX "-xamp")
+
+#What the user actually types and sees: the executable, the .desktop files and
+#the icons. No qmmp anywhere in these.
+set(APP_BINARY_NAME "xamp")
 
 set(PLUGIN_DIR "${CMAKE_INSTALL_LIBDIR}/qmmp-${QMMP_VERSION_MAJOR}.${QMMP_VERSION_MINOR}${APP_NAME_SUFFIX}" CACHE STRING "plugin path")
 option(USE_SKINNED "standard skinned user interface" ON)

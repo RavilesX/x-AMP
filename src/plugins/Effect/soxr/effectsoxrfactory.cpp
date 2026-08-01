@@ -48,7 +48,7 @@ QDialog *EffectSoXRFactory::createSettings(QWidget *parent)
 void EffectSoXRFactory::showAbout(QWidget *parent)
 {
      QMessageBox::about(parent, tr("About SoX Resampler Plugin"),
-                        tr("Qmmp SoX Resampler Plugin") + QChar::LineFeed +
+                        tr("x-AMP SoX Resampler Plugin") + QChar::LineFeed +
                         tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

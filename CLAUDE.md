@@ -35,9 +35,18 @@ Plugin availability is auto-detected via `pkg_check_modules`; a `USE_X=ON` with 
 
 ### Fork naming
 
-`APP_NAME_SUFFIX` is set to `-xamp` in [CMakeLists.txt](CMakeLists.txt), so x-AMP installs alongside upstream qmmp: binary `qmmp-xamp`, libs `libqmmp-xamp.so`, plugins in `lib/qmmp-<major>.<minor>-xamp`, data in `share/qmmp-xamp`. Runtime identity is spelled `xamp` (no dash — D-Bus rejects `-` in the last component of a service name): config/cache/data under `~/.config/xamp` etc. via `QCoreApplication::organizationName()`, IPC socket `/tmp/xamp.sock.$UID`, MPRIS `org.mpris.MediaPlayer2.xamp`.
+Two names, set in [CMakeLists.txt](CMakeLists.txt), and the split matters:
 
-Asset files keep their upstream names on disk; the suffix is applied at install time with `install(... RENAME ...)`. Do not rename the sources — [src/app/images/images.qrc](src/app/images/images.qrc) and [main.cpp](src/app/main.cpp) reference them by their plain names.
+- `APP_BINARY_NAME` = `xamp` — everything the user types or sees on disk: the executable, `xamp.desktop`, `xamp.png`. No `qmmp` in any of it.
+- `APP_NAME_SUFFIX` = `-xamp` — internal artefacts only: `libqmmp-xamp.so`, `lib/qmmp-<major>.<minor>-xamp`, `share/qmmp-xamp`, `qmmp-xamp.pc`. Keeping the `qmmp` prefix here is deliberate: it documents the lineage and keeps the diff against upstream small.
+
+Runtime identity is `xamp` — no dash, because D-Bus rejects `-` in the last component of a service name, and one spelling for every identifier is easier to keep straight: config/cache/data under `~/.config/xamp` etc. via `QCoreApplication::organizationName()`, IPC socket `/tmp/xamp.sock.$UID`, MPRIS `org.mpris.MediaPlayer2.xamp`, settings file `xamp.conf`.
+
+In user-visible text the name is spelled **x-AMP**: window titles, About dialogs, plugin names, notifications, MPRIS `Identity`.
+
+Asset files keep their upstream names on disk; the fork's name is applied at install time with `install(... RENAME ...)`. Do not rename the sources — [src/app/images/images.qrc](src/app/images/images.qrc) and [main.cpp](src/app/main.cpp) reference them by their plain names.
+
+Two strings must keep saying Qmmp: the upstream copyright line in [aboutdialog.cpp](src/qmmpui/aboutdialog.cpp) (their attribution, not ours to reword) and the "Based on Qmmp" note in [qmmpstarter.cpp](src/app/qmmpstarter.cpp). `Qmmp` is also the namespace and a class-name prefix, so never search-and-replace it outside string literals.
 
 API docs: `cd doc && doxygen Doxyfile`.
 

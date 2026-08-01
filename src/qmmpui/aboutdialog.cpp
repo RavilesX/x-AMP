@@ -66,7 +66,7 @@ QString AboutDialog::loadAbout()
     QString text;
     text.append(u"<head><META content=\"text/html; charset=UTF-8\"></head>"_s);
     text.append(layoutDirection() == Qt::RightToLeft ? u"<div dir='rtl'>"_s : u"<div>"_s);
-    text.append(u"<h3>"_s + tr("Qt-based Multimedia Player (Qmmp)") + u"</h3>"_s);
+    text.append(u"<h3>"_s + tr("Qt-based Multimedia Player (x-AMP)") + u"</h3>"_s);
     text.append(u"<p>"_s + getStringFromResource(u":description"_s) + u"</p>"_s);
 
     text.append(u"<p><b>"_s + tr("Version: %1").arg(Qmmp::strVersion()) + u"</b><br>"_s);
@@ -75,7 +75,17 @@ QString AboutDialog::loadAbout()
     text.append(tr("System: %1").arg(QSysInfo::prettyProductName()) + u"<br>"_s);
     text.append(tr("Build ABI: %1").arg(QSysInfo::buildAbi()) + u"</p>"_s);
 
+    //x-AMP: the fork's own identity first, then upstream's, so neither is
+    //mistaken for the other. The upstream copyright line keeps its original
+    //wording on purpose -- it is their attribution, not ours to reword, and
+    //rewording it would orphan its translations.
     text.append(u"<p>"_s);
+    text.append(tr("(c) %1 x-AMP contributors").arg(2026) + u"<br>"_s);
+    text.append(u"<a href=\"https://github.com/RavilesX/x-AMP\">https://github.com/RavilesX/x-AMP</a>"_s);
+    text.append(u"</p>"_s);
+
+    text.append(u"<p>"_s);
+    text.append(tr("Based on Qmmp:") + u"<br>"_s);
     text.append(tr("(c) %1-%2 Qmmp Development Team").arg(2006).arg(2026) + u"<br>"_s);
     text.append(u"<a href=\"https://qmmp.ylsoftware.com/\">https://qmmp.ylsoftware.com/</a><br>"_s);
     text.append(u"<a href=\"https://sourceforge.net/projects/qmmp-dev/\">https://sourceforge.net/projects/qmmp-dev/</a>"_s);

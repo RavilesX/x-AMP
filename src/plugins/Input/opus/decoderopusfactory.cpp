@@ -123,7 +123,7 @@ QDialog *DecoderOpusFactory::createSettings(QWidget *)
 void DecoderOpusFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Opus Audio Plugin"),
-                       tr("Qmmp Opus Audio Plugin") + QChar::LineFeed +
+                       tr("x-AMP Opus Audio Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

@@ -347,7 +347,7 @@ QDialog *DecoderFFmpegFactory::createSettings(QWidget *parent)
 void DecoderFFmpegFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About FFmpeg Audio Plugin"),
-                       tr("Qmmp FFmpeg Audio Plugin") + QChar::LineFeed +
+                       tr("x-AMP FFmpeg Audio Plugin") + QChar::LineFeed +
                        tr("Compiled against:") + QChar::LineFeed +
                        QStringLiteral("libavformat-%1.%2.%3\n"
                                       "libavcodec-%4.%5.%6\n"

@@ -47,7 +47,7 @@ QDialog *NotifierFactory::createSettings(QWidget *parent)
 void NotifierFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Notifier Plugin"),
-                       tr("Qmmp Notifier Plugin") + QChar::LineFeed +
+                       tr("x-AMP Notifier Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

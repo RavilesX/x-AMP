@@ -48,7 +48,7 @@ QDialog *EffectFileWriterFactory::createSettings(QWidget *parent)
 void EffectFileWriterFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About File Writer Plugin"),
-                       tr("Qmmp File Writer Plugin") + QChar::LineFeed +
+                       tr("x-AMP File Writer Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

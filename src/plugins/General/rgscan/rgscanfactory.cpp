@@ -47,7 +47,7 @@ QDialog *RGScanFactory::createSettings(QWidget *parent)
 void RGScanFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About ReplayGain Scanner Plugin"),
-                       tr("ReplayGain Scanner Plugin for Qmmp") + QChar::LineFeed +
+                       tr("ReplayGain Scanner Plugin for x-AMP") + QChar::LineFeed +
                        tr("This plugin scans audio files and gives information for volume normalization") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>") + QChar::LineFeed +
                        tr("Based on source code by:") + QChar::LineFeed +

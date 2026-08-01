@@ -51,7 +51,7 @@ QDialog *OutputWASAPIFactory::createSettings(QWidget* parent)
 void OutputWASAPIFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About WASAPI Output Plugin"),
-                       tr("Qmmp WASAPI Output Plugin") + QChar::LineFeed +
+                       tr("x-AMP WASAPI Output Plugin") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }
 

@@ -93,7 +93,7 @@ QDialog *DecoderWildMidiFactory::createSettings(QWidget *parent)
 void DecoderWildMidiFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About WildMidi Audio Plugin"),
-                       tr("Qmmp WildMidi Audio Plugin") + QChar::LineFeed +
+                       tr("x-AMP WildMidi Audio Plugin") + QChar::LineFeed +
                        tr("This plugin uses WildMidi library to play midi files") + QChar::LineFeed +
                        tr("Compiled against libWildMidi-%1.%2.%3")
                                .arg(LIBWILDMIDI_VER_MAJOR)

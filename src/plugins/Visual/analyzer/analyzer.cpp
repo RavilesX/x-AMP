@@ -31,7 +31,7 @@
 
 Analyzer::Analyzer(QWidget *parent) : Visual (parent)
 {
-    setWindowTitle (tr("Qmmp Analyzer"));
+    setWindowTitle (tr("x-AMP Analyzer"));
     setMinimumSize(2 * 300 - 30, 105);
     m_timer = new QTimer (this);
     connect(m_timer, &QTimer::timeout, this, &Analyzer::timeout);

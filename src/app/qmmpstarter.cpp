@@ -90,8 +90,8 @@ QMMPStarter::QMMPStarter() : QObject()
 #endif
     createPaths();
 #ifdef Q_OS_WIN
-    QString defaultConfig = Qmmp::dataPath() + QStringLiteral("/qmmp-default.ini");
-    QString userConfig = Qmmp::configDir() + QStringLiteral("/qmmp.ini");
+    QString defaultConfig = Qmmp::dataPath() + QStringLiteral("/xamp-default.ini");
+    QString userConfig = Qmmp::configDir() + QStringLiteral("/xamp.ini");
     if(!QFile::exists(userConfig) && QFile::exists(defaultConfig))
     {
         qCDebug(core) << "creating initial config";
@@ -314,7 +314,10 @@ void QMMPStarter::startPlayer()
     QIcon::setThemeSearchPaths(theme_paths);
 
     //copy config from previous version
-    QString configFile = Qmmp::configDir() + u"/qmmp.conf"_s;
+    //x-AMP: QSettings derives the file name from the application name, so this
+    //is xamp.conf now. Left as qmmp.conf it would never exist and the import
+    //below would rerun on every start.
+    QString configFile = Qmmp::configDir() + u"/xamp.conf"_s;
     if(!QFile::exists(configFile))
     {
         QString oldConfigFile = QDir::homePath() + u"/.qmmp/qmmp2rc"_s;
@@ -336,7 +339,9 @@ void QMMPStarter::startPlayer()
             if(qApp->platformName() == QLatin1String("wayland"))
             {
                 //force qsui by default for wayland
-                QSettings settings(QStringLiteral("qmmp"), QStringLiteral("qmmp"));
+                //x-AMP: must target our own settings; with qmmp/qmmp this
+                //wrote into the system Qmmp's config
+                QSettings settings(QStringLiteral("xamp"), QStringLiteral("xamp"));
                 settings.remove("Ui/current_plugin"_L1);
             }
         }
@@ -530,23 +535,25 @@ void QMMPStarter::printUsage()
     tmp_stream.copyfmt(cout);
     streambuf* old_stream = cout.rdbuf(tmp_stream.rdbuf());
 #endif
-    cout << qPrintable(tr("Usage: qmmp [options] [files]")) << endl;
+    cout << qPrintable(tr("Usage: xamp [options] [files]")) << endl;
     cout << qPrintable(tr("Options:")) << endl;
     cout << "--------" << endl;
     for(const QString &line : m_option_manager->helpString())
         cout << qPrintable(CommandLineManager::formatHelpString(line)) << endl;
     CommandLineManager::printUsage();
     QStringList extraHelp;
-    extraHelp << QStringLiteral("--ui <name>||") + tr("Start qmmp with the specified user interface");
+    extraHelp << QStringLiteral("--ui <name>||") + tr("Start x-AMP with the specified user interface");
     extraHelp << QStringLiteral("--ui-list||") + tr("List all available user interfaces");
     extraHelp << QStringLiteral("--no-start||") + tr("Don't start the application");
     extraHelp << QStringLiteral("--debug||") + tr("Print debugging messages");
     extraHelp << QStringLiteral("-h, --help||") + tr("Display this text and exit");
     extraHelp << QStringLiteral("-v, --version||") + tr("Print version number and exit");
     extraHelp << QString();
-    extraHelp << tr("Home page: %1").arg(u"https://qmmp.ylsoftware.com"_s);
-    extraHelp << tr("Development page: %1").arg(u"https://sourceforge.net/p/qmmp-dev"_s);
-    extraHelp << tr("Bug tracker: %1").arg(u"https://sourceforge.net/p/qmmp-dev/tickets"_s);
+    //x-AMP: these must not point at the upstream project, or bug reports for
+    //this fork end up in Qmmp's tracker
+    extraHelp << tr("Home page: %1").arg(u"https://github.com/RavilesX/x-AMP"_s);
+    extraHelp << tr("Bug tracker: %1").arg(u"https://github.com/RavilesX/x-AMP/issues"_s);
+    extraHelp << tr("Based on Qmmp: %1").arg(u"https://qmmp.ylsoftware.com"_s);
     for(const QString &line : std::as_const(extraHelp))
         cout << qPrintable(CommandLineManager::formatHelpString(line)) << endl;
 #ifdef QMMP_NO_CLI
@@ -564,12 +571,12 @@ void QMMPStarter::printVersion()
     tmp_stream.copyfmt(cout);
     streambuf* old_stream = cout.rdbuf(tmp_stream.rdbuf());
 #endif
-    cout << qPrintable(tr("QMMP version: %1").arg(Qmmp::strVersion())) << endl;
+    cout << qPrintable(tr("x-AMP version: %1").arg(Qmmp::strVersion())) << endl;
     cout << qPrintable(tr("Compiled with Qt version: %1").arg(QLatin1StringView(QT_VERSION_STR))) << endl;
     cout << qPrintable(tr("Using Qt version: %1").arg(QString::fromLatin1(qVersion()))) << endl;
 #ifdef QMMP_NO_CLI
     string text = tmp_stream.str();
-    QMessageBox::information(nullptr, tr("Qmmp Version"), QString::fromStdString(text));
+    QMessageBox::information(nullptr, tr("x-AMP Version"), QString::fromStdString(text));
     cout.rdbuf(old_stream); //restore old stream buffer
 #endif
 }

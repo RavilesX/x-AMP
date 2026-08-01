@@ -153,7 +153,7 @@ HttpStreamReader::HttpStreamReader(const QString &url, HTTPInputSource *parent) 
     if(settings.value(u"override_user_agent"_s, false).toBool())
         m_userAgent = settings.value("user_agent"_L1).toString();
     if(m_userAgent.isEmpty())
-        m_userAgent = QStringLiteral("qmmp/%1").arg(Qmmp::strVersion());;
+        m_userAgent = QStringLiteral("xamp/%1").arg(Qmmp::strVersion());;
 #ifdef WITH_ENCA
     if(settings.value("use_enca"_L1, false).toBool())
         m_analyser = enca_analyser_alloc(settings.value("enca_lang"_L1).toByteArray ().constData());

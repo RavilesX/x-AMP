@@ -49,7 +49,7 @@ QDialog *HistoryFactory::createSettings(QWidget *parent)
 void HistoryFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about (parent, tr("About Listening History Plugin"),
-                        tr("Qmmp Listening History Plugin")+QChar::LineFeed+
+                        tr("x-AMP Listening History Plugin")+QChar::LineFeed+
                         tr("This plugin collects information about listened tracks")+QChar::LineFeed+
                         tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }

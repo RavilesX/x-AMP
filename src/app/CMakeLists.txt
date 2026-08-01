@@ -10,7 +10,7 @@ set(app_SRCS
 
 add_executable(qmmp ${app_SRCS})
 target_link_libraries(qmmp PRIVATE Qt6::Widgets Qt6::Network libqmmp libqmmpui)
-set_target_properties(qmmp PROPERTIES OUTPUT_NAME qmmp${APP_NAME_SUFFIX})
+set_target_properties(qmmp PROPERTIES OUTPUT_NAME ${APP_BINARY_NAME})
 
 if(WIN32)
     target_sources(qmmp PRIVATE qmmp.rc)
@@ -24,21 +24,21 @@ endif(WIN32)
 
 install(TARGETS qmmp DESTINATION ${CMAKE_INSTALL_BINDIR})
 if(UNIX)
-    #x-AMP: source names stay unsuffixed (images.qrc and main.cpp reference
-    #them); the suffix is applied on install via RENAME
+    #x-AMP: source names stay as upstream has them (images.qrc and main.cpp
+    #reference them); the fork's name is applied on install via RENAME
     install(FILES qmmp-opencda.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/solid/actions
-            RENAME qmmp-opencda${APP_NAME_SUFFIX}.desktop)
+            RENAME ${APP_BINARY_NAME}-opencda.desktop)
     install(FILES qmmp.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
-            RENAME qmmp${APP_NAME_SUFFIX}.desktop)
+            RENAME ${APP_BINARY_NAME}.desktop)
     foreach(size 16x16 32x32 48x48 56x56 64x64 128x128 256x256)
         install(FILES images/${size}/qmmp.png
                 DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/${size}/apps
-                RENAME qmmp${APP_NAME_SUFFIX}.png)
+                RENAME ${APP_BINARY_NAME}.png)
     endforeach()
     install(FILES images/scalable/qmmp.svgz DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
-            RENAME qmmp${APP_NAME_SUFFIX}.svgz)
+            RENAME ${APP_BINARY_NAME}.svgz)
     install(FILES images/scalable/qmmp-simple.svgz DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
-            RENAME qmmp-simple${APP_NAME_SUFFIX}.svgz)
+            RENAME ${APP_BINARY_NAME}-simple.svgz)
     #AppStream requires the file name to match the component id, which is the
     #fork's own rather than a suffixed upstream one
     install(FILES metainfo/io.github.ravilesx.xamp.metainfo.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
@@ -46,7 +46,7 @@ endif(UNIX)
 
 if(USE_DIR_ASSOC)
     install(FILES qmmp-enqueue.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
-            RENAME qmmp-enqueue${APP_NAME_SUFFIX}.desktop)
+            RENAME ${APP_BINARY_NAME}-enqueue.desktop)
     install(FILES qmmp-dir.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
-            RENAME qmmp-dir${APP_NAME_SUFFIX}.desktop)
+            RENAME ${APP_BINARY_NAME}-dir.desktop)
 endif(USE_DIR_ASSOC)

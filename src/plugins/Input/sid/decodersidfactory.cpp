@@ -108,7 +108,7 @@ QDialog *DecoderSIDFactory::createSettings(QWidget *parent)
 void DecoderSIDFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About SID Audio Plugin"),
-                       tr("Qmmp SID Audio Plugin") + QChar::LineFeed +
+                       tr("x-AMP SID Audio Plugin") + QChar::LineFeed +
                        tr("This plugin plays Commodore 64 music files using libsidplayfp library") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }

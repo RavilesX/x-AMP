@@ -47,7 +47,7 @@ QDialog *TrackChangeFactory::createSettings(QWidget *parent)
 void TrackChangeFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Track Change Plugin"),
-                       tr("Qmmp Track Change Plugin") + QChar::LineFeed +
+                       tr("x-AMP Track Change Plugin") + QChar::LineFeed +
                        tr("This plugin executes external command when current track is changed") + QChar::LineFeed +
                        tr("Written by: Ilya Kotov <forkotov02@ya.ru>"));
 }

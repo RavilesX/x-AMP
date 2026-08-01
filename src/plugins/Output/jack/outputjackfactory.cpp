@@ -52,7 +52,7 @@ QDialog *OutputJACKFactory::createSettings(QWidget*)
 void OutputJACKFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About Jack Output Plugin"),
-                       tr("Qmmp Jack Output Plugin") + QChar::LineFeed +
+                       tr("x-AMP Jack Output Plugin") + QChar::LineFeed +
                        tr("Written by: Yuriy Zhuravlev <slalkerg@gmail.com>"));
 }
 
