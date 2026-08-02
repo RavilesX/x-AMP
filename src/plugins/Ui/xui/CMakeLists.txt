@@ -9,6 +9,7 @@ set(libxui_SRCS
     xuimainwindow.cpp
     xuiplayercard.cpp
     xuiplaylistcard.cpp
+    xuisettings.cpp
     xuivisualization.cpp
     translations/translations.qrc
 )

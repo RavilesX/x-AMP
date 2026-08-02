@@ -280,8 +280,9 @@ void XUiPlayerCard::updateBitrate(int bitrate)
 
 void XUiPlayerCard::updateState(Qmmp::State state)
 {
-    const bool playing = state == Qmmp::Playing;
-    m_play->setPlaying(playing || state == Qmmp::Paused);
+    //the glyph offers the next action: pause while playing, play otherwise --
+    //so a paused player shows a play triangle, not a second pause icon
+    m_play->setPlaying(state == Qmmp::Playing);
     if(state == Qmmp::Stopped)
     {
         m_seek->setValue(0);

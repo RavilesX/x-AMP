@@ -57,9 +57,12 @@ private slots:
     void showMainMenu();
     void toggleMaximised();
     void updateWindowTitle();
+    void showPreferences();
 
 private:
     QWidget *buildTitleBar();
+    void createShortcuts();
+    void applyCardVisibility();
     /*! Which window edges the pointer is over, for resize cursors. */
     Qt::Edges edgesAt(const QPoint &pos) const;
     void readSettings();
@@ -75,6 +78,7 @@ private:
     XUiEqualizerCard *m_equalizerCard;
     XUiPlaylistCard *m_playlistCard;
     QMenu *m_mainMenu = nullptr;
+    bool m_hideOnClose = false;
 };
 
 #endif

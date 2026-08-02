@@ -26,6 +26,7 @@
 #include <qmmp/eqsettings.h>
 
 class QLabel;
+class SoundCore;
 class QmmpSettings;
 class XUiEqSlider;
 class XUiToggle;
@@ -50,21 +51,31 @@ private slots:
     void applySettings();
     void showPresetMenu();
     void reloadFromSettings();
+    /*! Applies the preset saved for the track that just started, if any. */
+    void applyAutoPreset();
 
 private:
     QWidget *buildHeader();
     QWidget *buildBands();
     void loadPresets();
-    void applyPreset(int index);
+    void applyPreset(const EqSettings &preset, const QString &name);
     void savePreset();
+    void saveAutoPreset();
+    void setFlat();
+    /*! File name of the current track, which is what auto presets key on. */
+    QString currentTrackKey() const;
 
     QmmpSettings *m_settings;
+    SoundCore *m_core;
     XUiToggle *m_enabled;
+    XUiToggle *m_auto;
     XUiMenuButton *m_presetButton;
     XUiEqSlider *m_preamp;
     QList<XUiEqSlider *> m_bands;
     QList<EqSettings> m_presets;
     QStringList m_presetNames;
+    QList<EqSettings> m_autoPresets;
+    QStringList m_autoPresetNames;
 };
 
 #endif

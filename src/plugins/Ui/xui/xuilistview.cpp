@@ -281,24 +281,45 @@ void XUiListView::paintEvent(QPaintEvent *)
 
     if(m_rows.isEmpty())
     {
-        //empty state: glyph over two lines of guidance, as in the design
+        //Empty state: glyph over two lines of guidance. The parts are dropped
+        //as height runs out -- with the equalizer shown the list can be only a
+        //few rows tall, and a fixed layout would spill over the card's footer.
         const bool filtered = !m_filter.isEmpty();
-        const QRectF glyph(width() / 2.0 - 34, height() / 2.0 - 74, 68, 68);
-        XUiIcons::paint(&p, filtered ? XUiIcons::Search : XUiIcons::MusicNote,
-                        glyph, XUi::Border);
+        constexpr qreal GLYPH = 56.0;
+        constexpr qreal LINE1 = 26.0;
+        constexpr qreal LINE2 = 22.0;
+        constexpr qreal GAP = 8.0;
+
+        const bool showGlyph = height() >= GLYPH + GAP + LINE1 + LINE2;
+        const bool showHint = height() >= LINE1 + LINE2;
+        const qreal total = (showGlyph ? GLYPH + GAP : 0.0) + LINE1
+                            + (showHint ? LINE2 : 0.0);
+        qreal y = (height() - total) / 2.0;
+
+        if(showGlyph)
+        {
+            XUiIcons::paint(&p, filtered ? XUiIcons::Search : XUiIcons::MusicNote,
+                            QRectF(width() / 2.0 - GLYPH / 2.0, y, GLYPH, GLYPH),
+                            XUi::Border);
+            y += GLYPH + GAP;
+        }
 
         QFont f = font();
-        f.setPointSizeF(f.pointSizeF() * 1.15);
+        f.setPointSizeF(f.pointSizeF() * 1.1);
         p.setFont(f);
         p.setPen(XUi::TextDim);
-        p.drawText(QRectF(0, height() / 2.0, width(), 26), Qt::AlignCenter,
+        p.drawText(QRectF(0, y, width(), LINE1), Qt::AlignCenter,
                    filtered ? tr("No matching tracks") : tr("No tracks in playlist"));
-        f.setPointSizeF(font().pointSizeF());
-        p.setFont(f);
-        p.setPen(XUi::TextFaint);
-        p.drawText(QRectF(0, height() / 2.0 + 26, width(), 24), Qt::AlignCenter,
-                   filtered ? tr("Try a different search")
-                            : tr("Add tracks and enjoy your music"));
+        y += LINE1;
+
+        if(showHint)
+        {
+            p.setFont(font());
+            p.setPen(XUi::TextFaint);
+            p.drawText(QRectF(0, y, width(), LINE2), Qt::AlignCenter,
+                       filtered ? tr("Try a different search")
+                                : tr("Add tracks and enjoy your music"));
+        }
         return;
     }
 

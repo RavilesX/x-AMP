@@ -21,6 +21,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QMenu>
+#include <QShortcut>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
@@ -37,6 +38,7 @@
 #include "xuiplayercard.h"
 #include "xuiequalizercard.h"
 #include "xuiplaylistcard.h"
+#include "xuisettings.h"
 #include "xuimainwindow.h"
 
 namespace
@@ -81,7 +83,9 @@ XUiMainWindow::XUiMainWindow(QWidget *parent) : QWidget(parent)
     connect(m_player, &MediaPlayer::playbackFinished, this, &XUiMainWindow::updateWindowTitle);
     connect(m_uiHelper, &UiHelper::showMainWindowCalled, this, &QWidget::show);
 
+    createShortcuts();
     readSettings();
+    applyCardVisibility();
     updateWindowTitle();
     //the starter only constructs the interface; showing it is ours to do
     show();
@@ -133,20 +137,98 @@ void XUiMainWindow::showMainMenu()
     if(!m_mainMenu)
     {
         m_mainMenu = new QMenu(this);
-        m_mainMenu->addAction(tr("&Add File..."), this, [this] { m_uiHelper->addFiles(this); });
-        m_mainMenu->addAction(tr("Add &Directory..."), this, [this] { m_uiHelper->addDirectory(this); });
-        m_mainMenu->addSeparator();
-        m_mainMenu->addAction(tr("&Preferences..."), this, [this] {
-            //phase 5.4 adds this interface's own pages; the shared ones are
-            //enough to configure output, plugins and audio meanwhile
-            ConfigDialog dialog(this);
-            dialog.exec();
+
+        QMenu *file = m_mainMenu->addMenu(tr("&Add"));
+        file->addAction(tr("Add &File..."), QKeySequence(tr("Ctrl+F")),
+                        this, [this] { m_uiHelper->addFiles(this); });
+        file->addAction(tr("Add &Directory..."), QKeySequence(tr("Ctrl+D")),
+                        this, [this] { m_uiHelper->addDirectory(this); });
+        file->addAction(tr("Add &URL..."), QKeySequence(tr("Ctrl+U")),
+                        this, [this] { m_uiHelper->addUrl(this); });
+
+        QMenu *playback = m_mainMenu->addMenu(tr("&Playback"));
+        playback->addAction(tr("&Play/Pause"), QKeySequence(Qt::Key_Space),
+                            m_player, &MediaPlayer::pause);
+        playback->addAction(tr("&Stop"), QKeySequence(tr("Ctrl+.")),
+                            m_player, &MediaPlayer::stop);
+        playback->addAction(tr("&Next"), QKeySequence(tr("Ctrl+Right")),
+                            m_player, &MediaPlayer::next);
+        playback->addAction(tr("P&revious"), QKeySequence(tr("Ctrl+Left")),
+                            m_player, &MediaPlayer::previous);
+
+        //view toggles mirror the preferences page, so both stay in step
+        QMenu *view = m_mainMenu->addMenu(tr("&View"));
+        QSettings settings;
+        QAction *equalizer = view->addAction(tr("&Equalizer"));
+        equalizer->setCheckable(true);
+        equalizer->setChecked(settings.value(XUiSettings::ShowEqualizerKey, true).toBool());
+        connect(equalizer, &QAction::toggled, this, [this](bool on) {
+            QSettings().setValue(XUiSettings::ShowEqualizerKey, on);
+            applyCardVisibility();
         });
+        QAction *playlist = view->addAction(tr("&Playlist"));
+        playlist->setCheckable(true);
+        playlist->setChecked(settings.value(XUiSettings::ShowPlaylistKey, true).toBool());
+        connect(playlist, &QAction::toggled, this, [this](bool on) {
+            QSettings().setValue(XUiSettings::ShowPlaylistKey, on);
+            applyCardVisibility();
+        });
+
+        m_mainMenu->addSeparator();
+        m_mainMenu->addAction(tr("&Preferences..."), QKeySequence(tr("Ctrl+P")),
+                              this, &XUiMainWindow::showPreferences);
         m_mainMenu->addAction(tr("&About x-AMP"), this, [this] { m_uiHelper->about(this); });
         m_mainMenu->addSeparator();
-        m_mainMenu->addAction(tr("&Quit"), this, [this] { m_uiHelper->exit(); });
+        m_mainMenu->addAction(tr("&Quit"), QKeySequence(tr("Ctrl+Q")),
+                              this, [this] { m_uiHelper->exit(); });
     }
     m_mainMenu->exec(mapToGlobal(QPoint(XUi::CardGap, XUi::TitleBarHeight)));
+}
+
+void XUiMainWindow::showPreferences()
+{
+    ConfigDialog dialog(this);
+    XUiSettings *page = new XUiSettings(&dialog);
+    dialog.addPage(tr("Interface"), page);
+    if(dialog.exec() == QDialog::Accepted)
+    {
+        page->writeSettings();
+        applyCardVisibility();
+    }
+}
+
+void XUiMainWindow::createShortcuts()
+{
+    //Shortcuts on the window rather than the menu: the menu is built lazily,
+    //so its own shortcuts would not work until it had been opened once.
+    struct { const char *keys; void (MediaPlayer::*slot)(); } bindings[] = {
+        { "Space",      &MediaPlayer::pause },
+        { "Ctrl+.",     &MediaPlayer::stop },
+        { "Ctrl+Right", &MediaPlayer::next },
+        { "Ctrl+Left",  &MediaPlayer::previous },
+    };
+    for(const auto &binding : bindings)
+        new QShortcut(QKeySequence(QLatin1String(binding.keys)), this,
+                      m_player, binding.slot);
+
+    new QShortcut(QKeySequence(QStringLiteral("Ctrl+P")), this,
+                  this, &XUiMainWindow::showPreferences);
+    new QShortcut(QKeySequence(QStringLiteral("Ctrl+F")), this,
+                  this, [this] { m_uiHelper->addFiles(this); });
+    new QShortcut(QKeySequence(QStringLiteral("Ctrl+D")), this,
+                  this, [this] { m_uiHelper->addDirectory(this); });
+    new QShortcut(QKeySequence(QStringLiteral("Ctrl+Q")), this,
+                  this, [this] { m_uiHelper->exit(); });
+}
+
+void XUiMainWindow::applyCardVisibility()
+{
+    QSettings settings;
+    m_equalizerCard->setVisible(settings.value(XUiSettings::ShowEqualizerKey, true).toBool());
+    m_playlistCard->setVisible(settings.value(XUiSettings::ShowPlaylistKey, true).toBool());
+    m_hideOnClose = settings.value(XUiSettings::HideOnCloseKey, false).toBool();
+    //hiding a card leaves the window taller than its content needs
+    resize(width(), qMax(minimumSizeHint().height(), sizeHint().height()));
 }
 
 void XUiMainWindow::toggleMaximised()
@@ -261,6 +343,13 @@ void XUiMainWindow::writeSettings()
 void XUiMainWindow::closeEvent(QCloseEvent *e)
 {
     writeSettings();
+    if(m_hideOnClose && m_uiHelper->visibilityControl())
+    {
+        //something else can bring us back (tray icon, MPRIS, --toggle-visibility)
+        hide();
+        e->ignore();
+        return;
+    }
     QWidget::closeEvent(e);
     m_uiHelper->exit();
 }

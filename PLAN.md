@@ -648,9 +648,37 @@ decibelios con suelo en −70 dB. Lo mismo para los VU: la RMS de música normal
 ronda −20 dBFS, así que en escala lineal el medidor no pasa de las dos
 primeras celdas.
 
-**5.4 — Menús, ajustes, persistencia y AUTO.** Menú del hamburguesa, página
-de preferencias propia, atajos, y el interruptor AUTO del ecualizador
-(presets por pista, con su interfaz para guardarlos).
+**5.4 — Menús, ajustes, persistencia y AUTO.** ✅ hecha
+
+- **AUTO del ecualizador.** Presets por pista en `eq.auto_preset`, indexados
+  por nombre de archivo, el mismo formato y archivo que usa *skinned*. Al
+  cambiar de pista aplica el suyo; si no tiene, vuelve a plano en vez de
+  dejar el anterior. «Guardar para esta pista» en el menú de presets.
+- **Menú del hamburguesa completo:** submenús Add, Playback y View, con
+  preferencias, acerca de y salir.
+- **Atajos:** Espacio, `Ctrl+.`, `Ctrl+←/→`, `Ctrl+F/D/U`, `Ctrl+P`, `Ctrl+Q`.
+- **Página de preferencias propia** dentro del `ConfigDialog` compartido:
+  mostrar/ocultar ecualizador y lista, y ocultar en vez de salir al cerrar.
+  Las mismas claves las usa el menú *View*, así que no se desincronizan.
+
+Trampas:
+
+- **Los atajos van en la ventana, no en el menú.** El menú se construye la
+  primera vez que se abre, así que sus atajos no existirían hasta entonces.
+- **El icono del botón central debe ofrecer la acción siguiente**, no el
+  estado actual: pausa mientras suena, reproducir cuando está pausado. Estaba
+  al revés y no se notaba porque `setPlaying(playing || paused)` daba el icono
+  de pausa en los dos casos.
+- **El estado vacío de la lista tiene que encogerse.** Con el ecualizador
+  visible la lista baja a pocas filas y un bloque de altura fija se metía
+  debajo de los botones del pie. Ahora suelta el icono, y luego la segunda
+  línea, según la altura disponible.
+
+Nota de verificación: en este entorno `wmctrl -a` levanta la ventana pero
+**no le pasa el foco de teclado**, que se queda en el editor. Toda entrada
+sintética se perdía por eso. Con `XSetInputFocus` explícito
+(`win.set_input_focus`) más `configure(stack_mode=Above)` sí funciona, y así
+se comprobaron los atajos y el menú.
 
 **5.5 — Pulido y decisión de UI por defecto.** Solo entonces evaluar si `xui`
 sustituye a `skinned` como `QMMP_DEFAULT_UI`.

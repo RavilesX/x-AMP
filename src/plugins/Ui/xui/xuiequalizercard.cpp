@@ -28,6 +28,7 @@
 #include <QVBoxLayout>
 #include <qmmp/qmmp.h>
 #include <qmmp/qmmpsettings.h>
+#include <qmmp/soundcore.h>
 #include "xuitheme.h"
 #include "xuicontrols.h"
 #include "xuiequalizercard.h"
@@ -62,11 +63,55 @@ namespace
     {
         return Qmmp::configDir() + QStringLiteral("/eq.preset");
     }
+
+    //Auto presets are keyed by file name and live in their own file, again
+    //the same one the skinned interface uses.
+    QString autoPresetPath()
+    {
+        return Qmmp::configDir() + QStringLiteral("/eq.auto_preset");
+    }
+
+    //Both files use the same layout: a Presets group indexing named groups.
+    void readPresets(const QString &path, QList<EqSettings> *presets, QStringList *names)
+    {
+        presets->clear();
+        names->clear();
+        if(!QFile::exists(path))
+            return;
+        QSettings file(path, QSettings::IniFormat);
+        int i = 0;
+        while(file.contains(QStringLiteral("Presets/Preset%1").arg(++i)))
+        {
+            const QString name = file.value(QStringLiteral("Presets/Preset%1").arg(i)).toString();
+            EqSettings preset(EqSettings::EQ_BANDS_10);
+            file.beginGroup(name);
+            for(int band = 0; band < EqSettings::EQ_BANDS_10; ++band)
+                preset.setGain(band, file.value(QStringLiteral("Band%1").arg(band), 0).toDouble());
+            preset.setPreamp(file.value(QStringLiteral("Preamp"), 0).toDouble());
+            file.endGroup();
+            presets->append(preset);
+            names->append(name);
+        }
+    }
+
+    void writePreset(const QString &path, const QString &name, int slot,
+                     const EqSettings &preset)
+    {
+        QSettings file(path, QSettings::IniFormat);
+        file.setValue(QStringLiteral("Presets/Preset%1").arg(slot + 1), name);
+        file.beginGroup(name);
+        for(int i = 0; i < EqSettings::EQ_BANDS_10; ++i)
+            file.setValue(QStringLiteral("Band%1").arg(i), preset.gain(i));
+        file.setValue(QStringLiteral("Preamp"), preset.preamp());
+        file.endGroup();
+        file.sync();
+    }
 }
 
 XUiEqualizerCard::XUiEqualizerCard(QWidget *parent) : QWidget(parent)
 {
     m_settings = QmmpSettings::instance();
+    m_core = SoundCore::instance();
 
     QVBoxLayout *root = new QVBoxLayout(this);
     root->setContentsMargins(0, 0, 0, 0);
@@ -78,6 +123,8 @@ XUiEqualizerCard::XUiEqualizerCard(QWidget *parent) : QWidget(parent)
     reloadFromSettings();
     connect(m_settings, &QmmpSettings::eqSettingsChanged,
             this, &XUiEqualizerCard::reloadFromSettings);
+    connect(m_core, &SoundCore::trackInfoChanged,
+            this, &XUiEqualizerCard::applyAutoPreset);
 }
 
 QWidget *XUiEqualizerCard::buildHeader()
@@ -99,25 +146,29 @@ QWidget *XUiEqualizerCard::buildHeader()
 
     QLabel *onLabel = makeLabel(tr("ON"), XUi::TextDim, 0.9);
 
-    //the design also shows an AUTO switch, for per-track presets; it needs
-    //the playlist to know which track is current, so it arrives with phase 5.3
+    m_auto = new XUiToggle(header);
+    m_auto->setToolTip(tr("Load a preset saved for each track"));
+    connect(m_auto, &XUiToggle::toggled, this, [this](bool on) {
+        QSettings().setValue(QStringLiteral("XUi/eq_auto"), on);
+        if(on)
+            applyAutoPreset();
+    });
+    QLabel *autoLabel = makeLabel(tr("AUTO"), XUi::TextDim, 0.9);
 
     m_presetButton = new XUiMenuButton(tr("Presets"), header);
     connect(m_presetButton, &XUiMenuButton::clicked, this, &XUiEqualizerCard::showPresetMenu);
 
     XUiIconButton *reset = new XUiIconButton(XUiIcons::Settings, header);
     reset->setToolTip(tr("Reset all bands"));
-    connect(reset, &XUiIconButton::clicked, this, [this] {
-        m_preamp->setValue(0.0);
-        for(XUiEqSlider *slider : std::as_const(m_bands))
-            slider->setValue(0.0);
-        applySettings();
-    });
+    connect(reset, &XUiIconButton::clicked, this, &XUiEqualizerCard::setFlat);
 
     layout->addWidget(title);
     layout->addSpacing(8);
     layout->addWidget(m_enabled);
     layout->addWidget(onLabel);
+    layout->addSpacing(10);
+    layout->addWidget(m_auto);
+    layout->addWidget(autoLabel);
     layout->addStretch(1);
     layout->addWidget(m_presetButton);
     layout->addWidget(reset);
@@ -189,38 +240,63 @@ void XUiEqualizerCard::applySettings()
 
 void XUiEqualizerCard::loadPresets()
 {
-    m_presets.clear();
-    m_presetNames.clear();
-
-    QString path = presetPath();
-    if(!QFile::exists(path))
-        return; //nothing saved yet; the menu still offers "Save as..."
-
-    QSettings file(path, QSettings::IniFormat);
-    int i = 0;
-    while(file.contains(QStringLiteral("Presets/Preset%1").arg(++i)))
-    {
-        const QString name = file.value(QStringLiteral("Presets/Preset%1").arg(i)).toString();
-        EqSettings preset(EqSettings::EQ_BANDS_10);
-        file.beginGroup(name);
-        for(int band = 0; band < EqSettings::EQ_BANDS_10; ++band)
-            preset.setGain(band, file.value(QStringLiteral("Band%1").arg(band), 0).toDouble());
-        preset.setPreamp(file.value(QStringLiteral("Preamp"), 0).toDouble());
-        file.endGroup();
-        m_presets.append(preset);
-        m_presetNames.append(name);
-    }
+    readPresets(presetPath(), &m_presets, &m_presetNames);
+    readPresets(autoPresetPath(), &m_autoPresets, &m_autoPresetNames);
+    m_auto->setChecked(QSettings().value(QStringLiteral("XUi/eq_auto"), false).toBool());
 }
 
-void XUiEqualizerCard::applyPreset(int index)
+QString XUiEqualizerCard::currentTrackKey() const
 {
-    if(index < 0 || index >= m_presets.size())
+    //the file name, matching what the skinned interface keys auto presets on
+    const QString path = m_core->trackInfo().path();
+    return path.section(QLatin1Char('/'), -1);
+}
+
+void XUiEqualizerCard::applyAutoPreset()
+{
+    if(!m_auto->isChecked())
         return;
-    const EqSettings &preset = m_presets.at(index);
+    const int index = m_autoPresetNames.indexOf(currentTrackKey());
+    if(index >= 0)
+        applyPreset(m_autoPresets.at(index), m_autoPresetNames.at(index));
+    else
+        setFlat(); //no preset for this track: back to flat, not the last one
+}
+
+void XUiEqualizerCard::setFlat()
+{
+    m_preamp->setValue(0.0);
+    for(XUiEqSlider *slider : std::as_const(m_bands))
+        slider->setValue(0.0);
+    m_presetButton->setText(tr("Presets"));
+    applySettings();
+}
+
+void XUiEqualizerCard::saveAutoPreset()
+{
+    const QString key = currentTrackKey();
+    if(key.isEmpty())
+        return;
+
+    EqSettings preset(EqSettings::EQ_BANDS_10);
+    preset.setPreamp(m_preamp->value());
+    for(int i = 0; i < m_bands.size(); ++i)
+        preset.setGain(i, m_bands.at(i)->value());
+
+    int slot = m_autoPresetNames.indexOf(key);
+    if(slot < 0)
+        slot = m_autoPresetNames.size();
+    writePreset(autoPresetPath(), key, slot, preset);
+    loadPresets();
+    m_auto->setChecked(true); //saving one implies wanting it applied
+}
+
+void XUiEqualizerCard::applyPreset(const EqSettings &preset, const QString &name)
+{
     m_preamp->setValue(preset.preamp());
     for(int i = 0; i < m_bands.size(); ++i)
         m_bands.at(i)->setValue(preset.gain(i));
-    m_presetButton->setText(m_presetNames.at(index));
+    m_presetButton->setText(name);
     applySettings();
 }
 
@@ -232,18 +308,16 @@ void XUiEqualizerCard::savePreset()
     if(!accepted || name.isEmpty())
         return;
 
-    QSettings file(presetPath(), QSettings::IniFormat);
+    EqSettings preset(EqSettings::EQ_BANDS_10);
+    preset.setPreamp(m_preamp->value());
+    for(int i = 0; i < m_bands.size(); ++i)
+        preset.setGain(i, m_bands.at(i)->value());
+
     //replacing an existing name keeps its slot rather than adding a duplicate
     int slot = m_presetNames.indexOf(name);
     if(slot < 0)
         slot = m_presetNames.size();
-    file.setValue(QStringLiteral("Presets/Preset%1").arg(slot + 1), name);
-    file.beginGroup(name);
-    for(int i = 0; i < m_bands.size(); ++i)
-        file.setValue(QStringLiteral("Band%1").arg(i), m_bands.at(i)->value());
-    file.setValue(QStringLiteral("Preamp"), m_preamp->value());
-    file.endGroup();
-    file.sync();
+    writePreset(presetPath(), name, slot, preset);
 
     loadPresets();
     m_presetButton->setText(name);
@@ -255,12 +329,17 @@ void XUiEqualizerCard::showPresetMenu()
     for(int i = 0; i < m_presetNames.size(); ++i)
     {
         QAction *action = menu.addAction(m_presetNames.at(i));
-        connect(action, &QAction::triggered, this, [this, i] { applyPreset(i); });
+        connect(action, &QAction::triggered, this, [this, i] {
+            applyPreset(m_presets.at(i), m_presetNames.at(i));
+        });
     }
     if(!m_presetNames.isEmpty())
         menu.addSeparator();
     connect(menu.addAction(tr("Save as...")), &QAction::triggered,
             this, &XUiEqualizerCard::savePreset);
+    QAction *forTrack = menu.addAction(tr("Save for This Track"));
+    forTrack->setEnabled(!currentTrackKey().isEmpty());
+    connect(forTrack, &QAction::triggered, this, &XUiEqualizerCard::saveAutoPreset);
     menu.exec(m_presetButton->mapToGlobal(QPoint(0, m_presetButton->height() + 2)));
 }
 
