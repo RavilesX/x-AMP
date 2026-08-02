@@ -51,7 +51,13 @@ XUiPlaylistCard::XUiPlaylistCard(QWidget *parent) : QWidget(parent)
     root->addWidget(buildHeader());
 
     m_list = new XUiListView(m_manager, this);
-    connect(m_list, &XUiListView::activated, m_player, &MediaPlayer::play);
+    connect(m_list, &XUiListView::activated, this, [this] {
+        //MediaPlayer::play() only resumes when paused -- it never looks at the
+        //current track. Without the stop, activating a different row while
+        //paused carried on with the old track behind the new row's label.
+        m_player->stop();
+        m_player->play();
+    });
     root->addWidget(m_list, 1);
 
     root->addWidget(buildFooter());

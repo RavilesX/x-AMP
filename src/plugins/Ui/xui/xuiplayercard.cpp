@@ -355,6 +355,9 @@ void XUiPlayerCard::nextTrack()
     if(wrap)
     {
         playList->setCurrent(0);
+        //stop first: play() would only resume a paused track, ignoring the
+        //one just made current
+        m_player->stop();
         m_player->play();
         return;
     }

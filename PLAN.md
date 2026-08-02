@@ -763,6 +763,18 @@ Cinco cosas que solo salen usando el reproductor, no mirando capturas:
   inserción del reordenado. Desactivado con la búsqueda activa, igual que el
   reordenado.
 
+### ⚠️ `MediaPlayer::play()` no arranca la pista actual si está en pausa
+
+Solo reanuda y sale, sin mirar la lista
+([mediaplayer.cpp](src/qmmpui/mediaplayer.cpp), `playFromPosition`). Efecto:
+estando en pausa, activar otra pista dejaba sonando la vieja mientras la
+etiqueta ya marcaba la nueva.
+
+**Regla: `stop()` antes de `play()`** siempre que se cambie de pista por
+código. Es lo que hacen `skinned` y `qsui`, y `MediaPlayer::next()` por dentro.
+Afectaba a dos sitios de `xui`: activar una fila de la lista y la vuelta al
+principio del botón Siguiente.
+
 ### Huecos conocidos de `xui` frente a `skinned`
 
 Lista para una 5.6, si llega:
