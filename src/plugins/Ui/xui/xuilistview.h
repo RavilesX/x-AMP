@@ -52,6 +52,8 @@ protected:
     void resizeEvent(QResizeEvent *) override;
     void wheelEvent(QWheelEvent *) override;
     void mousePressEvent(QMouseEvent *) override;
+    void mouseMoveEvent(QMouseEvent *) override;
+    void mouseReleaseEvent(QMouseEvent *) override;
     void mouseDoubleClickEvent(QMouseEvent *) override;
     void keyPressEvent(QKeyEvent *) override;
     void contextMenuEvent(QContextMenuEvent *) override;
@@ -76,6 +78,12 @@ private:
     QList<int> m_rows;
     QString m_filter;
     int m_anchor = -1; //for shift-extended selection
+
+    //drag to reorder
+    QPoint m_pressPos;
+    int m_pressRow = -1;
+    int m_dropRow = -1;
+    bool m_dragging = false;
 };
 
 #endif

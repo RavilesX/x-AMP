@@ -675,10 +675,17 @@ Trampas:
   línea, según la altura disponible.
 
 Nota de verificación: en este entorno `wmctrl -a` levanta la ventana pero
-**no le pasa el foco de teclado**, que se queda en el editor. Toda entrada
-sintética se perdía por eso. Con `XSetInputFocus` explícito
-(`win.set_input_focus`) más `configure(stack_mode=Above)` sí funciona, y así
-se comprobaron los atajos y el menú.
+**no le pasa el foco de teclado**, que se queda en el editor. Con
+`XSetInputFocus` explícito (`win.set_input_focus`) más
+`configure(stack_mode=Above)` las **teclas** sí llegan, y así se comprobaron
+los atajos y el menú.
+
+Los **clics sintéticos sobre widgets propios siguen sin llegar** aunque el
+puntero esté en el sitio correcto y la ventana tenga foco. No es un fallo de
+la aplicación —probado a mano funciona—, es el entorno. **Cualquier cosa que
+dependa del ratón hay que probarla a mano**: arrastrar deslizadores, arrastrar
+filas, selección múltiple. Verificar por configuración sembrada cuando se
+pueda, que sí es concluyente.
 
 **5.5 — Pulido.** ✅ hecha
 
@@ -709,12 +716,37 @@ pestañas de listas, importar presets `.q1` de Winamp—. Se revisa tras uso
 diario. Quien la quiera: `xamp --ui xui`, que persiste en
 `Ui/current_plugin`.
 
+### Correcciones tras el primer uso real (5.5b)
+
+Cinco cosas que solo salen usando el reproductor, no mirando capturas:
+
+- **Reordenar arrastrando** en la lista. `PlayListModel::moveTracks(from, to)`
+  mueve **la selección**, tomando `from` como referencia, así que basta con
+  seleccionar en el press y llamar en el release. Marcador de inserción entre
+  filas y desplazamiento automático al arrastrar contra los bordes. Se
+  desactiva con la búsqueda activa: con filas ocultas la posición de destino
+  no significaría lo que parece.
+- **El botón de repetir no hacía nada perceptible.** Estaba bien cableado a
+  `setRepeatableList`, pero repetir *la lista* solo se nota al llegar al
+  final. Ahora cicla tres estados —apagado → repetir lista → repetir pista—
+  con icono propio para la última; el motor guarda los dos flags por separado
+  (`isRepeatableList` en `playstate.cpp`, `isRepeatableTrack` en
+  `mediaplayer.cpp`).
+- **El ecualizador se estiraba** al ocultar la lista. Su política de tamaño
+  vertical era la de por defecto, que crece: ahora `QSizePolicy::Maximum`.
+- **Al volver a mostrar una tarjeta se perdía la altura elegida**, porque
+  `applyCardVisibility()` saltaba a `sizeHint()`. Ahora crece y encoge la
+  ventana exactamente lo que ocupaba cada tarjeta, recordando su última
+  altura.
+- **El mando del deslizador se cortaba** al 0 % y al 100 %. El raíl iba de
+  borde a borde, así que el círculo se salía. Ahora está metido hacia dentro
+  el radio del mando más el grosor del trazo.
+
 ### Huecos conocidos de `xui` frente a `skinned`
 
 Lista para una 5.6, si llega:
 
-- Arrastrar y soltar para reordenar la lista, y soltar archivos desde el
-  gestor de archivos.
+- Soltar archivos desde el gestor de archivos.
 - Columnas configurables y ordenación por columna.
 - Pestañas de listas (hoy se cambia por el menú `Lst`).
 - Importar presets de Winamp (`.q1`).

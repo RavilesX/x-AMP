@@ -208,11 +208,16 @@ QWidget *XUiPlayerCard::buildTransport()
     next->setIconSize(24);
     connect(next, &XUiIconButton::clicked, m_player, &MediaPlayer::next);
 
+    //Three states rather than a checkbox: repeating only the playlist is
+    //barely observable, and repeat-one is what the second press is expected
+    //to do. The engine keeps the two as separate flags.
     m_repeat = new XUiIconButton(XUiIcons::Repeat, panel);
-    m_repeat->setCheckable(true);
-    m_repeat->setChecked(m_settings->isRepeatableList());
-    connect(m_repeat, &XUiIconButton::toggled, m_settings, &QmmpUiSettings::setRepeatableList);
-    connect(m_settings, &QmmpUiSettings::repeatableListChanged, m_repeat, &XUiIconButton::setChecked);
+    connect(m_repeat, &XUiIconButton::clicked, this, &XUiPlayerCard::cycleRepeat);
+    connect(m_settings, &QmmpUiSettings::repeatableListChanged,
+            this, &XUiPlayerCard::updateRepeat);
+    connect(m_settings, &QmmpUiSettings::repeatableTrackChanged,
+            this, &XUiPlayerCard::updateRepeat);
+    updateRepeat();
 
     m_volumeIcon = new XUiIconButton(XUiIcons::Volume, panel);
     connect(m_volumeIcon, &XUiIconButton::clicked, this, [this] {
@@ -326,6 +331,35 @@ void XUiPlayerCard::updateVolume(int volume)
 void XUiPlayerCard::seek(qint64 position)
 {
     m_core->seek(position);
+}
+
+void XUiPlayerCard::cycleRepeat()
+{
+    if(m_settings->isRepeatableTrack())
+    {
+        m_settings->setRepeatableTrack(false);
+        m_settings->setRepeatableList(false);
+    }
+    else if(m_settings->isRepeatableList())
+    {
+        m_settings->setRepeatableList(false);
+        m_settings->setRepeatableTrack(true);
+    }
+    else
+    {
+        m_settings->setRepeatableList(true);
+    }
+    updateRepeat();
+}
+
+void XUiPlayerCard::updateRepeat()
+{
+    const bool track = m_settings->isRepeatableTrack();
+    const bool list = m_settings->isRepeatableList();
+    m_repeat->setIcon(track ? XUiIcons::RepeatOne : XUiIcons::Repeat);
+    m_repeat->setChecked(track || list);
+    m_repeat->setToolTip(track ? tr("Repeat track")
+                               : (list ? tr("Repeat playlist") : tr("No repeat")));
 }
 
 void XUiPlayerCard::paintEvent(QPaintEvent *)

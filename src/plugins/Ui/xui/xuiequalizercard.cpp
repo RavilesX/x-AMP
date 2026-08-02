@@ -112,6 +112,9 @@ XUiEqualizerCard::XUiEqualizerCard(QWidget *parent) : QWidget(parent)
 {
     m_settings = QmmpSettings::instance();
     m_core = SoundCore::instance();
+    //without this the card stretches to fill whatever the playlist leaves
+    //behind when it is hidden; its content has a natural height
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 
     QVBoxLayout *root = new QVBoxLayout(this);
     root->setContentsMargins(0, 0, 0, 0);

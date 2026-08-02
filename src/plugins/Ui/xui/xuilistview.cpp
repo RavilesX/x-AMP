@@ -23,6 +23,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScrollBar>
+#include <QApplication>
 #include <QWheelEvent>
 #include <qmmpui/mediaplayer.h>
 #include <qmmpui/playlistmanager.h>
@@ -163,6 +164,9 @@ void XUiListView::wheelEvent(QWheelEvent *e)
 void XUiListView::mousePressEvent(QMouseEvent *e)
 {
     setFocus();
+    m_pressPos = e->pos();
+    m_pressRow = -1;
+    m_dragging = false;
     const int row = rowAt(e->position().y());
     if(row < 0 || !m_model)
     {
@@ -191,6 +195,54 @@ void XUiListView::mousePressEvent(QMouseEvent *e)
         m_model->setSelected(m_model->track(index), true);
         m_anchor = row;
     }
+    //reordering is only offered on the unfiltered list: with rows hidden the
+    //drop position would not mean what it looks like
+    if(e->button() == Qt::LeftButton && m_filter.isEmpty())
+        m_pressRow = row;
+    update();
+}
+
+void XUiListView::mouseMoveEvent(QMouseEvent *e)
+{
+    if(m_pressRow < 0 || !(e->buttons() & Qt::LeftButton))
+        return;
+    if(!m_dragging)
+    {
+        if((e->pos() - m_pressPos).manhattanLength() < QApplication::startDragDistance())
+            return;
+        m_dragging = true;
+        setCursor(Qt::ClosedHandCursor);
+    }
+
+    //scroll when dragged past either edge, so a track can be moved further
+    //than one screenful
+    const int y = e->position().y();
+    if(y < ROW_HEIGHT)
+        m_scrollBar->setValue(m_scrollBar->value() - 1);
+    else if(y > height() - ROW_HEIGHT)
+        m_scrollBar->setValue(m_scrollBar->value() + 1);
+
+    //the drop marker sits between rows, so round to the nearest boundary
+    m_dropRow = qBound(0, m_scrollBar->value() + (y + ROW_HEIGHT / 2) / ROW_HEIGHT,
+                       m_rows.size());
+    update();
+}
+
+void XUiListView::mouseReleaseEvent(QMouseEvent *e)
+{
+    Q_UNUSED(e);
+    if(m_dragging && m_dropRow >= 0 && m_model)
+    {
+        unsetCursor();
+        //moveTracks moves the whole selection, taking the pressed row as its
+        //reference; with no filter a row index is the track index
+        const int to = qMin(m_dropRow, m_rows.size() - 1);
+        if(to != m_pressRow)
+            m_model->moveTracks(m_pressRow, to);
+    }
+    m_dragging = false;
+    m_pressRow = -1;
+    m_dropRow = -1;
     update();
 }
 
@@ -381,5 +433,14 @@ void XUiListView::paintEvent(QPaintEvent *)
                               box.top(), durationWidth, ROW_HEIGHT),
                        Qt::AlignVCenter | Qt::AlignRight, duration);
         }
+    }
+
+    if(m_dragging && m_dropRow >= 0)
+    {
+        const qreal y = (m_dropRow - first) * ROW_HEIGHT;
+        QPen pen(XUi::AccentBright, 2);
+        pen.setCapStyle(Qt::RoundCap);
+        p.setPen(pen);
+        p.drawLine(QPointF(PADDING, y), QPointF(width() - PADDING - SCROLLBAR_WIDTH, y));
     }
 }

@@ -51,6 +51,7 @@ namespace XUiIcons
         Next,
         Shuffle,
         Repeat,
+        RepeatOne,
         Volume,
         VolumeMuted,
         Heart,

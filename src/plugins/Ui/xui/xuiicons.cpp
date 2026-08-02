@@ -176,6 +176,7 @@ void XUiIcons::paint(QPainter *p, Icon icon, const QRectF &rect, const QColor &c
         break;
     }
     case Repeat:
+    case RepeatOne:
     {
         QPainterPath path;
         path.addRoundedRect(QRectF(4, 6.5, 16, 11), 4.5, 4.5);
@@ -186,6 +187,15 @@ void XUiIcons::paint(QPainter *p, Icon icon, const QRectF &rect, const QColor &c
         head.lineTo(15.4, 6.5);
         head.lineTo(12.5, 9.4);
         strokePath(p, head, color, W);
+        if(icon == RepeatOne)
+        {
+            //a numeral 1 inside the loop: repeat this track, not the list
+            QPainterPath one;
+            one.moveTo(10.4, 10.6);
+            one.lineTo(12.1, 9.4);
+            one.lineTo(12.1, 14.8);
+            strokePath(p, one, color, 1.7);
+        }
         break;
     }
     case Volume:

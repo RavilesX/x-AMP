@@ -222,6 +222,13 @@ void XUiPlayButton::mouseReleaseEvent(QMouseEvent *e)
 
 // -------------------------------------------------------------------- slider
 
+namespace
+{
+    constexpr qreal GRIP_RADIUS = 5.0;
+    //radius plus the pen width, so the outline is not clipped either
+    constexpr qreal GRIP_MARGIN = GRIP_RADIUS + 1.0;
+}
+
 XUiSlider::XUiSlider(QWidget *parent) : QWidget(parent)
 {
     setCursor(Qt::PointingHandCursor);
@@ -255,9 +262,10 @@ void XUiSlider::setGripAlwaysVisible(bool visible)
 
 qint64 XUiSlider::valueAt(int x) const
 {
-    if(width() <= 1 || m_maximum <= 0)
+    const qreal travel = width() - 2.0 * GRIP_MARGIN;
+    if(travel <= 0.0 || m_maximum <= 0)
         return 0;
-    const qreal ratio = qBound(0.0, qreal(x) / qreal(width()), 1.0);
+    const qreal ratio = qBound(0.0, (x - GRIP_MARGIN) / travel, 1.0);
     return qint64(ratio * m_maximum);
 }
 
@@ -268,20 +276,25 @@ void XUiSlider::paintEvent(QPaintEvent *)
 
     const qreal y = height() / 2.0;
     const qreal thickness = 4.0;
-    const qreal filled = m_maximum > 0 ? width() * (qreal(m_value) / qreal(m_maximum)) : 0.0;
+    //The track is inset by the grip's radius at both ends so the grip stays
+    //inside the widget at 0% and 100%; drawn edge to edge it was clipped.
+    const qreal left = GRIP_MARGIN;
+    const qreal travel = width() - 2.0 * GRIP_MARGIN;
+    const qreal ratio = m_maximum > 0 ? qreal(m_value) / qreal(m_maximum) : 0.0;
+    const qreal grip = left + ratio * travel;
 
-    QRectF track(0, y - thickness / 2.0, width(), thickness);
     p.setPen(Qt::NoPen);
     p.setBrush(XUi::Border);
-    p.drawRoundedRect(track, thickness / 2.0, thickness / 2.0);
+    p.drawRoundedRect(QRectF(left, y - thickness / 2.0, travel, thickness),
+                      thickness / 2.0, thickness / 2.0);
 
-    if(filled > 0.0)
+    if(grip > left)
     {
-        QLinearGradient g(0, 0, filled, 0);
+        QLinearGradient g(left, 0, grip, 0);
         g.setColorAt(0.0, XUi::AccentDeep);
         g.setColorAt(1.0, XUi::Accent);
         p.setBrush(g);
-        p.drawRoundedRect(QRectF(0, y - thickness / 2.0, filled, thickness),
+        p.drawRoundedRect(QRectF(left, y - thickness / 2.0, grip - left, thickness),
                           thickness / 2.0, thickness / 2.0);
     }
 
@@ -289,7 +302,7 @@ void XUiSlider::paintEvent(QPaintEvent *)
     {
         p.setBrush(XUi::Text);
         p.setPen(QPen(XUi::Accent, 2));
-        p.drawEllipse(QPointF(filled, y), 5, 5);
+        p.drawEllipse(QPointF(grip, y), GRIP_RADIUS, GRIP_RADIUS);
     }
 }
 

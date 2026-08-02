@@ -227,11 +227,35 @@ void XUiMainWindow::createShortcuts()
 void XUiMainWindow::applyCardVisibility()
 {
     QSettings settings;
-    m_equalizerCard->setVisible(settings.value(XUiSettings::ShowEqualizerKey, true).toBool());
-    m_playlistCard->setVisible(settings.value(XUiSettings::ShowPlaylistKey, true).toBool());
+    const bool showEqualizer = settings.value(XUiSettings::ShowEqualizerKey, true).toBool();
+    const bool showPlaylist = settings.value(XUiSettings::ShowPlaylistKey, true).toBool();
     m_hideOnClose = settings.value(XUiSettings::HideOnCloseKey, false).toBool();
-    //hiding a card leaves the window taller than its content needs
-    resize(width(), qMax(minimumSizeHint().height(), sizeHint().height()));
+
+    //Grow and shrink the window by exactly what each card occupied, rather
+    //than snapping to sizeHint(): that discarded whatever height the user had
+    //dragged the window to, so re-showing a card reset it to the default.
+    int delta = 0;
+    auto toggle = [&](QWidget *card, bool show, int *remembered) {
+        if(card->isVisible() == show)
+            return;
+        if(show)
+        {
+            delta += (*remembered > 0 ? *remembered : card->sizeHint().height()) + XUi::CardGap;
+        }
+        else
+        {
+            *remembered = card->height();
+            delta -= card->height() + XUi::CardGap;
+        }
+        card->setVisible(show);
+    };
+
+    const bool first = !isVisible(); //startup: nothing to grow or shrink yet
+    toggle(m_equalizerCard, showEqualizer, &m_equalizerHeight);
+    toggle(m_playlistCard, showPlaylist, &m_playlistHeight);
+
+    if(!first && delta != 0)
+        resize(width(), qMax(minimumSizeHint().height(), height() + delta));
 }
 
 void XUiMainWindow::toggleMaximised()

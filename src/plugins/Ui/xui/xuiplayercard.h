@@ -59,6 +59,9 @@ private slots:
     void updateVolume(int volume);
     void updateBitrate(int bitrate);
     void seek(qint64 position);
+    /*! Cycles off -> repeat list -> repeat track. */
+    void cycleRepeat();
+    void updateRepeat();
 
 private:
     QWidget *buildDetails();

@@ -79,6 +79,9 @@ private:
     XUiPlaylistCard *m_playlistCard;
     QMenu *m_mainMenu = nullptr;
     bool m_hideOnClose = false;
+    //last height each card had, so re-showing restores it instead of a default
+    int m_equalizerHeight = 0;
+    int m_playlistHeight = 0;
 };
 
 #endif
