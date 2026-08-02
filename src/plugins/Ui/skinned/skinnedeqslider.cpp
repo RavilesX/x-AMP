@@ -112,15 +112,16 @@ void SkinnedEqSlider::updateSkin()
 
 void SkinnedEqSlider::draw(bool pressed)
 {
-    int p = int(std::ceil(double(m_value - m_min) * (height() - skin()->scaled(12)) / (m_max-m_min)));
-    m_pixmap = skin()->getEqSlider(27 - 27 * (m_value-m_min) / (m_max-m_min));
-    QPainter paint(&m_pixmap);
-    if(pressed)
-        paint.drawPixmap(1, p, skin()->getButton(Skin::EQ_BT_BAR_P));
-    else
-        paint.drawPixmap(1, p, skin()->getButton(Skin::EQ_BT_BAR_N));
+    //x-AMP: compose at base scale, then scale once (see SkinnedVolumeBar)
+    QPixmap composed = skin()->getEqSliderBase(27 - 27 * (m_value-m_min) / (m_max-m_min));
+    int p = int(std::ceil(double(m_value - m_min) * (composed.height() - 12) / (m_max-m_min)));
+    {
+        QPainter paint(&composed);
+        paint.drawPixmap(1, p, skin()->getButtonBase(pressed ? Skin::EQ_BT_BAR_P : Skin::EQ_BT_BAR_N));
+    }
+    m_pixmap = skin()->scalePixmap(composed);
     setPixmap(m_pixmap);
-    m_pos = p;
+    m_pos = skin()->scaled(p); //hit testing happens in widget coordinates
 }
 
 double SkinnedEqSlider::convert(int p)

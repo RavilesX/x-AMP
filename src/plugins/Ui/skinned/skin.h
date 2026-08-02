@@ -50,6 +50,19 @@ public:
      * that widget math and pixmap sizes round the same way.
      */
     int scaled(int value) const;
+    /*!
+     * Scales an already composed pixmap to the current factor. Widgets that
+     * paint a button over a bar frame must compose the two at base scale and
+     * scale the result once with this: scaling the parts independently gives
+     * each its own effective factor after rounding, and the artwork lands one
+     * pixel apart at fractional factors.
+     */
+    QPixmap scalePixmap(const QPixmap &pix) const;
+    QPixmap getButtonBase(uint bt) const;
+    QPixmap getVolumeBarBase(uint n) const;
+    QPixmap getBalanceBarBase(uint n) const;
+    QPixmap getEqSliderBase(uint n) const;
+    QPixmap getPosBarBase() const;
     QPixmap getMain() const;
     QPixmap getButton(uint bt) const;
     QCursor getCursor(uint cu) const;
@@ -295,10 +308,17 @@ private:
      * to load pixmap from default skin.
      */
     QPixmap *getDummyPixmap(const QString &name, const QString &fallback);
-    QPixmap scalePixmap(const QPixmap &pix);
     static Skin *m_instance;
     QDir m_skin_dir;
     QHash<uint, QPixmap> m_buttons;
+    //x-AMP: unscaled (base) copies kept for widgets that compose a button
+    //over a bar frame and scale the composed result once; implicit sharing
+    //makes these free until the scaled originals are replaced
+    QHash<uint, QPixmap> m_buttons_base;
+    QPixmap m_posbar_base;
+    QList<QPixmap> m_eq_bar_base;
+    QList<QPixmap> m_volume_base;
+    QList<QPixmap> m_balance_base;
     QHash<uint, QCursor> m_cursors;
     QHash<uint, QPixmap> m_titlebar;
     QHash<uint, QPixmap> m_pl_parts;

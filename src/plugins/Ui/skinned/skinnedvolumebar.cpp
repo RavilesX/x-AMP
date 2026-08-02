@@ -100,15 +100,17 @@ void SkinnedVolumeBar::updateSkin()
 
 void SkinnedVolumeBar::draw(bool pressed)
 {
-    int p=int(ceil(double(m_value - m_min) * (width() - skin()->scaled(18)) / (m_max-m_min)));
-    m_pixmap = skin()->getVolumeBar(27 * (m_value-m_min) / (m_max-m_min));
-    QPainter paint(&m_pixmap);
-    if(pressed)
-        paint.drawPixmap(p, skin()->scaled(1), skin()->getButton(Skin::BT_VOL_P));
-    else
-        paint.drawPixmap(p, skin()->scaled(1), skin()->getButton(Skin::BT_VOL_N));
+    //x-AMP: compose frame and button at base scale, then scale once; scaling
+    //them independently misaligns their artwork at fractional factors
+    QPixmap composed = skin()->getVolumeBarBase(27 * (m_value-m_min) / (m_max-m_min));
+    int p = int(ceil(double(m_value - m_min) * (composed.width() - 18) / (m_max-m_min)));
+    {
+        QPainter paint(&composed);
+        paint.drawPixmap(p, 1, skin()->getButtonBase(pressed ? Skin::BT_VOL_P : Skin::BT_VOL_N));
+    }
+    m_pixmap = skin()->scalePixmap(composed);
     setPixmap(m_pixmap);
-    m_pos = p;
+    m_pos = skin()->scaled(p);
 }
 
 int SkinnedVolumeBar::convert(int p)

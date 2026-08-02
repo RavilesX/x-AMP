@@ -275,6 +275,12 @@ void Skin::setSkin(const QString &path, bool force)
     loadRegion();
     loadCursors();
     loadColors();
+    //x-AMP: keep base copies before scaling, for compose-then-scale widgets
+    m_buttons_base = m_buttons;
+    m_posbar_base = m_posbar;
+    m_eq_bar_base = m_eq_bar;
+    m_volume_base = m_volume;
+    m_balance_base = m_balance;
     if(m_scale_factor > 1.0)
     {
         for(QPixmap &pixmap : m_buttons)
@@ -1009,7 +1015,32 @@ QPixmap *Skin::getDummyPixmap(const QString &name, const QString &fallback)
     return nullptr;
 }
 
-QPixmap Skin::scalePixmap(const QPixmap &pix)
+QPixmap Skin::getButtonBase(uint bt) const
+{
+    return m_buttons_base.value(bt);
+}
+
+QPixmap Skin::getVolumeBarBase(uint n) const
+{
+    return m_volume_base.value(n);
+}
+
+QPixmap Skin::getBalanceBarBase(uint n) const
+{
+    return m_balance_base.value(n);
+}
+
+QPixmap Skin::getEqSliderBase(uint n) const
+{
+    return m_eq_bar_base.value(n);
+}
+
+QPixmap Skin::getPosBarBase() const
+{
+    return m_posbar_base;
+}
+
+QPixmap Skin::scalePixmap(const QPixmap &pix) const
 {
     //x-AMP: at a fractional factor FastTransformation drops and duplicates
     //rows, which looks broken; smooth scaling is forced there and the

@@ -123,18 +123,20 @@ void SkinnedPositionBar::updateSkin()
 
 void SkinnedPositionBar::draw(bool pressed)
 {
-    qint64 p = qint64(ceil(double(m_value-m_min) * (width() - skin()->scaled(30)) / (m_max-m_min)));
-    m_pixmap = skin()->getPosBar();
+    //x-AMP: compose at base scale, then scale once (see SkinnedVolumeBar)
+    QPixmap composed = skin()->getPosBarBase();
+    qint64 p = qint64(ceil(double(m_value-m_min) * (composed.width() - 30) / (m_max-m_min)));
     if (m_max > 0)
     {
-        QPainter paint(&m_pixmap);
+        QPainter paint(&composed);
         if (pressed)
-            paint.drawPixmap(p,0,skin()->getButton(Skin::BT_POSBAR_P));
+            paint.drawPixmap(p,0,skin()->getButtonBase(Skin::BT_POSBAR_P));
         else
-            paint.drawPixmap(p,0,skin()->getButton(Skin::BT_POSBAR_N));
+            paint.drawPixmap(p,0,skin()->getButtonBase(Skin::BT_POSBAR_N));
     }
+    m_pixmap = skin()->scalePixmap(composed);
     setPixmap(m_pixmap);
-    m_pos = p;
+    m_pos = skin()->scaled(int(p)); //hit testing happens in widget coordinates
 }
 
 qint64 SkinnedPositionBar::convert(qint64 p)

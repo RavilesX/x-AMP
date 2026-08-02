@@ -117,15 +117,16 @@ void SkinnedBalanceBar::draw(bool pressed)
 {
     if(std::abs(m_value) < 6)
         m_value = 0;
-    int p=int(ceil(double(m_value - m_min) * (width() - skin()->scaled(13)) / (m_max-m_min)));
-    m_pixmap = skin()->getBalanceBar(std::abs(27 * m_value / m_max));
-    QPainter paint(&m_pixmap);
-    if(pressed)
-        paint.drawPixmap(p, skin()->scaled(1), skin()->getButton(Skin::BT_BAL_P));
-    else
-        paint.drawPixmap(p, skin()->scaled(1), skin()->getButton(Skin::BT_BAL_N));
+    //x-AMP: compose at base scale, then scale once (see SkinnedVolumeBar)
+    QPixmap composed = skin()->getBalanceBarBase(std::abs(27 * m_value / m_max));
+    int p = int(ceil(double(m_value - m_min) * (composed.width() - 13) / (m_max-m_min)));
+    {
+        QPainter paint(&composed);
+        paint.drawPixmap(p, 1, skin()->getButtonBase(pressed ? Skin::BT_BAL_P : Skin::BT_BAL_N));
+    }
+    m_pixmap = skin()->scalePixmap(composed);
     setPixmap(m_pixmap);
-    m_pos = p;
+    m_pos = skin()->scaled(p);
 }
 
 int SkinnedBalanceBar::convert(int p)
