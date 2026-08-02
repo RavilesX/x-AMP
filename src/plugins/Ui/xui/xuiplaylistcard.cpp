@@ -113,18 +113,23 @@ QWidget *XUiPlaylistCard::buildFooter()
     layout->setContentsMargins(XUi::CardPadding, 0, XUi::CardPadding, 12);
     layout->setSpacing(8);
 
-    auto add = [&](const QString &text, void (XUiPlaylistCard::*slot)()) {
+    auto add = [&](const QString &text, const QString &tip,
+                   void (XUiPlaylistCard::*slot)()) {
         XUiMenuButton *button = new XUiMenuButton(text, footer);
+        button->setToolTip(tip);
         connect(button, &XUiMenuButton::clicked, this, slot);
         layout->addWidget(button);
         return button;
     };
 
-    add(tr("Add"), &XUiPlaylistCard::showAddMenu);
-    add(tr("Sub"), &XUiPlaylistCard::showRemoveMenu);
-    add(tr("Sel"), &XUiPlaylistCard::showSelectMenu);
+    //symbols rather than words for the two obvious ones; the tooltip carries
+    //the meaning, and they are not translated
+    add(QStringLiteral("+"), tr("Add tracks"), &XUiPlaylistCard::showAddMenu);
+    //U+2212 minus, not a hyphen: it matches the plus in width and weight
+    add(QStringLiteral("−"), tr("Remove tracks"), &XUiPlaylistCard::showRemoveMenu);
+    add(tr("Sel"), tr("Select tracks"), &XUiPlaylistCard::showSelectMenu);
     layout->addStretch(1);
-    m_playlists = add(tr("Lst"), &XUiPlaylistCard::showPlaylistsMenu);
+    m_playlists = add(tr("Lst"), tr("Playlists"), &XUiPlaylistCard::showPlaylistsMenu);
     return footer;
 }
 
