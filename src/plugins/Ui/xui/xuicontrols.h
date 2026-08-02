@@ -106,6 +106,12 @@ public:
     qint64 value() const { return m_value; }
     /*! Hides the grip until the pointer is over the slider. */
     void setGripAlwaysVisible(bool visible);
+    /*!
+     * Amount one wheel notch moves the value. Zero, the default, ignores the
+     * wheel -- worth keeping for sliders where a stray scroll would be
+     * destructive, such as seeking.
+     */
+    void setWheelStep(qint64 step);
 
 signals:
     /*! Emitted while dragging, and once on click. */
@@ -118,6 +124,7 @@ protected:
     void mousePressEvent(QMouseEvent *) override;
     void mouseMoveEvent(QMouseEvent *) override;
     void mouseReleaseEvent(QMouseEvent *) override;
+    void wheelEvent(QWheelEvent *) override;
     void enterEvent(QEnterEvent *) override;
     void leaveEvent(QEvent *) override;
 
@@ -129,6 +136,7 @@ private:
     bool m_dragging = false;
     bool m_hovered = false;
     bool m_gripAlwaysVisible = true;
+    qint64 m_wheelStep = 0;
 };
 
 /*!

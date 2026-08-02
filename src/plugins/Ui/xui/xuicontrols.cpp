@@ -260,6 +260,35 @@ void XUiSlider::setGripAlwaysVisible(bool visible)
     update();
 }
 
+void XUiSlider::setWheelStep(qint64 step)
+{
+    m_wheelStep = step;
+}
+
+void XUiSlider::wheelEvent(QWheelEvent *e)
+{
+    if(m_wheelStep <= 0 || m_maximum <= 0)
+    {
+        QWidget::wheelEvent(e);
+        return;
+    }
+
+    //one notch is 120 units; trackpads send finer deltas, so scale rather
+    //than counting notches
+    const qreal notches = e->angleDelta().y() / 120.0;
+    const qint64 value = qBound(qint64(0),
+                                m_value + qint64(qRound(notches * m_wheelStep)),
+                                m_maximum);
+    e->accept();
+    if(value == m_value)
+        return;
+    m_value = value;
+    update();
+    //a notch is a complete gesture, so report it as both
+    emit moved(m_value);
+    emit released(m_value);
+}
+
 qint64 XUiSlider::valueAt(int x) const
 {
     const qreal travel = width() - 2.0 * GRIP_MARGIN;
@@ -351,6 +380,7 @@ void XUiSlider::leaveEvent(QEvent *)
 
 namespace
 {
+    constexpr qreal WHEEL_STEP_DB = 1.0; //dB per wheel notch
     constexpr qreal KNOB_H = 20.0;
     constexpr qreal KNOB_W = 18.0;
     constexpr qreal RAIL_W = 3.0;
@@ -471,9 +501,14 @@ void XUiEqSlider::mouseDoubleClickEvent(QMouseEvent *e)
 
 void XUiEqSlider::wheelEvent(QWheelEvent *e)
 {
-    setValue(m_value + (e->angleDelta().y() > 0 ? 1.0 : -1.0));
-    emit moved(m_value);
+    //hovering is enough: wheel events go to the widget under the pointer, so
+    //no click or focus is needed first
+    const qreal notches = e->angleDelta().y() / 120.0;
+    const double previous = m_value;
+    setValue(m_value + notches * WHEEL_STEP_DB);
     e->accept();
+    if(!qFuzzyCompare(previous, m_value)) //silent once the band is at its limit
+        emit moved(m_value);
 }
 
 void XUiEqSlider::enterEvent(QEnterEvent *)

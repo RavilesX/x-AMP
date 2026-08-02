@@ -232,6 +232,7 @@ QWidget *XUiPlayerCard::buildTransport()
 
     m_volume = new XUiSlider(panel);
     m_volume->setMaximum(100);
+    m_volume->setWheelStep(4); //percent per notch, hovering is enough
     m_volume->setFixedWidth(120);
     connect(m_volume, &XUiSlider::moved, m_core, &SoundCore::setVolume);
 

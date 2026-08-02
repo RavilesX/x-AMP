@@ -788,6 +788,19 @@ manda `Leave` también al entrar en un hijo— y la lista fija un cursor propio
 en vez de heredar. Ojo con `unsetCursor()` dentro de una rama condicional: si
 el arrastre acaba sin destino válido, el cursor de mano cerrada se quedaba.
 
+### Rueda del ratón por hover
+
+Los eventos de rueda van al widget bajo el puntero, sin necesidad de foco ni
+de clic previo, así que basta con implementar `wheelEvent`:
+
+- **Volumen:** 4 % por muesca. `XUiSlider::setWheelStep()` lo activa; por
+  defecto es 0, que ignora la rueda — así la **barra de posición no la usa**,
+  donde un desplazamiento accidental saltaría dentro de la canción.
+- **Bandas del ecualizador:** 1 dB por muesca.
+
+Escalar por `delta / 120` en vez de contar muescas, que los paneles táctiles
+mandan deltas más finos. Y no emitir la señal si el valor ya está topado.
+
 ### Huecos conocidos de `xui` frente a `skinned`
 
 Lista para una 5.6, si llega:
