@@ -54,7 +54,7 @@ Hecho:
 - [x] **Fase 3 — integración continua.**
 - [x] **Fase 4 — mejoras propias:** zoom 150 %, arreglo del cuelgue con
       shuffle, barra de transporte duplicada fuera.
-- [ ] **Fase 5 — interfaz nueva (`xui`).** 5.1 hecha; 5.2–5.5 pendientes.
+- [ ] **Fase 5 — interfaz nueva (`xui`).** 5.1 y 5.2 hechas; 5.3–5.5 pendientes.
 
 Lo tocado del código de Qmmp hasta ahora: dos arreglos de build (Fase 1), el
 rebranding (Fase 2) y las mejoras de la Fase 4. El motor de audio, los
@@ -584,9 +584,34 @@ Trampas encontradas al construirlo:
 - El bitrate no está listo cuando llegan los metadatos: hay que conectar
   `bitrateChanged` aparte, que además cubre los VBR.
 
-**5.2 — Tarjeta del ecualizador.** 10 bandas + preamp con el estilo del
-mockup (raíl fino, glow, mando redondeado), interruptor ON, AUTO, desplegable
-de presets. Reaprovechar la lógica de presets de `qsui`.
+**5.2 — Tarjeta del ecualizador.** ✅ hecha
+10 bandas + preamp con el estilo del mockup: raíl fino con la parte recorrida
+encendida bajo el mando, interruptor ON, escala +12/0/−12 dB, desplegable de
+presets con «Guardar como…», y botón de reinicio. Doble clic en una banda la
+deja plana; la rueda la mueve de dB en dB.
+
+Controles nuevos en `xuicontrols`: `XUiEqSlider`, `XUiToggle`,
+`XUiMenuButton`.
+
+Los presets comparten `~/.config/xamp/eq.preset` con la interfaz *skinned*, a
+propósito: un preset guardado en una aparece en la otra.
+
+**AUTO no está.** El mockup lo muestra, pero son presets por pista y necesita
+que la lista sepa cuál suena: llega con la 5.3. Mejor eso que un control
+muerto en la interfaz.
+
+Trampas:
+
+- **Las claves de configuración del EQ son minúsculas y con guion bajo**:
+  grupo `[Equalizer_10]`, claves `band_0`…`band_9`, `preamp`, `enabled`
+  ([qmmpsettings.cpp](src/qmmp/qmmpsettings.cpp)). Nada que ver con el formato
+  de los archivos de preset, que sí usa `Band0` y `Preamp`.
+- **No fijar a mano un `minimumSize` de la ventana.** Si queda por debajo de
+  lo que las tarjetas necesitan, Qt las encoge por debajo de su propio mínimo
+  y la tarjeta del reproductor se aplasta —carátula recortada, espectro
+  desaparecido—. Dejar que el layout lo derive. Además, al restaurar la
+  geometría guardada hay que hacer `expandedTo(minimumSizeHint())`, o un
+  tamaño de antes de añadir una tarjeta la recorta.
 
 **5.3 — Tarjeta de la lista.** La parte gorda: selección múltiple, arrastrar y
 soltar, ordenación, cola, menú contextual, pestañas de listas, búsqueda,

@@ -132,6 +132,94 @@ private:
 };
 
 /*!
+ * Vertical equalizer slider: a thin rail with the travelled part lit from
+ * the knob down, as in the design. Values are dB, symmetric around zero.
+ */
+class XUiEqSlider : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit XUiEqSlider(QWidget *parent = nullptr);
+
+    void setRange(double minimum, double maximum);
+    void setValue(double value);
+    double value() const { return m_value; }
+
+signals:
+    void moved(double value);
+
+protected:
+    void paintEvent(QPaintEvent *) override;
+    void mousePressEvent(QMouseEvent *) override;
+    void mouseMoveEvent(QMouseEvent *) override;
+    void mouseReleaseEvent(QMouseEvent *) override;
+    void mouseDoubleClickEvent(QMouseEvent *) override;
+    void wheelEvent(QWheelEvent *) override;
+    void enterEvent(QEnterEvent *) override;
+    void leaveEvent(QEvent *) override;
+
+private:
+    /*! Vertical centre of the knob for the current value. */
+    qreal knobY() const;
+    double valueAt(int y) const;
+
+    double m_minimum = -12.0;
+    double m_maximum = 12.0;
+    double m_value = 0.0;
+    bool m_dragging = false;
+    bool m_hovered = false;
+};
+
+/*!
+ * Pill-shaped on/off switch.
+ */
+class XUiToggle : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit XUiToggle(QWidget *parent = nullptr);
+
+    void setChecked(bool checked);
+    bool isChecked() const { return m_checked; }
+
+signals:
+    void toggled(bool checked);
+
+protected:
+    void paintEvent(QPaintEvent *) override;
+    void mouseReleaseEvent(QMouseEvent *) override;
+
+private:
+    bool m_checked = false;
+};
+
+/*!
+ * Text button with a trailing chevron, used for the presets menu.
+ */
+class XUiMenuButton : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit XUiMenuButton(const QString &text, QWidget *parent = nullptr);
+
+    void setText(const QString &text);
+
+signals:
+    void clicked();
+
+protected:
+    void paintEvent(QPaintEvent *) override;
+    void mouseReleaseEvent(QMouseEvent *) override;
+    void enterEvent(QEnterEvent *) override;
+    void leaveEvent(QEvent *) override;
+    QSize sizeHint() const override;
+
+private:
+    QString m_text;
+    bool m_hovered = false;
+};
+
+/*!
  * Album artwork with rounded corners. Falls back to the x-AMP wordmark on a
  * dark panel when the track has no cover.
  */

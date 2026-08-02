@@ -17,62 +17,54 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
-#ifndef XUIMAINWINDOW_H
-#define XUIMAINWINDOW_H
+#ifndef XUIEQUALIZERCARD_H
+#define XUIEQUALIZERCARD_H
 
+#include <QList>
+#include <QStringList>
 #include <QWidget>
+#include <qmmp/eqsettings.h>
 
-class QMenu;
-class UiHelper;
-class SoundCore;
-class MediaPlayer;
-class PlayListManager;
-class XUiPlayerCard;
-class XUiEqualizerCard;
+class QLabel;
+class QmmpSettings;
+class XUiEqSlider;
+class XUiToggle;
+class XUiMenuButton;
+class XUiIconButton;
 
 /*!
- * Frameless main window with a title bar of its own.
- *
- * Frameless costs us the window manager's move, resize and snap behaviour,
- * so those are handed back to the compositor through startSystemMove() and
- * startSystemResize() rather than reimplemented by tracking the pointer --
- * that is the only approach that behaves identically on X11 and Wayland.
+ * Ten-band equalizer with a preamp, matching the frequencies the interface
+ * labels. Presets share ~/.config/xamp/eq.preset with the skinned interface,
+ * so a preset saved in one shows up in the other.
  */
-class XUiMainWindow : public QWidget
+class XUiEqualizerCard : public QWidget
 {
     Q_OBJECT
 public:
-    explicit XUiMainWindow(QWidget *parent = nullptr);
-    ~XUiMainWindow();
+    explicit XUiEqualizerCard(QWidget *parent = nullptr);
 
 protected:
     void paintEvent(QPaintEvent *) override;
-    void mousePressEvent(QMouseEvent *) override;
-    void mouseDoubleClickEvent(QMouseEvent *) override;
-    void mouseMoveEvent(QMouseEvent *) override;
-    void closeEvent(QCloseEvent *) override;
 
 private slots:
-    void showMainMenu();
-    void toggleMaximised();
-    void updateWindowTitle();
+    void applySettings();
+    void showPresetMenu();
+    void reloadFromSettings();
 
 private:
-    QWidget *buildTitleBar();
-    /*! Which window edges the pointer is over, for resize cursors. */
-    Qt::Edges edgesAt(const QPoint &pos) const;
-    void readSettings();
-    void writeSettings();
+    QWidget *buildHeader();
+    QWidget *buildBands();
+    void loadPresets();
+    void applyPreset(int index);
+    void savePreset();
 
-    UiHelper *m_uiHelper;
-    SoundCore *m_core;
-    MediaPlayer *m_player;
-    PlayListManager *m_playListManager;
-
-    QWidget *m_titleBar;
-    XUiPlayerCard *m_playerCard;
-    XUiEqualizerCard *m_equalizerCard;
-    QMenu *m_mainMenu = nullptr;
+    QmmpSettings *m_settings;
+    XUiToggle *m_enabled;
+    XUiMenuButton *m_presetButton;
+    XUiEqSlider *m_preamp;
+    QList<XUiEqSlider *> m_bands;
+    QList<EqSettings> m_presets;
+    QStringList m_presetNames;
 };
 
 #endif

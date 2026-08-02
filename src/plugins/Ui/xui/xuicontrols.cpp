@@ -21,6 +21,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QRadialGradient>
+#include <QWheelEvent>
 #include "xuitheme.h"
 #include "xuicontrols.h"
 
@@ -328,6 +329,241 @@ void XUiSlider::enterEvent(QEnterEvent *)
 }
 
 void XUiSlider::leaveEvent(QEvent *)
+{
+    m_hovered = false;
+    update();
+}
+
+// ----------------------------------------------------------------- eq slider
+
+namespace
+{
+    constexpr qreal KNOB_H = 26.0;
+    constexpr qreal KNOB_W = 22.0;
+    constexpr qreal RAIL_W = 3.0;
+}
+
+XUiEqSlider::XUiEqSlider(QWidget *parent) : QWidget(parent)
+{
+    setCursor(Qt::PointingHandCursor);
+    setFixedWidth(int(KNOB_W) + 8);
+    setMinimumHeight(120);
+}
+
+void XUiEqSlider::setRange(double minimum, double maximum)
+{
+    m_minimum = minimum;
+    m_maximum = maximum;
+    setValue(m_value);
+}
+
+void XUiEqSlider::setValue(double value)
+{
+    value = qBound(m_minimum, value, m_maximum);
+    if(qFuzzyCompare(m_value, value))
+        return;
+    m_value = value;
+    update();
+}
+
+qreal XUiEqSlider::knobY() const
+{
+    //travel is the height minus the knob, so the knob never leaves the rail
+    const qreal travel = height() - KNOB_H;
+    const qreal ratio = (m_value - m_minimum) / (m_maximum - m_minimum);
+    return KNOB_H / 2.0 + (1.0 - ratio) * travel;
+}
+
+double XUiEqSlider::valueAt(int y) const
+{
+    const qreal travel = height() - KNOB_H;
+    if(travel <= 0.0)
+        return m_value;
+    const qreal ratio = qBound(0.0, 1.0 - (y - KNOB_H / 2.0) / travel, 1.0);
+    return m_minimum + ratio * (m_maximum - m_minimum);
+}
+
+void XUiEqSlider::paintEvent(QPaintEvent *)
+{
+    QPainter p(this);
+    p.setRenderHint(QPainter::Antialiasing, true);
+
+    const qreal cx = width() / 2.0;
+    const qreal top = KNOB_H / 2.0;
+    const qreal bottom = height() - KNOB_H / 2.0;
+    const qreal knob = knobY();
+
+    //unlit rail above the knob
+    p.setPen(Qt::NoPen);
+    p.setBrush(XUi::Border);
+    p.drawRoundedRect(QRectF(cx - RAIL_W / 2.0, top, RAIL_W, bottom - top),
+                      RAIL_W / 2.0, RAIL_W / 2.0);
+
+    //lit section from the knob downwards
+    if(knob < bottom)
+    {
+        QLinearGradient g(0, knob, 0, bottom);
+        g.setColorAt(0.0, XUi::AccentBright);
+        g.setColorAt(1.0, XUi::AccentDeep);
+        p.setBrush(g);
+        p.drawRoundedRect(QRectF(cx - RAIL_W / 2.0, knob, RAIL_W, bottom - knob),
+                          RAIL_W / 2.0, RAIL_W / 2.0);
+    }
+
+    //knob
+    QLinearGradient body(0, knob - KNOB_H / 2.0, 0, knob + KNOB_H / 2.0);
+    body.setColorAt(0.0, m_hovered ? XUi::Hover : XUi::Elevated);
+    body.setColorAt(1.0, XUi::Card);
+    p.setBrush(body);
+    p.setPen(QPen(m_dragging ? XUi::Accent : XUi::Border, 1));
+    p.drawRoundedRect(QRectF(cx - KNOB_W / 2.0, knob - KNOB_H / 2.0, KNOB_W, KNOB_H), 6, 6);
+
+    //indicator line across the knob
+    p.setPen(QPen(m_dragging || m_hovered ? XUi::AccentBright : XUi::Text, 2));
+    p.drawLine(QPointF(cx - 6, knob), QPointF(cx + 6, knob));
+}
+
+void XUiEqSlider::mousePressEvent(QMouseEvent *e)
+{
+    if(e->button() != Qt::LeftButton)
+        return;
+    m_dragging = true;
+    setValue(valueAt(e->position().y()));
+    emit moved(m_value);
+}
+
+void XUiEqSlider::mouseMoveEvent(QMouseEvent *e)
+{
+    if(!m_dragging)
+        return;
+    setValue(valueAt(e->position().y()));
+    emit moved(m_value);
+}
+
+void XUiEqSlider::mouseReleaseEvent(QMouseEvent *e)
+{
+    if(e->button() != Qt::LeftButton)
+        return;
+    m_dragging = false;
+    update();
+}
+
+void XUiEqSlider::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    if(e->button() != Qt::LeftButton)
+        return;
+    setValue(0.0); //double click resets the band to flat
+    emit moved(m_value);
+}
+
+void XUiEqSlider::wheelEvent(QWheelEvent *e)
+{
+    setValue(m_value + (e->angleDelta().y() > 0 ? 1.0 : -1.0));
+    emit moved(m_value);
+    e->accept();
+}
+
+void XUiEqSlider::enterEvent(QEnterEvent *)
+{
+    m_hovered = true;
+    update();
+}
+
+void XUiEqSlider::leaveEvent(QEvent *)
+{
+    m_hovered = false;
+    update();
+}
+
+// -------------------------------------------------------------------- toggle
+
+XUiToggle::XUiToggle(QWidget *parent) : QWidget(parent)
+{
+    setCursor(Qt::PointingHandCursor);
+    setFixedSize(44, 24);
+}
+
+void XUiToggle::setChecked(bool checked)
+{
+    if(m_checked == checked)
+        return;
+    m_checked = checked;
+    update();
+}
+
+void XUiToggle::paintEvent(QPaintEvent *)
+{
+    QPainter p(this);
+    p.setRenderHint(QPainter::Antialiasing, true);
+    p.setPen(Qt::NoPen);
+    p.setBrush(m_checked ? XUi::Accent : XUi::Border);
+    p.drawRoundedRect(rect(), height() / 2.0, height() / 2.0);
+
+    const qreal r = height() / 2.0 - 3.0;
+    const qreal cx = m_checked ? width() - r - 3.0 : r + 3.0;
+    p.setBrush(XUi::Text);
+    p.drawEllipse(QPointF(cx, height() / 2.0), r, r);
+}
+
+void XUiToggle::mouseReleaseEvent(QMouseEvent *e)
+{
+    if(e->button() != Qt::LeftButton || !rect().contains(e->pos()))
+        return;
+    m_checked = !m_checked;
+    update();
+    emit toggled(m_checked);
+}
+
+// --------------------------------------------------------------- menu button
+
+XUiMenuButton::XUiMenuButton(const QString &text, QWidget *parent)
+    : QWidget(parent), m_text(text)
+{
+    setCursor(Qt::PointingHandCursor);
+    setFixedHeight(34);
+}
+
+void XUiMenuButton::setText(const QString &text)
+{
+    if(m_text == text)
+        return;
+    m_text = text;
+    updateGeometry();
+    update();
+}
+
+QSize XUiMenuButton::sizeHint() const
+{
+    return QSize(QFontMetrics(font()).horizontalAdvance(m_text) + 54, 34);
+}
+
+void XUiMenuButton::paintEvent(QPaintEvent *)
+{
+    QPainter p(this);
+    p.setRenderHint(QPainter::Antialiasing, true);
+    p.setPen(QPen(XUi::Border, 1));
+    p.setBrush(m_hovered ? XUi::Hover : XUi::Elevated);
+    p.drawRoundedRect(QRectF(rect()).adjusted(0.5, 0.5, -0.5, -0.5), 8, 8);
+
+    p.setPen(XUi::Text);
+    p.drawText(rect().adjusted(12, 0, -30, 0), Qt::AlignVCenter | Qt::AlignLeft, m_text);
+    XUiIcons::paint(&p, XUiIcons::ChevronDown,
+                    QRectF(width() - 26.0, height() / 2.0 - 8.0, 16, 16), XUi::TextDim);
+}
+
+void XUiMenuButton::mouseReleaseEvent(QMouseEvent *e)
+{
+    if(e->button() == Qt::LeftButton && rect().contains(e->pos()))
+        emit clicked();
+}
+
+void XUiMenuButton::enterEvent(QEnterEvent *)
+{
+    m_hovered = true;
+    update();
+}
+
+void XUiMenuButton::leaveEvent(QEvent *)
 {
     m_hovered = false;
     update();

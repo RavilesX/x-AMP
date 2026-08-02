@@ -35,6 +35,7 @@
 #include "xuitheme.h"
 #include "xuicontrols.h"
 #include "xuiplayercard.h"
+#include "xuiequalizercard.h"
 #include "xuimainwindow.h"
 
 namespace
@@ -53,8 +54,10 @@ XUiMainWindow::XUiMainWindow(QWidget *parent) : QWidget(parent)
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground); //rounded corners need this
     setMouseTracking(true);
-    setMinimumSize(560, 320);
-    resize(720, 470);
+    //no hand-picked minimum: an explicit one smaller than the cards need lets
+    //Qt squeeze them past their own minimums, which crushes the player card.
+    //Let the layout derive it instead.
+    resize(780, 700);
 
     QVBoxLayout *root = new QVBoxLayout(this);
     //margin leaves room for the rounded corners to show the desktop through
@@ -67,8 +70,10 @@ XUiMainWindow::XUiMainWindow(QWidget *parent) : QWidget(parent)
     m_playerCard = new XUiPlayerCard(this);
     root->addWidget(m_playerCard);
 
-    //the equalizer and playlist cards land here in phases 5.2 and 5.3
-    root->addStretch(1);
+    m_equalizerCard = new XUiEqualizerCard(this);
+    root->addWidget(m_equalizerCard, 1);
+
+    //the playlist card lands here in phase 5.3
 
     connect(m_core, &SoundCore::trackInfoChanged, this, &XUiMainWindow::updateWindowTitle);
     connect(m_player, &MediaPlayer::playbackFinished, this, &XUiMainWindow::updateWindowTitle);
@@ -230,8 +235,9 @@ void XUiMainWindow::readSettings()
     QSettings settings;
     settings.beginGroup(QStringLiteral("XUi"));
     const QSize size = settings.value(QStringLiteral("size")).toSize();
+    //expandToMinimum: a size saved before a card was added would clip it
     if(size.isValid())
-        resize(size);
+        resize(size.expandedTo(minimumSizeHint()));
     const QPoint pos = settings.value(QStringLiteral("position")).toPoint();
     if(!pos.isNull())
         move(pos);
