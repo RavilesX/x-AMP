@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include <QApplication>
+#include <QAbstractButton>
 #include <QDialog>
 #include <QMouseEvent>
 #include <QWindow>
@@ -38,6 +39,17 @@ void XUiDialogs::install()
     qApp->installEventFilter(filter);
 }
 
+void XUiDialogs::stripLabelledIcons(QWidget *root)
+{
+    const QList<QAbstractButton *> buttons = root->findChildren<QAbstractButton *>();
+    for(QAbstractButton *button : buttons)
+    {
+        //an icon-only button would be left blank, so those keep theirs
+        if(!button->icon().isNull() && !button->text().isEmpty())
+            button->setIcon(QIcon());
+    }
+}
+
 bool XUiDialogs::eventFilter(QObject *watched, QEvent *event)
 {
     QDialog *dialog = qobject_cast<QDialog *>(watched);
@@ -47,6 +59,7 @@ bool XUiDialogs::eventFilter(QObject *watched, QEvent *event)
     if(event->type() == QEvent::Show && !dialog->property(HANDLED).toBool())
     {
         dialog->setProperty(HANDLED, true);
+        stripLabelledIcons(dialog);
         //setWindowFlags hides the widget, so it has to be shown again; doing
         //this on Show rather than at construction keeps it to one frame and
         //works for dialogs built elsewhere

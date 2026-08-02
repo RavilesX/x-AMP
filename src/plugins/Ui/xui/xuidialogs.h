@@ -22,6 +22,8 @@
 
 #include <QObject>
 
+class QWidget;
+
 /*!
  * Drops the window manager's frame from this application's dialogs.
  *
@@ -44,6 +46,15 @@ public:
 
     /*! Installs the filter. Safe to call more than once. */
     static void install();
+
+    /*!
+     * Drops the icon from every button in \b root that also carries a label.
+     *
+     * Those come from the desktop's icon theme and sit badly next to plain
+     * text in this interface. Buttons that are nothing but an icon keep it,
+     * since removing it would leave them blank.
+     */
+    static void stripLabelledIcons(QWidget *root);
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
