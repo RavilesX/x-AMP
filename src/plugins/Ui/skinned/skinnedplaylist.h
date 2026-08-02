@@ -32,10 +32,8 @@ class PlayListModel;
 class SkinnedPlayListTitleBar;
 class SkinnedPlayListSlider;
 class SkinnedMainWindow;
-class SymbolDisplay;
 class OutputState;
 class PixmapWidget;
-class SkinnedPlaylistControl;
 class SkinnedKeyboardManager;
 class PlayListManager;
 class SkinnedPlayListBrowser;
@@ -60,18 +58,11 @@ public:
 #endif
 
 signals:
-    void play();
-    void next();
-    void prev();
-    void pause();
-    void stop();
-    void eject();
     void loadPlaylist();
     void savePlaylist();
     void closed();
 
 public slots:
-    void setTime(qint64 time);
     void readSettings();
 
 private slots:
@@ -87,11 +78,9 @@ private slots:
     void generateCopySelectedMenu();
     void copySelectedMenuActionTriggered(QAction *action);
     void onCurrentPlayListChanged(PlayListModel *current, PlayListModel *previous);
-    void onListChanged(int flags);
 
 private:
     void updatePositions();
-    QString formatTime (int sec);
     void drawPixmap (QPainter *painter, int x, int y, const QPixmap &pix);
     void createMenus();
     void createActions();
@@ -120,9 +109,6 @@ private:
     SkinnedButton *m_selectButton;
     SkinnedButton *m_sortButton;
     SkinnedButton *m_playlistButton;
-    SkinnedPlaylistControl *m_pl_control;
-    SymbolDisplay *m_length_totalLength;
-    SymbolDisplay *m_current_time;
     Skin *m_skin;
     SkinnedListWidget *m_listWidget;
     SkinnedPlayListTitleBar *m_titleBar;

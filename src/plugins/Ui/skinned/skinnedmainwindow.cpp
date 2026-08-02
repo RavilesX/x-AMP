@@ -105,12 +105,6 @@ SkinnedMainWindow::SkinnedMainWindow(QWidget *parent) : QMainWindow(parent)
     Visual::add(m_vis);
     //connections
     connect(m_player, &MediaPlayer::playbackFinished, this, &SkinnedMainWindow::restoreWindowTitle);
-    connect(m_playlist, &SkinnedPlayList::next, m_player, &MediaPlayer::next);
-    connect(m_playlist, &SkinnedPlayList::prev, m_player, &MediaPlayer::previous);
-    connect(m_playlist, &SkinnedPlayList::play, m_player, &MediaPlayer::play);
-    connect(m_playlist, &SkinnedPlayList::pause, m_player, &MediaPlayer::pause);
-    connect(m_playlist, &SkinnedPlayList::stop, m_player, &MediaPlayer::stop);
-    connect(m_playlist, &SkinnedPlayList::eject, this, &SkinnedMainWindow::playFiles);
     connect(m_playlist, &SkinnedPlayList::loadPlaylist, this, &SkinnedMainWindow::loadPlaylist);
     connect(m_playlist, &SkinnedPlayList::savePlaylist, this, &SkinnedMainWindow::savePlaylist);
 
@@ -118,7 +112,6 @@ SkinnedMainWindow::SkinnedMainWindow(QWidget *parent) : QMainWindow(parent)
     connect(m_display, &SkinnedDisplay::repeatableToggled, m_ui_settings, &QmmpUiSettings::setRepeatableList);
 
     connect(m_core, &SoundCore::stateChanged, this, &SkinnedMainWindow::showState);
-    connect(m_core, &SoundCore::elapsedChanged, m_playlist, &SkinnedPlayList::setTime);
     connect(m_core, &SoundCore::trackInfoChanged, this, &SkinnedMainWindow::showMetaData);
     connect(m_uiHelper, &UiHelper::toggleVisibilityCalled, this, &SkinnedMainWindow::toggleVisibility);
     connect(m_uiHelper, &UiHelper::showMainWindowCalled, this, &SkinnedMainWindow::showAndRaise);
@@ -141,9 +134,7 @@ void SkinnedMainWindow::showState(Qmmp::State state)
             m_equalizer->loadPreset(m_pl_manager->currentPlayList()->currentTrack()->path().section(QLatin1Char('/'), -1));
         break;
     case Qmmp::Paused:
-        break;
     case Qmmp::Stopped:
-        m_playlist->setTime(-1);
         break;
     default:
         ;

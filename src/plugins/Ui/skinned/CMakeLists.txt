@@ -25,7 +25,6 @@ set(skinned_SRCS
 	skinnedmainwindow.cpp
 	skinnednumber.cpp
 	skinnedplaylistbrowser.cpp
-	skinnedplaylistcontrol.cpp
 	skinnedplaylist.cpp
 	skinnedplaylistheader.cpp
 	skinnedplaylistselector.cpp

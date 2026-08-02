@@ -8,6 +8,10 @@ x-AMP — Qt6-based audio player (C++17, GPL-2+), a git fork of [Qmmp](https://q
 
 Upstream Qmmp itself uses Subversion and a SourceForge tracker; x-AMP does not. Work happens on `main`, upstream snapshots land on the `upstream` branch tagged `upstream/rNNNNN`, and bugs go to this repository's issues. [PLAN.md](PLAN.md) is the continuity document: current state, the upstream-merge procedure, and the traps already found.
 
+## Code discovery
+
+Project indexed in codebase-memory-mcp as `home-ravilesx-Documentos-Proyectos-Github-x-AMP`. For any code exploration (finding a function/class, tracing call chains, understanding structure) use the MCP tools first: `search_graph`/`search_code` to locate symbols, `trace_path` for call chains, `get_code_snippet` for exact source, `get_architecture` for structure, `query_graph` for complex queries. Fall back to Grep/Glob/Read for non-code files or when the graph doesn't have it. Always Read a file before editing it regardless of what the graph shows. Re-run `index_repository` after large structural changes (renames across many files, new plugins) since the graph goes stale.
+
 ## Build
 
 CMake is the only build system. Upstream Qmmp also ships qmake `.pro`/`.pri` files; this fork deleted them, so a `git merge upstream` will reintroduce them as `deleted by us` conflicts — `git rm` them (see PLAN.md). `lrelease` (qttools) must be installed — CMake compiles all `.ts` files at configure time and fails hard without it.

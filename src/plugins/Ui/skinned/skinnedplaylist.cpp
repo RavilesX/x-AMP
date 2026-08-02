@@ -41,8 +41,6 @@
 #include "skinnedplaylisttitlebar.h"
 #include "skinnedplaylistslider.h"
 #include "pixmapwidget.h"
-#include "symboldisplay.h"
-#include "skinnedplaylistcontrol.h"
 #include "skinnedkeyboardmanager.h"
 #include "skinnedplaylistbrowser.h"
 #include "skinnedplaylistselector.h"
@@ -94,12 +92,6 @@ SkinnedPlayList::SkinnedPlayList(PlayListManager *manager, SkinnedMainWindow *pa
     m_resizeWidget = new QWidget(this);
     m_resizeWidget->resize(25, 25);
     m_resizeWidget->setCursor(m_skin->getCursor(Skin::CUR_PSIZE));
-    m_pl_control = new SkinnedPlaylistControl(this);
-
-    m_length_totalLength = new SymbolDisplay(this, 17);
-    m_length_totalLength->setAlignment(Qt::AlignLeft);
-
-    m_current_time = new SymbolDisplay(this, 6);
     m_keyboardManager = new SkinnedKeyboardManager(m_listWidget);
 
     connect(m_listWidget, &SkinnedListWidget::doubleClicked, this, [this] {
@@ -117,13 +109,6 @@ SkinnedPlayList::SkinnedPlayList(PlayListManager *manager, SkinnedMainWindow *pa
     connect(m_sortButton, &SkinnedButton::clicked, this, &SkinnedPlayList::showSortMenu);
     connect(m_playlistButton, &SkinnedButton::clicked, this, &SkinnedPlayList::showPlaylistMenu);
 
-    connect(m_pl_control, &SkinnedPlaylistControl::nextClicked, this, &SkinnedPlayList::next);
-    connect(m_pl_control, &SkinnedPlaylistControl::previousClicked, this, &SkinnedPlayList::prev);
-    connect(m_pl_control, &SkinnedPlaylistControl::playClicked, this, &SkinnedPlayList::play);
-    connect(m_pl_control, &SkinnedPlaylistControl::pauseClicked, this, &SkinnedPlayList::pause);
-    connect(m_pl_control, &SkinnedPlaylistControl::stopClicked, this, &SkinnedPlayList::stop);
-    connect(m_pl_control, &SkinnedPlaylistControl::ejectClicked, this, &SkinnedPlayList::eject);
-
     connect(m_pl_manager, &PlayListManager::selectedPlayListChanged, m_listWidget, &SkinnedListWidget::setModel);
     m_listWidget->setModel(m_pl_manager->selectedPlayList());
 
@@ -135,12 +120,10 @@ SkinnedPlayList::SkinnedPlayList(PlayListManager *manager, SkinnedMainWindow *pa
     m_titleBar->setMinimumSize(0,0);
     m_titleBar->move(0,0);
     connect(m_pl_manager, &PlayListManager::currentPlayListChanged, this, &SkinnedPlayList::onCurrentPlayListChanged);
-    connect(m_pl_manager->currentPlayList(), &PlayListModel::listChanged, this, &SkinnedPlayList::onListChanged);
     m_titleBar->setModel(m_pl_manager->currentPlayList());
 
     setCursor(m_skin->getCursor(Skin::CUR_PNORMAL));
     updatePositions();
-    setTime(-1);
 }
 
 SkinnedPlayList::~SkinnedPlayList()
@@ -178,11 +161,7 @@ void SkinnedPlayList::updatePositions()
     m_selectButton->move(m_skin->scaled(70), m_skin->scaled(86) + 29 * sy);
     m_sortButton->move(m_skin->scaled(99), m_skin->scaled(86) + 29 * sy);
 
-    m_pl_control->move(m_skin->scaled(128) + sx * 25, m_skin->scaled(100) + 29 * sy);
     m_playlistButton->move(m_skin->scaled(228) + sx * 25, m_skin->scaled(86) + 29 * sy);
-
-    m_length_totalLength->move(m_skin->scaled(132) + sx * 25, m_skin->scaled(88) + 29 * sy);
-    m_current_time->move(m_skin->scaled(191) + sx * 25, m_skin->scaled(101) + 29 * sy);
 
     m_plslider->move(m_skin->scaled(255) + sx * 25, m_skin->scaled(20));
     m_resizeWidget->move(width() - 25, height() - 29);
@@ -521,34 +500,6 @@ void SkinnedPlayList::showSortMenu()
     m_sortMenu->exec(m_sortButton->mapToGlobal(QPoint (0,0)));
 }
 
-QString SkinnedPlayList::formatTime(int sec)
-{
-    if(sec >= 3600)
-        sec /= 60;
-    return QStringLiteral("%1:%2").arg(sec / 60, 2, 10, QLatin1Char('0')).arg(sec%60, 2, 10, QLatin1Char('0'));
-}
-
-void SkinnedPlayList::setTime(qint64 time)
-{
-    if(time < 0)
-        m_current_time->display(u"--:--"_s);
-    else
-        m_current_time->display(formatTime(time / 1000));
-    m_current_time->update();
-
-    SoundCore *core = SoundCore::instance();
-    if(core)
-    {
-        QString str_length = formatTime(m_pl_manager->currentPlayList()->totalDuration() / 1000) + QLatin1Char('/');
-        if(core->state() == Qmmp::Playing || core->state() == Qmmp::Paused)
-            str_length.append(formatTime(core->duration() / 1000));
-        else
-            str_length.append(u"--:--"_s);
-        m_length_totalLength->display(str_length);
-        m_length_totalLength->update();
-    }
-}
-
 void SkinnedPlayList::showPlaylistMenu()
 {
     m_playlistMenu->exec(m_playlistButton->mapToGlobal(QPoint(0,0)));
@@ -656,16 +607,8 @@ void SkinnedPlayList::copySelectedMenuActionTriggered(QAction *action)
 
 void SkinnedPlayList::onCurrentPlayListChanged(PlayListModel *current, PlayListModel *previous)
 {
+    Q_UNUSED(previous);
     m_titleBar->setModel(current);
-    connect(current, &PlayListModel::listChanged, this, &SkinnedPlayList::onListChanged);
-    if(previous)
-        disconnect(current, &PlayListModel::listChanged, this, &SkinnedPlayList::onListChanged);
-}
-
-void SkinnedPlayList::onListChanged(int flags)
-{
-    if(flags & PlayListModel::CURRENT || flags & PlayListModel::STRUCTURE)
-        setTime(-1);
 }
 
 void SkinnedPlayList::setMinimalMode(bool b)

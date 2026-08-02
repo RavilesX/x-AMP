@@ -8,6 +8,7 @@
 qmmp.pro.*
 bin/qmmp
 lib
+CLAUDE.md
 
 # --- CMake build output ---
 build/
