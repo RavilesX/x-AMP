@@ -154,9 +154,9 @@ void XUiMainWindow::showMainMenu()
         m_mainMenu = new QMenu(this);
 
         QMenu *file = m_mainMenu->addMenu(tr("&Add"));
-        file->addAction(tr("Add &File..."), QKeySequence(tr("Ctrl+F")),
+        file->addAction(tr("Add &File..."), QKeySequence(tr("Ctrl+Shift+A")),
                         this, [this] { m_uiHelper->addFiles(this); });
-        file->addAction(tr("Add &Directory..."), QKeySequence(tr("Ctrl+D")),
+        file->addAction(tr("Add &Directory..."), QKeySequence(tr("Ctrl+Shift+D")),
                         this, [this] { m_uiHelper->addDirectory(this); });
         file->addAction(tr("Add &URL..."), QKeySequence(tr("Ctrl+U")),
                         this, [this] { m_uiHelper->addUrl(this); });
@@ -173,6 +173,9 @@ void XUiMainWindow::showMainMenu()
 
         //view toggles mirror the preferences page, so both stay in step
         QMenu *view = m_mainMenu->addMenu(tr("&View"));
+        view->addAction(tr("&Search Playlist"), QKeySequence(tr("Ctrl+F")),
+                        m_playlistCard, &XUiPlaylistCard::toggleSearch);
+        view->addSeparator();
         QSettings settings;
         QAction *equalizer = view->addAction(tr("&Equalizer"));
         equalizer->setCheckable(true);
@@ -230,10 +233,12 @@ void XUiMainWindow::createShortcuts()
 
     new QShortcut(QKeySequence(QStringLiteral("Ctrl+P")), this,
                   this, &XUiMainWindow::showPreferences);
-    new QShortcut(QKeySequence(QStringLiteral("Ctrl+F")), this,
+    new QShortcut(QKeySequence(QStringLiteral("Ctrl+Shift+A")), this,
                   this, [this] { m_uiHelper->addFiles(this); });
-    new QShortcut(QKeySequence(QStringLiteral("Ctrl+D")), this,
+    new QShortcut(QKeySequence(QStringLiteral("Ctrl+Shift+D")), this,
                   this, [this] { m_uiHelper->addDirectory(this); });
+    new QShortcut(QKeySequence(QStringLiteral("Ctrl+F")), this,
+                  m_playlistCard, &XUiPlaylistCard::toggleSearch);
     new QShortcut(QKeySequence(QStringLiteral("Ctrl+Q")), this,
                   this, [this] { m_uiHelper->exit(); });
 }

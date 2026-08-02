@@ -2,5 +2,6 @@
 <RCC version="1.0">
   <qresource>
     <file>xui_plugin_en.qm</file>
+    <file>xui_plugin_es.qm</file>
   </qresource>
 </RCC>

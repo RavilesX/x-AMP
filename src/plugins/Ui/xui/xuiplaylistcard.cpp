@@ -87,20 +87,11 @@ QWidget *XUiPlaylistCard::buildHeader()
     layout->addWidget(m_search, 1);
     layout->addStretch(1);
 
-    XUiIconButton *add = new XUiIconButton(XUiIcons::Plus, header);
-    add->setToolTip(tr("Add"));
-    connect(add, &XUiIconButton::clicked, this, &XUiPlaylistCard::showAddMenu);
-
-    XUiIconButton *list = new XUiIconButton(XUiIcons::List, header);
-    list->setToolTip(tr("Playlists"));
-    connect(list, &XUiIconButton::clicked, this, &XUiPlaylistCard::showPlaylistsMenu);
-
+    //adding and playlists live in the footer; only search is here, since it
+    //acts on this header's own field
     XUiIconButton *search = new XUiIconButton(XUiIcons::Search, header);
-    search->setToolTip(tr("Search"));
+    search->setToolTip(tr("Search (Ctrl+F)"));
     connect(search, &XUiIconButton::clicked, this, &XUiPlaylistCard::toggleSearch);
-
-    layout->addWidget(add);
-    layout->addWidget(list);
     layout->addWidget(search);
     return header;
 }

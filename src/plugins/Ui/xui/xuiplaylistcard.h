@@ -39,11 +39,13 @@ class XUiPlaylistCard : public QWidget
 public:
     explicit XUiPlaylistCard(QWidget *parent = nullptr);
 
+    /*! Shows or hides the search field. Driven by Ctrl+F on the window. */
+    void toggleSearch();
+
 protected:
     void paintEvent(QPaintEvent *) override;
 
 private slots:
-    void toggleSearch();
     void showAddMenu();
     void showRemoveMenu();
     void showSelectMenu();
