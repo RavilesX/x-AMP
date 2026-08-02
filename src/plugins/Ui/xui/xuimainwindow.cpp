@@ -39,6 +39,7 @@
 #include "xuiequalizercard.h"
 #include "xuiplaylistcard.h"
 #include "xuisettings.h"
+#include "xuistyle.h"
 #include "xuimainwindow.h"
 
 namespace
@@ -59,8 +60,14 @@ XUiMainWindow::XUiMainWindow(QWidget *parent) : QWidget(parent)
     setMouseTracking(true);
     //menus, tooltips and dialogs are plain Qt widgets and would otherwise
     //follow the desktop's theme, which need not be dark like the cards
-    setPalette(XUi::palette());
-    setStyleSheet(XUi::styleSheet());
+    //Applied to the whole application rather than to this window: the shared
+    //dialogs from libqmmpui (track details, preferences) are separate
+    //top-level windows, and only one interface is ever loaded per process,
+    //so nothing else is affected. Order matters -- setStyle resets the
+    //palette, so it goes first.
+    qApp->setStyle(new XUiStyle);
+    qApp->setPalette(XUi::palette());
+    qApp->setStyleSheet(XUi::styleSheet());
     //no hand-picked minimum: an explicit one smaller than the cards need lets
     //Qt squeeze them past their own minimums, which crushes the player card.
     //Let the layout derive it instead.

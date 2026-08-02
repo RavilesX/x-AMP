@@ -713,10 +713,21 @@ que heredan los hijos y los emergentes con ella de padre. Ahí viven también
 los estilos del campo de búsqueda y la barra de desplazamiento de la lista,
 que antes estaban repetidos en cada widget.
 
-**Los diálogos compartidos** (detalles, preferencias) vienen de `libqmmpui` y
-los usan las tres interfaces; heredan la hoja por ser hijos de la ventana,
-pero su disposición sigue siendo la de upstream. Rehacerlos sería un tema
-global, no cosa de este plugin.
+**Paleta, hoja de estilos y estilo se aplican a `qApp`, no a la ventana.** Los
+diálogos compartidos —detalles de pista, preferencias— son ventanas de nivel
+superior de `libqmmpui`, y por ahí no llegaba la hoja puesta en la ventana
+principal. Como **solo se carga una interfaz por proceso**, hacerlo global no
+afecta a nadie más. Orden importante: `setStyle()` **antes** que
+`setPalette()`, porque reinicia la paleta.
+
+Su *disposición* sigue siendo la de upstream; solo se uniforman las
+superficies (pestañas, botones, campos, cabeceras).
+
+**El retardo del tooltip es un `styleHint`, no una propiedad.** Los 700 ms de
+Qt se hacen eternos en botones que son solo un icono. Único modo de cambiarlo:
+un `QProxyStyle` que devuelva `SH_ToolTip_WakeUpDelay` — 250 ms aquí, y
+`SH_ToolTip_FallAsleepDelay` a 0 para que al pasar entre botones vecinos cada
+uno se muestre de inmediato.
 
 **UI por defecto: sigue siendo `skinned`** (decidido, no pendiente).
 `QMMP_DEFAULT_UI` no se toca por ahora. `xui` es nueva y le faltan cosas que

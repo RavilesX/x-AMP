@@ -10,6 +10,7 @@ set(libxui_SRCS
     xuiplayercard.cpp
     xuiplaylistcard.cpp
     xuisettings.cpp
+    xuistyle.cpp
     xuivisualization.cpp
     translations/translations.qrc
 )

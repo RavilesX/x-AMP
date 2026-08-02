@@ -146,9 +146,62 @@ namespace XUi
             "  background: %6; border: 1px solid %2; border-radius: 8px;"
             "  padding: 0 10px; color: %3; selection-background-color: %4;"
             "}"
-            "QLineEdit:focus { border-color: %4; }")
+            "QLineEdit:focus { border-color: %4; }"
+
+            //shared dialogs: track details, preferences. Their layouts stay as
+            //libqmmpui builds them; only the surfaces are brought into line.
+            "QDialog, QDialog QWidget { background-color: %7; color: %3; }"
+            "QTabWidget::pane {"
+            "  border: 1px solid %2; border-radius: 8px; top: -1px;"
+            "}"
+            "QTabBar::tab {"
+            "  background: transparent; color: %5;"
+            "  padding: 7px 16px; margin-right: 2px;"
+            "  border: 1px solid transparent;"
+            "  border-top-left-radius: 7px; border-top-right-radius: 7px;"
+            "}"
+            "QTabBar::tab:hover { color: %3; }"
+            "QTabBar::tab:selected {"
+            "  color: %3; background: %1; border-color: %2; border-bottom-color: %1;"
+            "}"
+            "QTextEdit, QPlainTextEdit, QAbstractItemView {"
+            "  background: %6; border: 1px solid %2; border-radius: 8px;"
+            "  color: %3; selection-background-color: %4;"
+            "}"
+            "QPushButton, QToolButton {"
+            "  background: %6; border: 1px solid %2; border-radius: 7px;"
+            "  padding: 6px 14px; color: %3;"
+            "}"
+            "QPushButton:hover, QToolButton:hover { background: %8; }"
+            "QPushButton:pressed, QToolButton:pressed { background: %2; }"
+            "QPushButton:disabled, QToolButton:disabled { color: %5; }"
+            "QPushButton:default { border-color: %4; }"
+            "QCheckBox, QRadioButton, QGroupBox { color: %3; }"
+            "QGroupBox {"
+            "  border: 1px solid %2; border-radius: 8px;"
+            "  margin-top: 10px; padding-top: 8px;"
+            "}"
+            "QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 4px; }"
+            "QCheckBox::indicator, QRadioButton::indicator {"
+            "  width: 15px; height: 15px;"
+            "  border: 1px solid %2; border-radius: 4px; background: %6;"
+            "}"
+            "QRadioButton::indicator { border-radius: 8px; }"
+            "QCheckBox::indicator:checked, QRadioButton::indicator:checked {"
+            "  background: %4; border-color: %4;"
+            "}"
+            "QComboBox, QSpinBox, QDoubleSpinBox {"
+            "  background: %6; border: 1px solid %2; border-radius: 7px;"
+            "  padding: 4px 8px; color: %3;"
+            "}"
+            "QComboBox:focus, QSpinBox:focus { border-color: %4; }"
+            "QHeaderView::section {"
+            "  background: %1; color: %5; border: 0; border-bottom: 1px solid %2;"
+            "  padding: 5px 8px;"
+            "}")
             .arg(CardTop.name(), Border.name(), Text.name(),
-                 Accent.name(), TextFaint.name(), Elevated.name());
+                 Accent.name(), TextFaint.name(), Elevated.name(),
+                 Card.name(), Hover.name());
     }
 }
 
