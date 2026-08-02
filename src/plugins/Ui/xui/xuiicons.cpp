@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
+#include <QGuiApplication>
+#include <QIcon>
 #include <QPainter>
+#include <QPixmap>
 #include <QPainterPath>
 #include <QRectF>
 #include <cmath>
@@ -89,6 +92,17 @@ namespace
         path->lineTo(x, y);
         path->lineTo(x - dy, y + dx);
     }
+}
+
+QIcon XUiIcons::toIcon(Icon icon, int size, const QColor &color)
+{
+    const qreal ratio = qGuiApp ? qGuiApp->devicePixelRatio() : 1.0;
+    QPixmap pixmap(int(size * ratio), int(size * ratio));
+    pixmap.setDevicePixelRatio(ratio);
+    pixmap.fill(Qt::transparent);
+    QPainter p(&pixmap);
+    paint(&p, icon, QRectF(0, 0, size, size), color);
+    return QIcon(pixmap);
 }
 
 void XUiIcons::paint(QPainter *p, Icon icon, const QRectF &rect, const QColor &color)

@@ -150,7 +150,12 @@ namespace XUi
 
             //shared dialogs: track details, preferences. Their layouts stay as
             //libqmmpui builds them; only the surfaces are brought into line.
-            "QDialog, QDialog QWidget { background-color: %7; color: %3; }"
+            //The accent border sets them apart from the window behind, which
+            //is the same near-black. No radius: these keep the system title
+            //bar, whose corners are square, so a rounded edge would not meet
+            //it cleanly.
+            "QDialog { background-color: %7; color: %3; border: 2px solid %4; }"
+            "QDialog QWidget { background-color: %7; color: %3; }"
             "QTabWidget::pane {"
             "  border: 1px solid %2; border-radius: 8px; top: -1px;"
             "}"
@@ -168,6 +173,10 @@ namespace XUi
             "  background: %6; border: 1px solid %2; border-radius: 8px;"
             "  color: %3; selection-background-color: %4;"
             "}"
+            //without this the selected row keeps the style's own text colour,
+            //which came out dark against the accent
+            "QAbstractItemView::item:selected { background: %4; color: #ffffff; }"
+            "QAbstractItemView::item:hover { background: %8; }"
             "QPushButton, QToolButton {"
             "  background: %6; border: 1px solid %2; border-radius: 7px;"
             "  padding: 6px 14px; color: %3;"

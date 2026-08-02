@@ -22,6 +22,7 @@
 
 #include <QColor>
 
+class QIcon;
 class QPainter;
 class QRectF;
 
@@ -74,6 +75,13 @@ namespace XUiIcons
      * by the function and the painter state is restored on return.
      */
     void paint(QPainter *painter, Icon icon, const QRectF &rect, const QColor &color);
+
+    /*!
+     * Renders \b icon into a QIcon of \b size pixels, for the Qt widgets that
+     * ask for one instead of painting themselves -- config dialog pages, for
+     * instance. Honours the device pixel ratio.
+     */
+    QIcon toIcon(Icon icon, int size, const QColor &color);
 }
 
 #endif

@@ -200,7 +200,9 @@ void XUiMainWindow::showPreferences()
 {
     ConfigDialog dialog(this);
     XUiSettings *page = new XUiSettings(&dialog);
-    dialog.addPage(tr("Interface"), page);
+    //the other pages carry icons, so ours would sit oddly without one
+    dialog.addPage(tr("Interface"), page,
+                   XUiIcons::toIcon(XUiIcons::Equalizer, 32, XUi::Text));
     if(dialog.exec() == QDialog::Accepted)
     {
         page->writeSettings();
