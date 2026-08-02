@@ -33,11 +33,6 @@
 #include "xuilistview.h"
 #include "xuiplaylistcard.h"
 
-namespace
-{
-    
-}
-
 XUiPlaylistCard::XUiPlaylistCard(QWidget *parent) : QWidget(parent)
 {
     m_uiHelper = UiHelper::instance();
@@ -86,12 +81,6 @@ QWidget *XUiPlaylistCard::buildHeader()
     m_search->setPlaceholderText(tr("Search tracks..."));
     m_search->setFixedHeight(30);
     m_search->hide(); //revealed by the search button
-    m_search->setStyleSheet(QStringLiteral(
-        "QLineEdit { background: %1; border: 1px solid %2; border-radius: 8px;"
-        " padding: 0 10px; color: %3; }"
-        "QLineEdit:focus { border-color: %4; }")
-        .arg(XUi::Elevated.name(), XUi::Border.name(),
-             XUi::Text.name(), XUi::Accent.name()));
     connect(m_search, &QLineEdit::textChanged, this, [this](const QString &text) {
         m_list->setFilter(text);
     });

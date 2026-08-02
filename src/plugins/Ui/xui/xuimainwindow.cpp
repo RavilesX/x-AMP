@@ -60,6 +60,7 @@ XUiMainWindow::XUiMainWindow(QWidget *parent) : QWidget(parent)
     //menus, tooltips and dialogs are plain Qt widgets and would otherwise
     //follow the desktop's theme, which need not be dark like the cards
     setPalette(XUi::palette());
+    setStyleSheet(XUi::styleSheet());
     //no hand-picked minimum: an explicit one smaller than the cards need lets
     //Qt squeeze them past their own minimums, which crushes the player card.
     //Let the layout derive it instead.

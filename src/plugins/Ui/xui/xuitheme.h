@@ -22,6 +22,7 @@
 
 #include <QColor>
 #include <QPalette>
+#include <QString>
 
 /*!
  * Colours and metrics for the whole interface.
@@ -91,6 +92,63 @@ namespace XUi
         p.setColor(QPalette::Disabled, QPalette::ButtonText, TextFaint);
         p.setColor(QPalette::Disabled, QPalette::WindowText, TextFaint);
         return p;
+    }
+
+    /*!
+     * Style sheet for the Qt widgets this interface does not paint itself.
+     *
+     * The palette alone is not enough: QStyle draws menus, tooltips and
+     * scrollbars with its own frames and gradients, so on a system style they
+     * came out grey and boxy next to the cards. Set on the main window, which
+     * child widgets and popups parented to it inherit.
+     */
+    inline QString styleSheet()
+    {
+        return QStringLiteral(
+            "QMenu {"
+            "  background-color: %1;"
+            "  border: 1px solid %2;"
+            "  border-radius: 10px;"
+            "  padding: 6px;"
+            "}"
+            "QMenu::item {"
+            "  padding: 7px 30px 7px 14px;"
+            "  margin: 1px 2px;"
+            "  border-radius: 6px;"
+            "  color: %3;"
+            "}"
+            "QMenu::item:selected { background-color: %4; color: #ffffff; }"
+            "QMenu::item:disabled { color: %5; }"
+            "QMenu::separator { height: 1px; background: %2; margin: 5px 10px; }"
+            //checkable entries: a small accent square instead of the style's box
+            "QMenu::indicator {"
+            "  width: 13px; height: 13px;"
+            "  margin-left: 6px;"
+            "  border: 1px solid %2;"
+            "  border-radius: 3px;"
+            "}"
+            "QMenu::indicator:checked { background-color: %4; border-color: %4; }"
+            "QToolTip {"
+            "  background-color: %1;"
+            "  color: %3;"
+            "  border: 1px solid %2;"
+            "  border-radius: 6px;"
+            "  padding: 4px 7px;"
+            "}"
+            "QScrollBar:vertical { background: transparent; width: 8px; margin: 0; }"
+            "QScrollBar::handle:vertical {"
+            "  background: %2; border-radius: 4px; min-height: 30px;"
+            "}"
+            "QScrollBar::handle:vertical:hover { background: %4; }"
+            "QScrollBar::add-line, QScrollBar::sub-line { height: 0; width: 0; }"
+            "QScrollBar::add-page, QScrollBar::sub-page { background: transparent; }"
+            "QLineEdit {"
+            "  background: %6; border: 1px solid %2; border-radius: 8px;"
+            "  padding: 0 10px; color: %3; selection-background-color: %4;"
+            "}"
+            "QLineEdit:focus { border-color: %4; }")
+            .arg(CardTop.name(), Border.name(), Text.name(),
+                 Accent.name(), TextFaint.name(), Elevated.name());
     }
 }
 

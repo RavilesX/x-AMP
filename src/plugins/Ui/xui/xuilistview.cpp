@@ -58,14 +58,7 @@ XUiListView::XUiListView(PlayListManager *manager, QWidget *parent)
     m_scrollBar = new QScrollBar(Qt::Vertical, this);
     m_scrollBar->setSingleStep(1);
     m_scrollBar->setPageStep(6);
-    m_scrollBar->setStyleSheet(QStringLiteral(
-        "QScrollBar:vertical { background: transparent; width: %1px; margin: 0; }"
-        "QScrollBar::handle:vertical { background: %2; border-radius: %3px; min-height: 30px; }"
-        "QScrollBar::handle:vertical:hover { background: %4; }"
-        "QScrollBar::add-line, QScrollBar::sub-line { height: 0; }"
-        "QScrollBar::add-page, QScrollBar::sub-page { background: transparent; }")
-        .arg(SCROLLBAR_WIDTH).arg(XUi::Border.name())
-        .arg(SCROLLBAR_WIDTH / 2).arg(XUi::Accent.name()));
+    //appearance comes from the window's style sheet, in XUi::styleSheet()
     connect(m_scrollBar, &QScrollBar::valueChanged, this, qOverload<>(&QWidget::update));
 
     connect(m_manager, &PlayListManager::selectedPlayListChanged,

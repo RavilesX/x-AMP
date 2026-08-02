@@ -705,9 +705,18 @@ pueda, que sí es concluyente.
 plugin propio de x-AMP no puede registrarse ahí. CLAUDE.md decía lo contrario
 en el paso 4 de «Adding a plugin»; corregido.
 
-**Los diálogos compartidos** (detalles, preferencias) siguen el tema del
-sistema, no la paleta de `xui`. Son de `libqmmpui` y los usan las tres
-interfaces: uniformarlos sería un tema global, no cosa de este plugin.
+**La paleta no basta para los menús.** `QStyle` dibuja `QMenu`, `QToolTip` y
+las barras de desplazamiento con sus propios marcos y degradados, así que con
+el estilo del sistema salían grises y cuadrados junto a las tarjetas. Hace
+falta hoja de estilos: `XUi::styleSheet()`, puesta en la ventana principal,
+que heredan los hijos y los emergentes con ella de padre. Ahí viven también
+los estilos del campo de búsqueda y la barra de desplazamiento de la lista,
+que antes estaban repetidos en cada widget.
+
+**Los diálogos compartidos** (detalles, preferencias) vienen de `libqmmpui` y
+los usan las tres interfaces; heredan la hoja por ser hijos de la ventana,
+pero su disposición sigue siendo la de upstream. Rehacerlos sería un tema
+global, no cosa de este plugin.
 
 **UI por defecto: sigue siendo `skinned`** (decidido, no pendiente).
 `QMMP_DEFAULT_UI` no se toca por ahora. `xui` es nueva y le faltan cosas que
