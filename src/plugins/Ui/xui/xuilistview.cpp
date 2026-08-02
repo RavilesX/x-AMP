@@ -52,6 +52,8 @@ XUiListView::XUiListView(PlayListManager *manager, QWidget *parent)
     //showing only its header and footer reads as broken
     setMinimumHeight(ROW_HEIGHT * 3);
     setAcceptDrops(true); //files dropped from the file manager
+    //an explicit cursor, so the window's edge-resize cursor is never inherited
+    setCursor(Qt::ArrowCursor);
 
     m_scrollBar = new QScrollBar(Qt::Vertical, this);
     m_scrollBar->setSingleStep(1);
@@ -249,9 +251,10 @@ void XUiListView::mouseMoveEvent(QMouseEvent *e)
 void XUiListView::mouseReleaseEvent(QMouseEvent *e)
 {
     Q_UNUSED(e);
+    if(m_dragging)
+        setCursor(Qt::ArrowCursor); //restore whatever the drag replaced
     if(m_dragging && m_dropRow >= 0 && m_model)
     {
-        unsetCursor();
         //moveTracks moves the whole selection, taking the pressed row as its
         //reference; with no filter a row index is the track index
         const int to = qMin(m_dropRow, m_rows.size() - 1);

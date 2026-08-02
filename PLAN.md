@@ -775,6 +775,19 @@ código. Es lo que hacen `skinned` y `qsui`, y `MediaPlayer::next()` por dentro.
 Afectaba a dos sitios de `xui`: activar una fila de la lista y la vuelta al
 principio del botón Siguiente.
 
+### ⚠️ Cursor de redimensionado pegado en una ventana sin marco
+
+Al no haber marco, la ventana detecta sus bordes a mano en `mouseMoveEvent` y
+pone el cursor de redimensionado. Pero **al pasar el puntero a un widget hijo
+la ventana deja de recibir esos eventos**, así que nunca llega a su
+`unsetCursor()`: el cursor se queda puesto y todo hijo sin cursor propio lo
+hereda. Se veían las flechas `<>` por toda la lista hasta salir de ella.
+
+Dos medidas, por si una falla: `leaveEvent()` en la ventana lo limpia —Qt
+manda `Leave` también al entrar en un hijo— y la lista fija un cursor propio
+en vez de heredar. Ojo con `unsetCursor()` dentro de una rama condicional: si
+el arrastre acaba sin destino válido, el cursor de mano cerrada se quedaba.
+
 ### Huecos conocidos de `xui` frente a `skinned`
 
 Lista para una 5.6, si llega:

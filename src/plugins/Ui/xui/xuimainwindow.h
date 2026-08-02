@@ -51,6 +51,7 @@ protected:
     void mousePressEvent(QMouseEvent *) override;
     void mouseDoubleClickEvent(QMouseEvent *) override;
     void mouseMoveEvent(QMouseEvent *) override;
+    void leaveEvent(QEvent *) override;
     void closeEvent(QCloseEvent *) override;
 
 private slots:

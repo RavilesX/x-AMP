@@ -306,6 +306,15 @@ void XUiMainWindow::mouseMoveEvent(QMouseEvent *e)
         unsetCursor();
 }
 
+void XUiMainWindow::leaveEvent(QEvent *)
+{
+    //Qt sends Leave when the pointer moves onto a child widget too. Without
+    //clearing here, a resize cursor picked up at the window edge stayed set
+    //and every child without a cursor of its own inherited it -- the pointer
+    //kept showing the horizontal resize arrows over the playlist.
+    unsetCursor();
+}
+
 void XUiMainWindow::mousePressEvent(QMouseEvent *e)
 {
     if(e->button() != Qt::LeftButton)
