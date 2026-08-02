@@ -144,6 +144,15 @@ void XUiIcons::paint(QPainter *p, Icon icon, const QRectF &rect, const QColor &c
         p->drawPath(path);
         break;
     }
+    case Stop:
+        p->setPen(Qt::NoPen);
+        p->setBrush(color);
+        {
+            QPainterPath path;
+            path.addRoundedRect(QRectF(6, 6, 12, 12), 1.8, 1.8);
+            p->drawPath(path);
+        }
+        break;
     case Previous:
     case Next:
     {

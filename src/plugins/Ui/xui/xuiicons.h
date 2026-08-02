@@ -47,6 +47,7 @@ namespace XUiIcons
         Close,
         Play,
         Pause,
+        Stop,
         Previous,
         Next,
         Shuffle,

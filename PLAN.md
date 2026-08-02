@@ -742,11 +742,31 @@ Cinco cosas que solo salen usando el reproductor, no mirando capturas:
   borde a borde, así que el círculo se salía. Ahora está metido hacia dentro
   el radio del mando más el grosor del trazo.
 
+### Segunda ronda de uso real (5.5c)
+
+- **Rueda del ratón demasiado lenta.** Dividía el delta entre 60 a ojo. Ahora
+  usa `QApplication::wheelScrollLines()`, la preferencia del escritorio, sobre
+  muescas de 120 unidades.
+- **La vista saltaba a la pista en reproducción al hacer clic** en una fila
+  lejana. `listChanged` también se emite al seleccionar, y `onModelChanged()`
+  llamaba a `ensureVisible(currentIndex)` en todas. Ahora solo sigue a la
+  pista actual cuando *cambia* de pista.
+- **«Siguiente» al final de la lista no volvía al principio.** El `next()` del
+  motor simplemente para: dar la vuelta es para lo que está repetir-lista.
+  Pulsar Siguiente es otra intención, así que `xui` envuelve — salvo con
+  aleatorio o repetir activos, que ya deciden el orden ellos.
+- **Faltaba botón de Stop.** Añadido entre reproducir y siguiente. Su icono va
+  un poco más grande que el tamaño base: un cuadrado relleno se lee más
+  pequeño que los triángulos de al lado.
+- **Soltar archivos desde el gestor** en la lista, con
+  `PlayListModel::insertUrls(index, urls)`, reutilizando el marcador de
+  inserción del reordenado. Desactivado con la búsqueda activa, igual que el
+  reordenado.
+
 ### Huecos conocidos de `xui` frente a `skinned`
 
 Lista para una 5.6, si llega:
 
-- Soltar archivos desde el gestor de archivos.
 - Columnas configurables y ordenación por columna.
 - Pestañas de listas (hoy se cambia por el menú `Lst`).
 - Importar presets de Winamp (`.q1`).

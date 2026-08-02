@@ -61,6 +61,8 @@ private slots:
     void seek(qint64 position);
     /*! Cycles off -> repeat list -> repeat track. */
     void cycleRepeat();
+    /*! Next, wrapping to the first track at the end of the playlist. */
+    void nextTrack();
     void updateRepeat();
 
 private:

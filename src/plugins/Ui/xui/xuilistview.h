@@ -57,6 +57,10 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent *) override;
     void keyPressEvent(QKeyEvent *) override;
     void contextMenuEvent(QContextMenuEvent *) override;
+    void dragEnterEvent(QDragEnterEvent *) override;
+    void dragMoveEvent(QDragMoveEvent *) override;
+    void dragLeaveEvent(QDragLeaveEvent *) override;
+    void dropEvent(QDropEvent *) override;
 
 private slots:
     void onModelChanged();
@@ -78,6 +82,13 @@ private:
     QList<int> m_rows;
     QString m_filter;
     int m_anchor = -1; //for shift-extended selection
+
+    /*! Row boundary nearest \b y, for both reordering and external drops. */
+    int dropRowAt(int y) const;
+
+    //current track the view last scrolled to, so it only follows real
+    //changes of track rather than every list update
+    int m_lastCurrent = -1;
 
     //drag to reorder
     QPoint m_pressPos;

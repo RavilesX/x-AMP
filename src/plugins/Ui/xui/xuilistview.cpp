@@ -18,6 +18,9 @@
  ***************************************************************************/
 
 #include <QContextMenuEvent>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
 #include <QKeyEvent>
 #include <QMenu>
 #include <QMouseEvent>
@@ -48,6 +51,7 @@ XUiListView::XUiListView(PlayListManager *manager, QWidget *parent)
     //keep a few rows even at the window's minimum size: a playlist card
     //showing only its header and footer reads as broken
     setMinimumHeight(ROW_HEIGHT * 3);
+    setAcceptDrops(true); //files dropped from the file manager
 
     m_scrollBar = new QScrollBar(Qt::Vertical, this);
     m_scrollBar->setSingleStep(1);
@@ -86,8 +90,14 @@ void XUiListView::onModelChanged()
 {
     rebuildRows();
     updateScrollBar();
-    if(m_model)
-        ensureVisible(m_rows.indexOf(m_model->currentIndex()));
+    //Only follow the playing track when it actually changes. listChanged also
+    //fires for selection, so scrolling on every one of them yanked the view
+    //back to the current track as soon as a distant row was clicked.
+    if(m_model && m_model->currentIndex() != m_lastCurrent)
+    {
+        m_lastCurrent = m_model->currentIndex();
+        ensureVisible(m_rows.indexOf(m_lastCurrent));
+    }
     update();
 }
 
@@ -142,6 +152,13 @@ void XUiListView::ensureVisible(int row)
         m_scrollBar->setValue(row - visibleRows() + 1);
 }
 
+int XUiListView::dropRowAt(int y) const
+{
+    //the marker sits between rows, so round to the nearest boundary
+    return qBound(0, m_scrollBar->value() + (y + ROW_HEIGHT / 2) / ROW_HEIGHT,
+                  m_rows.size());
+}
+
 int XUiListView::rowAt(int y) const
 {
     const int row = m_scrollBar->value() + y / ROW_HEIGHT;
@@ -157,7 +174,10 @@ void XUiListView::resizeEvent(QResizeEvent *)
 
 void XUiListView::wheelEvent(QWheelEvent *e)
 {
-    m_scrollBar->setValue(m_scrollBar->value() - e->angleDelta().y() / 60);
+    //one notch is 120 units; scroll by however many lines the desktop asks for
+    const qreal notches = e->angleDelta().y() / 120.0;
+    m_scrollBar->setValue(m_scrollBar->value()
+                          - qRound(notches * QApplication::wheelScrollLines()));
     e->accept();
 }
 
@@ -222,9 +242,7 @@ void XUiListView::mouseMoveEvent(QMouseEvent *e)
     else if(y > height() - ROW_HEIGHT)
         m_scrollBar->setValue(m_scrollBar->value() + 1);
 
-    //the drop marker sits between rows, so round to the nearest boundary
-    m_dropRow = qBound(0, m_scrollBar->value() + (y + ROW_HEIGHT / 2) / ROW_HEIGHT,
-                       m_rows.size());
+    m_dropRow = dropRowAt(y);
     update();
 }
 
@@ -323,6 +341,48 @@ void XUiListView::contextMenuEvent(QContextMenuEvent *e)
     connect(menu.addAction(tr("Remove &All")), &QAction::triggered,
             m_model, &PlayListModel::clear);
     menu.exec(e->globalPos());
+    update();
+}
+
+void XUiListView::dragEnterEvent(QDragEnterEvent *e)
+{
+    //reordering is internal, so only external URLs are of interest here
+    if(e->mimeData()->hasUrls() && m_filter.isEmpty())
+        e->acceptProposedAction();
+}
+
+void XUiListView::dragMoveEvent(QDragMoveEvent *e)
+{
+    if(!e->mimeData()->hasUrls())
+        return;
+    e->acceptProposedAction();
+    const int row = dropRowAt(e->position().y());
+    if(row != m_dropRow)
+    {
+        m_dropRow = row;
+        m_dragging = true; //reuse the reorder marker to show where they land
+        update();
+    }
+}
+
+void XUiListView::dragLeaveEvent(QDragLeaveEvent *)
+{
+    m_dropRow = -1;
+    m_dragging = false;
+    update();
+}
+
+void XUiListView::dropEvent(QDropEvent *e)
+{
+    if(m_model && e->mimeData()->hasUrls())
+    {
+        e->acceptProposedAction();
+        const int row = dropRowAt(e->position().y());
+        const int index = row < m_rows.size() ? m_rows.at(row) : m_model->trackCount();
+        m_model->insertUrls(index, e->mimeData()->urls());
+    }
+    m_dropRow = -1;
+    m_dragging = false;
     update();
 }
 

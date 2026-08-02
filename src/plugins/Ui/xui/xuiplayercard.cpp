@@ -204,9 +204,15 @@ QWidget *XUiPlayerCard::buildTransport()
             m_player->play();
     });
 
+    XUiIconButton *stop = new XUiIconButton(XUiIcons::Stop, panel);
+    stop->setIconSize(21); //a filled square reads smaller than the triangles
+    stop->setToolTip(tr("Stop"));
+    connect(stop, &XUiIconButton::clicked, m_player, &MediaPlayer::stop);
+
     XUiIconButton *next = new XUiIconButton(XUiIcons::Next, panel);
     next->setIconSize(24);
-    connect(next, &XUiIconButton::clicked, m_player, &MediaPlayer::next);
+    next->setToolTip(tr("Next"));
+    connect(next, &XUiIconButton::clicked, this, &XUiPlayerCard::nextTrack);
 
     //Three states rather than a checkbox: repeating only the playlist is
     //barely observable, and repeat-one is what the second press is expected
@@ -235,6 +241,8 @@ QWidget *XUiPlayerCard::buildTransport()
     layout->addWidget(previous);
     layout->addSpacing(6);
     layout->addWidget(m_play);
+    layout->addSpacing(6);
+    layout->addWidget(stop);
     layout->addSpacing(6);
     layout->addWidget(next);
     layout->addSpacing(6);
@@ -331,6 +339,26 @@ void XUiPlayerCard::updateVolume(int volume)
 void XUiPlayerCard::seek(qint64 position)
 {
     m_core->seek(position);
+}
+
+void XUiPlayerCard::nextTrack()
+{
+    //At the end of the playlist the engine's next() simply stops, since
+    //wrapping is what repeat-list is for. Pressing Next explicitly is a
+    //different intent, so wrap here -- unless shuffle or repeat already
+    //decide the order themselves.
+    PlayListModel *playList = PlayListManager::instance()->currentPlayList();
+    const bool wrap = playList->trackCount() > 0
+                      && playList->currentIndex() >= playList->trackCount() - 1
+                      && !m_settings->isShuffle()
+                      && !m_settings->isRepeatableList();
+    if(wrap)
+    {
+        playList->setCurrent(0);
+        m_player->play();
+        return;
+    }
+    m_player->next();
 }
 
 void XUiPlayerCard::cycleRepeat()
