@@ -25,6 +25,8 @@
 #include <qmmp/metadatamanager.h>
 #include <qmmpui/mediaplayer.h>
 #include <qmmpui/qmmpuisettings.h>
+#include <qmmpui/playlistmanager.h>
+#include <qmmpui/playlistmodel.h>
 #include "xuitheme.h"
 #include "xuicontrols.h"
 #include "xuivisualization.h"
@@ -105,17 +107,22 @@ QWidget *XUiPlayerCard::buildDetails()
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(4);
 
-    //title row: track name on the left, per-track actions on the right
+    //Title row: track name, and the details button. The design also shows a
+    //heart and an overflow menu; neither maps onto anything the engine can
+    //do -- there are no favourites, and every per-track action already lives
+    //in the playlist's context menu -- so they are left out rather than
+    //shipped dead.
     QHBoxLayout *titleRow = new QHBoxLayout;
     titleRow->setSpacing(2);
     m_title = makeLabel(XUi::Text, 1.3, true);
     titleRow->addWidget(m_title, 1);
-    for(XUiIcons::Icon icon : { XUiIcons::Heart, XUiIcons::More, XUiIcons::Kebab })
-    {
-        XUiIconButton *button = new XUiIconButton(icon, panel);
-        button->setCheckable(icon == XUiIcons::Heart);
-        titleRow->addWidget(button, 0, Qt::AlignTop);
-    }
+
+    XUiIconButton *details = new XUiIconButton(XUiIcons::Kebab, panel);
+    details->setToolTip(tr("Track details"));
+    connect(details, &XUiIconButton::clicked, this, [this] {
+        PlayListManager::instance()->currentPlayList()->showDetailsForCurrent(this);
+    });
+    titleRow->addWidget(details, 0, Qt::AlignTop);
     layout->addLayout(titleRow);
 
     m_artist = makeLabel(XUi::Accent, 1.0);

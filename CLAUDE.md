@@ -117,7 +117,7 @@ Two UIs ship: `skinned` (XMMS/Winamp 2.x skins, needs X11/xcb) and `qsui` (plain
 1. Create `src/plugins/<Category>/<name>/` with factory + implementation.
 2. Add a `CMakeLists.txt` following [src/plugins/Input/vorbis/CMakeLists.txt](src/plugins/Input/vorbis/CMakeLists.txt): `pkg_check_modules(... IMPORTED_TARGET)`, guard `add_library(... MODULE)` on `<LIB>_FOUND`, `install(TARGETS ... DESTINATION ${PLUGIN_DIR}/<Category>)`.
 3. Register the subdir + `option(USE_X ...)` in the category `CMakeLists.txt`, and add a `PRINT_SUMMARY` line in the top-level summary block.
-4. Add `translations/translations.qrc` + `<name>_plugin_en.ts` and register in [.tx/config](.tx/config).
+4. Add `translations/translations.qrc` + `<name>_plugin_en.ts`, then extract the strings: `/usr/lib/qt6/bin/lupdate <plugin dir> -ts <plugin dir>/translations/<name>_plugin_en.ts -no-obsolete`. Do **not** add an entry to [.tx/config](.tx/config): it points at `qmmp-development-team:p:qmmp`, upstream's Transifex project, which this fork cannot publish to. x-AMP-only plugins ship the English source and whatever translations arrive by pull request.
 
 ### Single instance / CLI
 

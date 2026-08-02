@@ -21,6 +21,7 @@
 #define XUITHEME_H
 
 #include <QColor>
+#include <QPalette>
 
 /*!
  * Colours and metrics for the whole interface.
@@ -59,6 +60,38 @@ namespace XUi
     inline constexpr int WindowRadius     = 14;
     inline constexpr int TitleBarHeight   = 38;
     inline constexpr int CardHeaderHeight = 46;
+
+    /*!
+     * Palette matching the cards, for the Qt widgets this interface does not
+     * paint itself: menus, tooltips, dialogs, the search field.
+     *
+     * Without it those follow whatever Qt theme the user runs, so a light
+     * desktop theme would put white menus over the dark cards. Applied to the
+     * main window, which every popup parented to it inherits.
+     */
+    inline QPalette palette()
+    {
+        QPalette p;
+        p.setColor(QPalette::Window, Card);
+        p.setColor(QPalette::WindowText, Text);
+        p.setColor(QPalette::Base, Elevated);
+        p.setColor(QPalette::AlternateBase, Card);
+        p.setColor(QPalette::Text, Text);
+        p.setColor(QPalette::Button, Elevated);
+        p.setColor(QPalette::ButtonText, Text);
+        p.setColor(QPalette::Highlight, Accent);
+        p.setColor(QPalette::HighlightedText, Text);
+        p.setColor(QPalette::ToolTipBase, Elevated);
+        p.setColor(QPalette::ToolTipText, Text);
+        p.setColor(QPalette::PlaceholderText, TextFaint);
+        p.setColor(QPalette::Light, Hover);
+        p.setColor(QPalette::Mid, Border);
+        p.setColor(QPalette::Dark, Background);
+        p.setColor(QPalette::Disabled, QPalette::Text, TextFaint);
+        p.setColor(QPalette::Disabled, QPalette::ButtonText, TextFaint);
+        p.setColor(QPalette::Disabled, QPalette::WindowText, TextFaint);
+        return p;
+    }
 }
 
 #endif

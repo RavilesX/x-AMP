@@ -680,8 +680,27 @@ sintética se perdía por eso. Con `XSetInputFocus` explícito
 (`win.set_input_focus`) más `configure(stack_mode=Above)` sí funciona, y así
 se comprobaron los atajos y el menú.
 
-**5.5 — Pulido y decisión de UI por defecto.** Solo entonces evaluar si `xui`
-sustituye a `skinned` como `QMMP_DEFAULT_UI`.
+**5.5 — Pulido.** ✅ hecha (queda decidir la UI por defecto)
+
+- **Fuera los controles muertos.** La fila del título llevaba un corazón, unos
+  puntos suspensivos y un menú de tres puntos sin conectar a nada — justo lo
+  que evité con AUTO y colé aquí. El de tres puntos ahora abre
+  `showDetailsForCurrent()`; los otros dos se van: no hay favoritos en el
+  motor, y las acciones por pista ya están en el menú contextual de la lista.
+- **Paleta propia** en `XUi::palette()`, aplicada a la ventana principal. Sin
+  ella los menús, tooltips y campos de texto siguen el tema Qt del usuario, y
+  un escritorio con tema claro pondría menús blancos sobre tarjetas oscuras.
+- **81 cadenas extraídas** con `lupdate` al `.ts` en inglés, que era un
+  esqueleto vacío.
+
+**Trampa heredada:** [.tx/config](.tx/config) apunta a
+`qmmp-development-team:p:qmmp`, el proyecto Transifex de **upstream**. Un
+plugin propio de x-AMP no puede registrarse ahí. CLAUDE.md decía lo contrario
+en el paso 4 de «Adding a plugin»; corregido.
+
+**Los diálogos compartidos** (detalles, preferencias) siguen el tema del
+sistema, no la paleta de `xui`. Son de `libqmmpui` y los usan las tres
+interfaces: uniformarlos sería un tema global, no cosa de este plugin.
 
 ### Trampas ya detectadas
 
