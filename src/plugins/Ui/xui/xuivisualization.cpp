@@ -39,18 +39,20 @@ namespace
         return int(std::pow(qreal(QMMP_VISUAL_FFT_SIZE), t));
     }
 
-    //Visual hands out samples in the ±32768 range, not normalised, so the raw
-    //FFT magnitudes are large. Same curve the bundled analysers use --
-    //20 / log(256) over a value already divided by 32768 -- rescaled to 0..1.
-    constexpr qreal Y_SCALE = 3.60673760222;
-    constexpr qreal STEPS = 15.0;
+    //takeFFTData() returns sqrt of the FFT output, whose range fft.c documents
+    //as ((FFT_BUFFER_SIZE / 2) * 32768)^2 -- so the magnitudes run up to
+    //256 * 32768. Normalise against that and read the result in decibels:
+    //a plain log floor cuts off the treble bins, which carry far less energy
+    //than the bass, and leaves the right half of the analyser dead.
+    constexpr qreal FFT_MAX = 256.0 * 32768.0;
+    constexpr qreal FLOOR_DB = -70.0;
 
     qreal magnitude(qreal raw)
     {
-        const qreal y = raw / 32768.0;
-        if(y <= 1.0)
-            return 0.0; //log of anything below 1 is negative: silence
-        return qBound(0.0, std::log(y) * Y_SCALE / STEPS, 1.0);
+        if(raw <= 0.0)
+            return 0.0;
+        const qreal db = 20.0 * std::log10(raw / FFT_MAX);
+        return qBound(0.0, 1.0 - db / FLOOR_DB, 1.0);
     }
 }
 
@@ -206,9 +208,12 @@ void XUiVuMeter::timeout()
                 sum += sample * sample;
             }
             const qreal rms = std::sqrt(sum / QMMP_VISUAL_NODE_SIZE);
-            //RMS of typical music sits well below 1.0; lift it so the meter
-            //uses its full height without pinning
-            m_levels[c] = qMax(qBound(0.0, rms * 3.0, 1.0), m_levels[c] - FALLOFF);
+            //also read in decibels: music sits around -20 dBFS, so a linear
+            //scale would leave the meter in its bottom couple of cells
+            qreal level = 0.0;
+            if(rms > 0.0)
+                level = qBound(0.0, 1.0 - (20.0 * std::log10(rms)) / -45.0, 1.0);
+            m_levels[c] = qMax(level, m_levels[c] - FALLOFF);
         }
     }
     else

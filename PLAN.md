@@ -54,7 +54,7 @@ Hecho:
 - [x] **Fase 3 — integración continua.**
 - [x] **Fase 4 — mejoras propias:** zoom 150 %, arreglo del cuelgue con
       shuffle, barra de transporte duplicada fuera.
-- [ ] **Fase 5 — interfaz nueva (`xui`).** 5.1 y 5.2 hechas; 5.3–5.5 pendientes.
+- [ ] **Fase 5 — interfaz nueva (`xui`).** 5.1–5.3 hechas; 5.4 y 5.5 pendientes.
 
 Lo tocado del código de Qmmp hasta ahora: dos arreglos de build (Fase 1), el
 rebranding (Fase 2) y las mejoras de la Fase 4. El motor de audio, los
@@ -613,12 +613,36 @@ Trampas:
   geometría guardada hay que hacer `expandedTo(minimumSizeHint())`, o un
   tamaño de antes de añadir una tarjeta la recorta.
 
-**5.3 — Tarjeta de la lista.** La parte gorda: selección múltiple, arrastrar y
-soltar, ordenación, cola, menú contextual, pestañas de listas, búsqueda,
-estado vacío. Adaptar `QSUiListWidget` en vez de reescribir.
+**5.3 — Tarjeta de la lista.** ✅ hecha
+Cabecera con añadir/listas/buscar, la lista de pistas, y la fila inferior
+Add · Sub · Sel · Lst del mockup. Selección simple, con Ctrl y con Mayús;
+doble clic o Intro reproduce; Supr borra; flechas navegan; menú contextual con
+reproducir, encolar y quitar; búsqueda que filtra en vivo; gestión de listas
+(crear, cambiar, borrar). Estado vacío ilustrado, con texto distinto si lo que
+está vacío es el resultado de una búsqueda.
 
-**5.4 — Menús, ajustes y persistencia.** Menú del hamburguesa, diálogo de
-preferencias, geometría y estado guardados, atajos.
+**Escrita desde cero, no adaptada de `qsui`.** `QSUiListWidget` está muy
+acoplado a su esquema de colores, su cabecera de columnas y su dibujante; traer
+eso habría arrastrado más código del que costó pintar filas directamente sobre
+`PlayListModel`. Nota: `PlayListModel` **no** es un `QAbstractItemModel`, así
+que un `QAbstractItemView` no sirve — y no hace falta, porque el estado
+interesante (pista actual, selección, posición en cola) ya vive en el modelo.
+
+**AUTO sigue sin estar.** Prometido aquí, pero hacerlo bien son presets por
+pista *más* la interfaz para guardarlos; a medias es justo lo que quiero
+evitar. Pasa a la 5.4.
+
+Trampa: **el suelo del analizador no puede ser logarítmico a secas.** Con
+`log(raw/32768)` los graves saturan y los agudos caen a cero, dejando muerta
+la mitad derecha del espectro. Hay que normalizar contra el máximo real que
+documenta [fft.c](src/qmmp/fft.c) —`(512/2) × 32768`— y leer el resultado en
+decibelios con suelo en −70 dB. Lo mismo para los VU: la RMS de música normal
+ronda −20 dBFS, así que en escala lineal el medidor no pasa de las dos
+primeras celdas.
+
+**5.4 — Menús, ajustes, persistencia y AUTO.** Menú del hamburguesa, página
+de preferencias propia, atajos, y el interruptor AUTO del ecualizador
+(presets por pista, con su interfaz para guardarlos).
 
 **5.5 — Pulido y decisión de UI por defecto.** Solo entonces evaluar si `xui`
 sustituye a `skinned` como `QMMP_DEFAULT_UI`.

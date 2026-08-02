@@ -17,64 +17,65 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
-#ifndef XUIMAINWINDOW_H
-#define XUIMAINWINDOW_H
+#ifndef XUILISTVIEW_H
+#define XUILISTVIEW_H
 
 #include <QWidget>
 
-class QMenu;
-class UiHelper;
-class SoundCore;
-class MediaPlayer;
+class QScrollBar;
+class PlayListModel;
 class PlayListManager;
-class XUiPlayerCard;
-class XUiEqualizerCard;
-class XUiPlaylistCard;
 
 /*!
- * Frameless main window with a title bar of its own.
+ * Track list, drawn with QPainter over PlayListModel.
  *
- * Frameless costs us the window manager's move, resize and snap behaviour,
- * so those are handed back to the compositor through startSystemMove() and
- * startSystemResize() rather than reimplemented by tracking the pointer --
- * that is the only approach that behaves identically on X11 and Wayland.
+ * Not a QAbstractItemView subclass: PlayListModel is not a QAbstractItemModel,
+ * and the interesting state (current track, queue position, selection) already
+ * lives in it. Painting rows directly avoids a proxy model that would only
+ * mirror what the engine already tracks.
  */
-class XUiMainWindow : public QWidget
+class XUiListView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit XUiMainWindow(QWidget *parent = nullptr);
-    ~XUiMainWindow();
+    explicit XUiListView(PlayListManager *manager, QWidget *parent = nullptr);
+
+    /*! Filters visible rows by a substring of the title. Empty shows all. */
+    void setFilter(const QString &filter);
+
+signals:
+    /*! A row was activated, so the caller can start playback. */
+    void activated();
 
 protected:
     void paintEvent(QPaintEvent *) override;
+    void resizeEvent(QResizeEvent *) override;
+    void wheelEvent(QWheelEvent *) override;
     void mousePressEvent(QMouseEvent *) override;
     void mouseDoubleClickEvent(QMouseEvent *) override;
-    void mouseMoveEvent(QMouseEvent *) override;
-    void closeEvent(QCloseEvent *) override;
+    void keyPressEvent(QKeyEvent *) override;
+    void contextMenuEvent(QContextMenuEvent *) override;
 
 private slots:
-    void showMainMenu();
-    void toggleMaximised();
-    void updateWindowTitle();
+    void onModelChanged();
+    void setModel(PlayListModel *model);
 
 private:
-    QWidget *buildTitleBar();
-    /*! Which window edges the pointer is over, for resize cursors. */
-    Qt::Edges edgesAt(const QPoint &pos) const;
-    void readSettings();
-    void writeSettings();
+    /*! Row index under \b y, or -1 past the end. */
+    int rowAt(int y) const;
+    int visibleRows() const;
+    void updateScrollBar();
+    void ensureVisible(int row);
+    /*! Model indices currently shown, honouring the filter. */
+    const QList<int> &rows() const { return m_rows; }
+    void rebuildRows();
 
-    UiHelper *m_uiHelper;
-    SoundCore *m_core;
-    MediaPlayer *m_player;
-    PlayListManager *m_playListManager;
-
-    QWidget *m_titleBar;
-    XUiPlayerCard *m_playerCard;
-    XUiEqualizerCard *m_equalizerCard;
-    XUiPlaylistCard *m_playlistCard;
-    QMenu *m_mainMenu = nullptr;
+    PlayListManager *m_manager;
+    PlayListModel *m_model = nullptr;
+    QScrollBar *m_scrollBar;
+    QList<int> m_rows;
+    QString m_filter;
+    int m_anchor = -1; //for shift-extended selection
 };
 
 #endif

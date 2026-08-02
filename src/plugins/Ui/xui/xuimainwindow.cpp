@@ -36,6 +36,7 @@
 #include "xuicontrols.h"
 #include "xuiplayercard.h"
 #include "xuiequalizercard.h"
+#include "xuiplaylistcard.h"
 #include "xuimainwindow.h"
 
 namespace
@@ -57,7 +58,7 @@ XUiMainWindow::XUiMainWindow(QWidget *parent) : QWidget(parent)
     //no hand-picked minimum: an explicit one smaller than the cards need lets
     //Qt squeeze them past their own minimums, which crushes the player card.
     //Let the layout derive it instead.
-    resize(780, 700);
+    resize(820, 900);
 
     QVBoxLayout *root = new QVBoxLayout(this);
     //margin leaves room for the rounded corners to show the desktop through
@@ -71,9 +72,10 @@ XUiMainWindow::XUiMainWindow(QWidget *parent) : QWidget(parent)
     root->addWidget(m_playerCard);
 
     m_equalizerCard = new XUiEqualizerCard(this);
-    root->addWidget(m_equalizerCard, 1);
+    root->addWidget(m_equalizerCard);
 
-    //the playlist card lands here in phase 5.3
+    m_playlistCard = new XUiPlaylistCard(this);
+    root->addWidget(m_playlistCard, 1); //the list absorbs spare height
 
     connect(m_core, &SoundCore::trackInfoChanged, this, &XUiMainWindow::updateWindowTitle);
     connect(m_player, &MediaPlayer::playbackFinished, this, &XUiMainWindow::updateWindowTitle);

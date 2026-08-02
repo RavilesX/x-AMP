@@ -5,8 +5,10 @@ set(libxui_SRCS
     xuiequalizercard.cpp
     xuifactory.cpp
     xuiicons.cpp
+    xuilistview.cpp
     xuimainwindow.cpp
     xuiplayercard.cpp
+    xuiplaylistcard.cpp
     xuivisualization.cpp
     translations/translations.qrc
 )

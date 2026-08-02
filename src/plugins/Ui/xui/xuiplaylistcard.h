@@ -17,64 +17,48 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
-#ifndef XUIMAINWINDOW_H
-#define XUIMAINWINDOW_H
+#ifndef XUIPLAYLISTCARD_H
+#define XUIPLAYLISTCARD_H
 
 #include <QWidget>
 
-class QMenu;
+class QLineEdit;
 class UiHelper;
-class SoundCore;
 class MediaPlayer;
 class PlayListManager;
-class XUiPlayerCard;
-class XUiEqualizerCard;
-class XUiPlaylistCard;
+class XUiListView;
+class XUiMenuButton;
 
 /*!
- * Frameless main window with a title bar of its own.
- *
- * Frameless costs us the window manager's move, resize and snap behaviour,
- * so those are handed back to the compositor through startSystemMove() and
- * startSystemResize() rather than reimplemented by tracking the pointer --
- * that is the only approach that behaves identically on X11 and Wayland.
+ * The playlist card: header with add/sort/search, the track list, and the
+ * row of menu buttons along the bottom.
  */
-class XUiMainWindow : public QWidget
+class XUiPlaylistCard : public QWidget
 {
     Q_OBJECT
 public:
-    explicit XUiMainWindow(QWidget *parent = nullptr);
-    ~XUiMainWindow();
+    explicit XUiPlaylistCard(QWidget *parent = nullptr);
 
 protected:
     void paintEvent(QPaintEvent *) override;
-    void mousePressEvent(QMouseEvent *) override;
-    void mouseDoubleClickEvent(QMouseEvent *) override;
-    void mouseMoveEvent(QMouseEvent *) override;
-    void closeEvent(QCloseEvent *) override;
 
 private slots:
-    void showMainMenu();
-    void toggleMaximised();
-    void updateWindowTitle();
+    void toggleSearch();
+    void showAddMenu();
+    void showRemoveMenu();
+    void showSelectMenu();
+    void showPlaylistsMenu();
 
 private:
-    QWidget *buildTitleBar();
-    /*! Which window edges the pointer is over, for resize cursors. */
-    Qt::Edges edgesAt(const QPoint &pos) const;
-    void readSettings();
-    void writeSettings();
+    QWidget *buildHeader();
+    QWidget *buildFooter();
 
     UiHelper *m_uiHelper;
-    SoundCore *m_core;
     MediaPlayer *m_player;
-    PlayListManager *m_playListManager;
-
-    QWidget *m_titleBar;
-    XUiPlayerCard *m_playerCard;
-    XUiEqualizerCard *m_equalizerCard;
-    XUiPlaylistCard *m_playlistCard;
-    QMenu *m_mainMenu = nullptr;
+    PlayListManager *m_manager;
+    XUiListView *m_list;
+    QLineEdit *m_search;
+    XUiMenuButton *m_playlists;
 };
 
 #endif
