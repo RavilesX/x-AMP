@@ -89,10 +89,13 @@ endif(QT_LRELEASE_EXECUTABLE)
 
 message(STATUS "Generating translations ...")
 
+#x-AMP: prune the build directory. With an in-source build it lives under
+#CMAKE_CURRENT_SOURCE_DIR, and CMake's own compiler_depend.ts timestamp files
+#match *.ts, so lrelease gets fed a couple hundred non-XML files.
 if(SVN_VERSION)
-    execute_process(COMMAND find ${CMAKE_CURRENT_SOURCE_DIR} -name *.ts -print0 COMMAND xargs -0 ${QT_LRELEASE_EXECUTABLE} -silent -nounfinished)
+    execute_process(COMMAND find ${CMAKE_CURRENT_SOURCE_DIR} -path ${CMAKE_BINARY_DIR} -prune -o -name *.ts -print0 COMMAND xargs -0 ${QT_LRELEASE_EXECUTABLE} -silent -nounfinished)
 else(SVN_VERSION)
-    execute_process(COMMAND find ${CMAKE_CURRENT_SOURCE_DIR} -name *.ts -print0 COMMAND xargs -0 ${QT_LRELEASE_EXECUTABLE} -silent)
+    execute_process(COMMAND find ${CMAKE_CURRENT_SOURCE_DIR} -path ${CMAKE_BINARY_DIR} -prune -o -name *.ts -print0 COMMAND xargs -0 ${QT_LRELEASE_EXECUTABLE} -silent)
 endif(SVN_VERSION)
 
 #x-AMP: installs alongside upstream qmmp. APP_NAME_SUFFIX keeps the internal
