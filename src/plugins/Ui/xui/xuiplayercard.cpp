@@ -121,7 +121,7 @@ QWidget *XUiPlayerCard::buildDetails()
     m_artist = makeLabel(XUi::Accent, 1.0);
     layout->addWidget(m_artist);
 
-    //format badges, and the channel indicator on the far right
+    //format badges
     QHBoxLayout *chipRow = new QHBoxLayout;
     chipRow->setSpacing(8);
     m_format = new XUiChip(panel);
@@ -131,17 +131,32 @@ QWidget *XUiPlayerCard::buildDetails()
     chipRow->addWidget(m_bitrate);
     chipRow->addWidget(m_sampleRate);
     chipRow->addStretch(1);
-    m_mono = makeLabel(XUi::TextFaint, 0.9, true);
-    m_mono->setText(tr("MONO"));
-    m_stereo = makeLabel(XUi::TextFaint, 0.9, true);
-    m_stereo->setText(tr("STEREO"));
-    chipRow->addWidget(m_mono);
-    chipRow->addWidget(m_stereo);
     layout->addLayout(chipRow);
 
     layout->addStretch(1);
 
-    //spectrum, elapsed/total, level meters
+    //MONO/STEREO sits directly over the meters, in one column with them, so
+    //the two share a width and each word lands over its own channel
+    QWidget *channels = new QWidget(panel);
+    QVBoxLayout *channelColumn = new QVBoxLayout(channels);
+    channelColumn->setContentsMargins(0, 0, 0, 0);
+    channelColumn->setSpacing(4);
+
+    QHBoxLayout *channelLabels = new QHBoxLayout;
+    channelLabels->setSpacing(6);
+    m_mono = makeLabel(XUi::TextFaint, 0.85, true);
+    m_mono->setText(tr("MONO"));
+    m_stereo = makeLabel(XUi::TextFaint, 0.85, true);
+    m_stereo->setText(tr("STEREO"));
+    channelLabels->addWidget(m_mono, 1, Qt::AlignCenter);
+    channelLabels->addWidget(m_stereo, 1, Qt::AlignCenter);
+    channelColumn->addLayout(channelLabels);
+
+    m_vu = new XUiVuMeter(panel);
+    m_vu->setFixedHeight(34); //width follows the labels above
+    channelColumn->addWidget(m_vu);
+
+    //spectrum, elapsed/total, then the channel column
     QHBoxLayout *visRow = new QHBoxLayout;
     visRow->setSpacing(10);
     m_spectrum = new XUiSpectrum(panel);
@@ -149,9 +164,7 @@ QWidget *XUiPlayerCard::buildDetails()
     visRow->addWidget(m_spectrum, 1);
     m_time = makeLabel(XUi::TextDim, 1.0, true);
     visRow->addWidget(m_time, 0, Qt::AlignBottom);
-    m_vu = new XUiVuMeter(panel);
-    m_vu->setFixedSize(66, 40);
-    visRow->addWidget(m_vu, 0, Qt::AlignBottom);
+    visRow->addWidget(channels, 0, Qt::AlignBottom);
     layout->addLayout(visRow);
 
     Visual::add(m_spectrum);
