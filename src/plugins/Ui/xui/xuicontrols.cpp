@@ -564,8 +564,20 @@ void XUiToggle::mouseReleaseEvent(QMouseEvent *e)
 
 // --------------------------------------------------------------- menu button
 
+namespace
+{
+    constexpr int GLYPH_SIZE = 16;
+}
+
 XUiMenuButton::XUiMenuButton(const QString &text, QWidget *parent)
     : QWidget(parent), m_text(text)
+{
+    setCursor(Qt::PointingHandCursor);
+    setFixedHeight(28);
+}
+
+XUiMenuButton::XUiMenuButton(XUiIcons::Icon icon, QWidget *parent)
+    : QWidget(parent), m_icon(icon), m_useIcon(true)
 {
     setCursor(Qt::PointingHandCursor);
     setFixedHeight(28);
@@ -582,7 +594,9 @@ void XUiMenuButton::setText(const QString &text)
 
 QSize XUiMenuButton::sizeHint() const
 {
-    return QSize(QFontMetrics(font()).horizontalAdvance(m_text) + 46, 28);
+    const int content = m_useIcon ? GLYPH_SIZE
+                                  : QFontMetrics(font()).horizontalAdvance(m_text);
+    return QSize(content + 46, 28);
 }
 
 void XUiMenuButton::paintEvent(QPaintEvent *)
@@ -593,8 +607,18 @@ void XUiMenuButton::paintEvent(QPaintEvent *)
     p.setBrush(m_hovered ? XUi::Hover : XUi::Elevated);
     p.drawRoundedRect(QRectF(rect()).adjusted(0.5, 0.5, -0.5, -0.5), 8, 8);
 
-    p.setPen(XUi::Text);
-    p.drawText(rect().adjusted(12, 0, -30, 0), Qt::AlignVCenter | Qt::AlignLeft, m_text);
+    if(m_useIcon)
+    {
+        XUiIcons::paint(&p, m_icon,
+                        QRectF(12, (height() - GLYPH_SIZE) / 2.0, GLYPH_SIZE, GLYPH_SIZE),
+                        m_hovered ? XUi::Text : XUi::TextDim);
+    }
+    else
+    {
+        p.setPen(XUi::Text);
+        p.drawText(rect().adjusted(12, 0, -30, 0),
+                   Qt::AlignVCenter | Qt::AlignLeft, m_text);
+    }
     XUiIcons::paint(&p, XUiIcons::ChevronDown,
                     QRectF(width() - 26.0, height() / 2.0 - 8.0, 16, 16), XUi::TextDim);
 }

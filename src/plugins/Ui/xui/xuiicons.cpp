@@ -293,11 +293,26 @@ void XUiIcons::paint(QPainter *p, Icon icon, const QRectF &rect, const QColor &c
         break;
     }
     case Plus:
+    case Minus:
     {
         QPainterPath path;
-        path.addPath(line(12, 5, 12, 19));
+        if(icon == Plus)
+            path.addPath(line(12, 5, 12, 19));
         path.addPath(line(5, 12, 19, 12));
         strokePath(p, path, color, W);
+        break;
+    }
+    case SelectAll:
+    {
+        //a marked box: the selection actions all act on what is ticked
+        QPainterPath box;
+        box.addRoundedRect(QRectF(4.5, 4.5, 15, 15), 3.5, 3.5);
+        strokePath(p, box, color, W);
+        QPainterPath check;
+        check.moveTo(8, 12.2);
+        check.lineTo(11, 15.2);
+        check.lineTo(16, 8.8);
+        strokePath(p, check, color, 2.0);
         break;
     }
     case Search:

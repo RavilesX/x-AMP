@@ -62,6 +62,8 @@ namespace XUiIcons
         Equalizer,
         PlaylistGlyph,
         Plus,
+        Minus,
+        SelectAll,
         Search,
         List,
         Settings,

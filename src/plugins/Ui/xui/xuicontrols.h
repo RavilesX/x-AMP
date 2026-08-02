@@ -209,6 +209,8 @@ class XUiMenuButton : public QWidget
     Q_OBJECT
 public:
     explicit XUiMenuButton(const QString &text, QWidget *parent = nullptr);
+    /*! Draws a glyph in place of the label, chevron unchanged. */
+    explicit XUiMenuButton(XUiIcons::Icon icon, QWidget *parent = nullptr);
 
     void setText(const QString &text);
 
@@ -224,6 +226,8 @@ protected:
 
 private:
     QString m_text;
+    XUiIcons::Icon m_icon = XUiIcons::Menu;
+    bool m_useIcon = false;
     bool m_hovered = false;
 };
 
