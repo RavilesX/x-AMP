@@ -47,6 +47,22 @@ cmake -B build -DUSE_JACK:BOOL=FALSE
 
 x-AMP se instala **junto a Qmmp**, sin pisarlo: el ejecutable es `xamp`, las librerías internas llevan el sufijo `-xamp` y la configuración vive en `~/.config/xamp`. Los dos reproductores pueden estar instalados y ejecutándose a la vez.
 
+## Interfaces
+
+Se incluyen tres. Se elige con `--ui` y la elección queda guardada:
+
+```sh
+xamp --ui xui        # interfaz propia de x-AMP: una ventana, tres secciones
+xamp --ui skinned    # clásica con skins de Winamp 2.x (la de por defecto)
+xamp --ui qsui       # widgets Qt convencionales
+xamp --ui-list       # ver las disponibles
+```
+
+`xui` está dibujada con `QPainter` en vez de mapas de bits, así que se ve
+nítida a cualquier tamaño y resolución. Es nueva: aún le faltan cosas que
+`skinned` sí tiene (reordenar arrastrando, columnas configurables, pestañas de
+listas), por eso todavía no es la de por defecto.
+
 La lista exacta de paquetes de desarrollo para Ubuntu/Mint está en [PLAN.md](PLAN.md) y es la misma que usa el workflow de [integración continua](.github/workflows/build.yml).
 
 Detalles de arquitectura, opciones de compilación y cómo escribir plugins: [CLAUDE.md](CLAUDE.md).

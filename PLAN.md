@@ -54,7 +54,7 @@ Hecho:
 - [x] **Fase 3 — integración continua.**
 - [x] **Fase 4 — mejoras propias:** zoom 150 %, arreglo del cuelgue con
       shuffle, barra de transporte duplicada fuera.
-- [ ] **Fase 5 — interfaz nueva (`xui`).** 5.1–5.3 hechas; 5.4 y 5.5 pendientes.
+- [x] **Fase 5 — interfaz nueva (`xui`).** 5.1–5.5 hechas. Disponible con `--ui xui`; el defecto sigue siendo `skinned`.
 
 Lo tocado del código de Qmmp hasta ahora: dos arreglos de build (Fase 1), el
 rebranding (Fase 2) y las mejoras de la Fase 4. El motor de audio, los
@@ -680,7 +680,7 @@ sintética se perdía por eso. Con `XSetInputFocus` explícito
 (`win.set_input_focus`) más `configure(stack_mode=Above)` sí funciona, y así
 se comprobaron los atajos y el menú.
 
-**5.5 — Pulido.** ✅ hecha (queda decidir la UI por defecto)
+**5.5 — Pulido.** ✅ hecha
 
 - **Fuera los controles muertos.** La fila del título llevaba un corazón, unos
   puntos suspensivos y un menú de tres puntos sin conectar a nada — justo lo
@@ -701,6 +701,24 @@ en el paso 4 de «Adding a plugin»; corregido.
 **Los diálogos compartidos** (detalles, preferencias) siguen el tema del
 sistema, no la paleta de `xui`. Son de `libqmmpui` y los usan las tres
 interfaces: uniformarlos sería un tema global, no cosa de este plugin.
+
+**UI por defecto: sigue siendo `skinned`** (decidido, no pendiente).
+`QMMP_DEFAULT_UI` no se toca por ahora. `xui` es nueva y le faltan cosas que
+`skinned` sí tiene —reordenar la lista arrastrando, columnas configurables,
+pestañas de listas, importar presets `.q1` de Winamp—. Se revisa tras uso
+diario. Quien la quiera: `xamp --ui xui`, que persiste en
+`Ui/current_plugin`.
+
+### Huecos conocidos de `xui` frente a `skinned`
+
+Lista para una 5.6, si llega:
+
+- Arrastrar y soltar para reordenar la lista, y soltar archivos desde el
+  gestor de archivos.
+- Columnas configurables y ordenación por columna.
+- Pestañas de listas (hoy se cambia por el menú `Lst`).
+- Importar presets de Winamp (`.q1`).
+- Icono de bandeja y control de visibilidad.
 
 ### Trampas ya detectadas
 
