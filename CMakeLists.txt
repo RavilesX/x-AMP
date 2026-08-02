@@ -276,6 +276,7 @@ message("")
 message("User Interfaces:")
 PRINT_SUMMARY ("Skinned user interface ................" USE_SKINNED SKINNED_AVAILABLE)
 PRINT_SUMMARY ("Simple user interface (QSUI) .........." USE_QSUI 1)
+PRINT_SUMMARY ("x-AMP user interface (XUI) ............" USE_XUI 1)
 
 message("")
 message("Advanced:")

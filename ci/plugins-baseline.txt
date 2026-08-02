@@ -68,3 +68,4 @@ WASAPI support (Windows) = disabled
 Wave support = enabled
 Waveout support (Windows) = disabled
 WavPack support = enabled
+x-AMP user interface (XUI) = enabled

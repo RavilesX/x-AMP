@@ -54,7 +54,7 @@ Hecho:
 - [x] **Fase 3 — integración continua.**
 - [x] **Fase 4 — mejoras propias:** zoom 150 %, arreglo del cuelgue con
       shuffle, barra de transporte duplicada fuera.
-- [ ] **Fase 5 — interfaz nueva (`xui`).** Analizada abajo, sin empezar.
+- [ ] **Fase 5 — interfaz nueva (`xui`).** 5.1 hecha; 5.2–5.5 pendientes.
 
 Lo tocado del código de Qmmp hasta ahora: dos arreglos de build (Fase 1), el
 rebranding (Fase 2) y las mejoras de la Fase 4. El motor de audio, los
@@ -553,13 +553,36 @@ Implementa `UiFactory` ([uifactory.h](src/qmmpui/uifactory.h)):
 
 ### Sub-fases
 
-**5.1 — Prototipo: tarjeta del reproductor.** ⬅️ siguiente
-Esqueleto del plugin (factory + CMake + traducciones) y solo la sección
-superior: carátula, metadatos, chips de formato, espectro, VU, MONO/STEREO,
-barra de posición, fila de transporte con el botón circular, volumen. Ventana
-sin marco con barra de título propia. Meta: **verlo corriendo y conectado al
-motor**, para validar aspecto y enfoque antes de escribir el resto. No es
-desechable: es el esqueleto sobre el que crecen las otras dos tarjetas.
+**5.1 — Prototipo: tarjeta del reproductor.** ✅ hecha
+Plugin `xui` completo de esqueleto y la sección superior funcionando: carátula,
+metadatos, chips de formato, espectro, VU, MONO/STEREO, barra de posición,
+transporte con botón circular y anillo de progreso, volumen. Ventana sin marco
+con barra de título propia. Probado con audio real: `xamp --ui xui`.
+
+Archivos, todos nuevos, en [src/plugins/Ui/xui/](src/plugins/Ui/xui/):
+`xuitheme.h` (paleta y métricas), `xuiicons` (24 glifos con `QPainterPath`),
+`xuicontrols` (botón de icono, botón circular, deslizador, chip, carátula),
+`xuivisualization` (espectro y VU, subclases de `Visual`), `xuiplayercard`,
+`xuimainwindow`, `xuifactory`.
+
+**Iconos: decidido dibujarlos en código.** Ni `QIcon::fromTheme` —se vería
+distinto en cada escritorio— ni SVG empaquetados. Son geometría simple: sin
+assets de terceros que licenciar, se recolorean solos desde la paleta y salen
+exactos a cualquier `devicePixelRatio`.
+
+Trampas encontradas al construirlo:
+
+- **El motor no muestra la ventana.** `QMMPStarter` solo llama a
+  `factory->create()`; cada interfaz se muestra a sí misma. Sin `show()` en el
+  constructor el proceso arranca, vive y no pinta nada.
+- **Las escalas de `Visual` no son la misma.** `takeFFTData()` devuelve
+  magnitudes en el rango que documenta [fft.c](src/qmmp/fft.c) —hasta
+  `(256 × 32768)`, de ahí el `>>15` de las interfaces existentes— pero
+  `takeData()` entrega PCM **ya normalizado a ±1**. Aplicar la misma división
+  a ambos satura el espectro y deja los VU apagados.
+- **`QList::assign` es de Qt 6.6**; aquí hay 6.4. Usar `QVector<T>(n, v)`.
+- El bitrate no está listo cuando llegan los metadatos: hay que conectar
+  `bitrateChanged` aparte, que además cubre los VBR.
 
 **5.2 — Tarjeta del ecualizador.** 10 bandas + preamp con el estilo del
 mockup (raíl fino, glow, mando redondeado), interruptor ON, AUTO, desplegable
