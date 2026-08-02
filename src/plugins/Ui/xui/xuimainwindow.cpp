@@ -40,6 +40,7 @@
 #include "xuiplaylistcard.h"
 #include "xuisettings.h"
 #include "xuistyle.h"
+#include "xuidialogs.h"
 #include "xuimainwindow.h"
 
 namespace
@@ -68,6 +69,9 @@ XUiMainWindow::XUiMainWindow(QWidget *parent) : QWidget(parent)
     qApp->setStyle(new XUiStyle);
     qApp->setPalette(XUi::palette());
     qApp->setStyleSheet(XUi::styleSheet());
+    //dialogs drop the window manager's grey frame; their accent border and
+    //their own buttons take over from it
+    XUiDialogs::install();
     //no hand-picked minimum: an explicit one smaller than the cards need lets
     //Qt squeeze them past their own minimums, which crushes the player card.
     //Let the layout derive it instead.

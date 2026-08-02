@@ -723,6 +723,22 @@ afecta a nadie más. Orden importante: `setStyle()` **antes** que
 Su *disposición* sigue siendo la de upstream; solo se uniforman las
 superficies (pestañas, botones, campos, cabeceras).
 
+**La barra de título de los diálogos la pinta el gestor de ventanas**, así que
+ni la paleta ni la hoja de estilos llegan a ella: se quedaba gris junto a las
+tarjetas oscuras. Probado primero `_GTK_THEME_VARIANT = "dark"`, la única
+palanca estándar del lado del cliente: **Muffin la ignora** —`xprop` confirma
+que la propiedad se pone, y el color medido es idéntico antes y después—, así
+que se revirtió junto con la dependencia de X11 que traía.
+
+Solución: **quitarles el marco** (`FramelessWindowHint`) en vez de imitarlo.
+Sale más barato que insertarles una barra propia, que habría exigido
+reestructurar en tiempo de ejecución el layout de diálogos construidos dentro
+de `libqmmpui`. Ya llevan borde de acento propio, y todos tienen sus botones
+para cerrar. Se hace desde un filtro de eventos de aplicación, en `Show`
+—`setWindowFlags` oculta el widget, así que hay que volver a mostrarlo— y una
+pulsación sobre el fondo del diálogo lo arrastra, que es lo único que se
+perdía.
+
 **El retardo del tooltip es un `styleHint`, no una propiedad.** Los 700 ms de
 Qt se hacen eternos en botones que son solo un icono. Único modo de cambiarlo:
 un `QProxyStyle` que devuelva `SH_ToolTip_WakeUpDelay` — 250 ms aquí, y

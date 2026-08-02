@@ -2,6 +2,7 @@ project(xui)
 
 set(libxui_SRCS
     xuicontrols.cpp
+    xuidialogs.cpp
     xuiequalizercard.cpp
     xuifactory.cpp
     xuiicons.cpp
