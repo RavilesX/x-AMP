@@ -19,7 +19,16 @@ Se mantienen separados a propósito: si `.svn` y `.git` vivieran en el mismo ár
 ## 2. Estado actual
 
 ```
-33f3b09 (main)     Record phases 1-2 in PLAN.md, drop qmake from CLAUDE.md
+c980ec8 (main)     Stop feeding CMake .ts timestamp files to lrelease
+7546875            Drop the duplicate playlist transport bar
+d306075            Compose sliders at base scale (150% seams)
+9d854cd            Add Zoom 150%
+69b0c29            Fix startup crash when shuffle is enabled
+138454f            Finish the rename (skin artwork, pulse, WM_CLASS)
+3d92bb3            Rename to xamp: no user-visible string says qmmp
+4c5a1c6            Commit the plugin baseline, activating the CI guard
+f519e15            Add CI: build, plugin guard, staged install
+33f3b09            Record phases 1-2 in PLAN.md, drop qmake from CLAUDE.md
 89eee43            Install and run alongside upstream qmmp as x-AMP
 764bd25            Remove the qmake build system
 b30a443            Fix distclean deleting unrelated directories
@@ -43,11 +52,13 @@ Hecho:
 - [x] **Fase 2 — rebranding e instalación paralela.**
 - [x] **Fase 2b — leyendas visibles: comando `xamp`, interfaz «x-AMP».**
 - [x] **Fase 3 — integración continua.**
+- [x] **Fase 4 — mejoras propias:** zoom 150 %, arreglo del cuelgue con
+      shuffle, barra de transporte duplicada fuera.
+- [ ] **Fase 5 — interfaz nueva (`xui`).** Analizada abajo, sin empezar.
 
-Lo tocado del código de Qmmp hasta ahora: dos arreglos de build (Fase 1) y el
-rebranding (Fase 2), más la eliminación de qmake. La lógica del reproductor
-—motor de audio, decodificadores, interfaces— sigue intacta. La Fase 4 está sin
-definir.
+Lo tocado del código de Qmmp hasta ahora: dos arreglos de build (Fase 1), el
+rebranding (Fase 2) y las mejoras de la Fase 4. El motor de audio, los
+decodificadores y las interfaces del sistema de plugins siguen intactos.
 
 ## 3. Ramas y sincronización con upstream
 
@@ -438,9 +449,156 @@ que mirarlos por la web.
   son nuestros. Por eso los warnings se reportan en el resumen del job en lugar
   de fallar.
 
-## Fase 4 — Mejoras propias
+## Fase 4 — Mejoras propias ✅ hecha
 
-**Pendiente de definir.** Anotar aquí las molestias concretas del Qmmp actual que motivaron el fork, priorizadas. Hasta tener esa lista, las fases 1–3 son trabajo de infraestructura válido en cualquier caso.
+Tres cambios salidos de usar el reproductor de verdad, no de una lista previa.
+
+**Zoom 150 %** (`9d854cd`, `d306075`). El skin a 1× se queda pequeño en
+pantallas actuales y a 2× es enorme. `Skin::ratio()` pasó a factor fraccional
+(1.0 / 1.5 / 2.0) con un ayudante `Skin::scaled()` que redondea con `qRound`;
+los 82 sitios de geometría van por ahí, porque con truncamiento entero la
+mitad de los widgets caía un píxel desplazada respecto a la otra. Acción
+«Zoom 150 %» (`Meta+E`), excluyente con «Double Size», ajuste
+`Skinned/zoom150`.
+
+> **Trampa del escalado fraccionario.** Las barras (volumen, balance,
+> posición, EQ) pintaban un botón ya escalado sobre un marco ya escalado. A
+> 1.5× cada pieza redondea a un factor efectivo distinto —marco de 13 px → 20
+> (×1.538), botón de 11 px → 17 (×1.545)— y el arte queda ~1 px desfasado: un
+> escalón visible en mitad de la barra. **Regla: componer a escala base y
+> escalar el compuesto una sola vez.** Un solo paso de escalado y las piezas
+> no pueden discrepar. Además `Qt::KeepAspectRatio` reajusta el tamaño ya
+> redondeado y devuelve pixmaps con un píxel de menos (413×174 pedido →
+> 412×174): usar `IgnoreAspectRatio` cuando ambas dimensiones ya llevan el
+> mismo factor.
+
+**Cuelgue al arrancar con shuffle** (`69b0c29`) — **bug de upstream**, presente
+en r13210. `PlayListModelPrivate` creaba el estado de reproducción en su
+constructor, y `ShufflePlayState::prepare()` llama a `model->trackCount()`,
+que desreferencia `model->d_ptr`… que se asigna con el resultado de ese mismo
+`new`. Puntero sin inicializar: cuelgue determinista en cada arranque si la
+configuración traía shuffle activado. Movido al cuerpo del constructor de
+`PlayListModel`, donde `d_ptr` ya es válido.
+
+**Barra de transporte duplicada de la lista** (`7546875`). La esquina inferior
+derecha de la lista repetía botones de reproducción y un tiempo
+transcurrido/total que la ventana principal ya muestra. Fuera el widget, los
+dos indicadores y todo lo que existía solo para alimentarlos. Detalle no
+obvio: los iconos estaban **horneados en `pledit.png`**, no los dibujaban los
+widgets, así que hubo que repintar el bitmap del skin o quedaban botones
+falsos.
+
+Reportar a upstream: el cuelgue del shuffle, el `distclean` destructivo
+(Fase 1) y el `find` de traducciones que traga los `compiler_depend.ts` de
+CMake (`c980ec8`).
+
+---
+
+## Fase 5 — Interfaz nueva (`xui`) 📋 analizada, sin empezar
+
+Objetivo: la interfaz del mockup — una sola ventana con tres tarjetas
+apiladas (reproductor, ecualizador, lista), fondo casi negro, acento azul,
+esquinas redondeadas, botón de reproducción circular con anillo, espectro y
+VU con degradado, estado vacío ilustrado.
+
+### Veredicto: no es un skin, es una interfaz nueva
+
+Descartado el formato de skin de Winamp 2.x que usa `skinned`. No es cuestión
+de esfuerzo, es que el formato no lo admite:
+
+- Son **tres ventanas separadas**, no una con secciones apiladas.
+- Los bitmaps son de **tamaño fijo**; el mockup es de ancho fluido.
+- No hay esquinas redondeadas, sombras, degradados ni glows: se recortan
+  sprites de una hoja con coordenadas fijas en C++
+  (`pixmap->copy(126,72,150,38)` y similares en [skin.cpp](src/plugins/Ui/skinned/skin.cpp)).
+- No existen los controles del mockup: interruptor ON, desplegable de
+  presets, campo de búsqueda, botón circular con anillo de progreso.
+
+El camino correcto es **`QPainter` + hojas de estilo QSS**, y sale ganando
+frente a los bitmaps: independiente de resolución y de `devicePixelRatio`, sin
+las costuras de redondeo que peleamos en la Fase 4 con el zoom al 150 %, y el
+tema se cambia tocando constantes en vez de repintar 14 PNG.
+
+### El motor ya da todo lo que pinta el mockup
+
+Es trabajo de presentación: **no hay que tocar el backend**.
+
+| Elemento del mockup | De dónde sale |
+|---|---|
+| Título, artista, carátula | `SoundCore::trackInfo()`, `PlayListTrack` |
+| `MP3` · `320 kbps` · `44 kHz` | `SoundCore::bitrate()`, `audioParameters()` |
+| `MONO` / `STEREO` | `SoundCore::audioParameters().channels()` |
+| Espectro y VU | API `Visual` — subclase + `Visual::add()` |
+| Posición, `01:35 / 04:20` | `elapsedChanged`, `duration()`, `seek()` |
+| Volumen, transporte, shuffle, repeat | `SoundCore`, `MediaPlayer`, `QmmpUiSettings` |
+| Bandas 60…16k + Preamp | `EqSettings::EQ_BANDS_10` — **son exactamente esas 10** |
+| Lista, ON/AUTO, presets | `PlayListManager` / `PlayListModel`, ya en `qsui` |
+
+`qsui` aporta además referencia viva: **9 widgets ya pintados con QPainter**
+(visualizador, ecualizador, carátula, cabecera de lista, waveform) y ~9000
+líneas de lista/menús/ajustes que funcionan y se pueden adaptar.
+
+### Arquitectura: plugin `Ui` nuevo, no un fork de qsui
+
+`xui` en [src/plugins/Ui/](src/plugins/Ui/), junto a `skinned` y `qsui`.
+Motivo: `qsui` es un `QMainWindow` clásico con barra de menús, barras de
+herramientas configurables y paneles acoplables; el mockup es otra cosa.
+Reestructurarlo sería cirugía mayor sobre código que funciona, y dejaría a los
+usuarios de `qsui` con una interfaz que no pidieron. Un plugin nuevo no rompe
+nada: `UiLoader` carga **una sola UI por proceso**, y las otras dos siguen ahí.
+
+Implementa `UiFactory` ([uifactory.h](src/qmmpui/uifactory.h)):
+`properties()` / `create()` / `showAbout()` / `translation()`, con
+`Q_PLUGIN_METADATA(IID "org.qmmp.qmmpui.UiFactoryInterface.1.0")`.
+
+### Sub-fases
+
+**5.1 — Prototipo: tarjeta del reproductor.** ⬅️ siguiente
+Esqueleto del plugin (factory + CMake + traducciones) y solo la sección
+superior: carátula, metadatos, chips de formato, espectro, VU, MONO/STEREO,
+barra de posición, fila de transporte con el botón circular, volumen. Ventana
+sin marco con barra de título propia. Meta: **verlo corriendo y conectado al
+motor**, para validar aspecto y enfoque antes de escribir el resto. No es
+desechable: es el esqueleto sobre el que crecen las otras dos tarjetas.
+
+**5.2 — Tarjeta del ecualizador.** 10 bandas + preamp con el estilo del
+mockup (raíl fino, glow, mando redondeado), interruptor ON, AUTO, desplegable
+de presets. Reaprovechar la lógica de presets de `qsui`.
+
+**5.3 — Tarjeta de la lista.** La parte gorda: selección múltiple, arrastrar y
+soltar, ordenación, cola, menú contextual, pestañas de listas, búsqueda,
+estado vacío. Adaptar `QSUiListWidget` en vez de reescribir.
+
+**5.4 — Menús, ajustes y persistencia.** Menú del hamburguesa, diálogo de
+preferencias, geometría y estado guardados, atajos.
+
+**5.5 — Pulido y decisión de UI por defecto.** Solo entonces evaluar si `xui`
+sustituye a `skinned` como `QMMP_DEFAULT_UI`.
+
+### Trampas ya detectadas
+
+- **Ventana sin marco:** `Qt::FramelessWindowHint` quita gratis el ajuste a
+  bordes, el redimensionado y la sombra del gestor de ventanas. Usar
+  `QWindow::startSystemMove()` / `startSystemResize()` en vez de mover la
+  ventana a mano: es lo único que funciona igual en X11 y Wayland.
+- **Iconos:** el mockup usa una veintena de glifos. `QIcon::fromTheme` depende
+  del tema del usuario y se vería distinto en cada escritorio. Hay que
+  empaquetar un juego propio (SVG en un `.qrc`, o trazados de `QPainterPath`).
+  Decidir antes de la 5.1, se propaga a todo.
+- **Solo una UI por proceso:** no se pueden comparar lado a lado. Probar con
+  `xamp --ui xui`; `xamp --ui-list` enumera las disponibles. La selección
+  persiste en `Ui/current_plugin`.
+- **Caché de plugins:** `QmmpPluginCache` guarda las `properties()` en
+  `QSettings` indexadas por ruta y fecha. Un plugin recompilado se detecta,
+  pero si se cambia `shortName` conviene borrar la caché del config.
+- **`create()` fija las bandas del EQ:** `qsui` llama a
+  `QmmpSettings::readEqSettings(EqSettings::EQ_BANDS_15)`. `xui` debe pedir
+  `EQ_BANDS_10` para cuadrar con el mockup.
+- **Traducciones:** `.ts` propio + `translations.qrc` + alta en
+  [.tx/config](.tx/config), como cualquier plugin nuevo (ver CLAUDE.md).
+- **Regla del zoom:** la lección de la Fase 4 se traduce aquí a componer y
+  escalar una sola vez. Con QPainter no hay pixmaps que redondeen distinto,
+  pero sí hay que respetar `devicePixelRatio` en cualquier pixmap cacheado.
 
 ---
 
