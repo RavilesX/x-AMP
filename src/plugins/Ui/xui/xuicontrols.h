@@ -54,7 +54,7 @@ protected:
 
 private:
     XUiIcons::Icon m_icon;
-    int m_iconSize = 20;
+    int m_iconSize = 18;
     bool m_checkable = false;
     bool m_checked = false;
     bool m_hovered = false;

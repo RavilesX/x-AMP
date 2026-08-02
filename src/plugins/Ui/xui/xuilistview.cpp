@@ -34,8 +34,8 @@
 
 namespace
 {
-    constexpr int ROW_HEIGHT = 34;
-    constexpr int PADDING = 14;
+    constexpr int ROW_HEIGHT = 28;
+    constexpr int PADDING = 12;
     constexpr int SCROLLBAR_WIDTH = 8;
 }
 
@@ -44,6 +44,9 @@ XUiListView::XUiListView(PlayListManager *manager, QWidget *parent)
 {
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
+    //keep a few rows even at the window's minimum size: a playlist card
+    //showing only its header and footer reads as broken
+    setMinimumHeight(ROW_HEIGHT * 3);
 
     m_scrollBar = new QScrollBar(Qt::Vertical, this);
     m_scrollBar->setSingleStep(1);

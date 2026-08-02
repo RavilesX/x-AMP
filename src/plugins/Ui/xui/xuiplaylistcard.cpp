@@ -35,7 +35,7 @@
 
 namespace
 {
-    constexpr int HEADER_HEIGHT = 58;
+    
 }
 
 XUiPlaylistCard::XUiPlaylistCard(QWidget *parent) : QWidget(parent)
@@ -60,7 +60,7 @@ XUiPlaylistCard::XUiPlaylistCard(QWidget *parent) : QWidget(parent)
 QWidget *XUiPlaylistCard::buildHeader()
 {
     QWidget *header = new QWidget(this);
-    header->setFixedHeight(HEADER_HEIGHT);
+    header->setFixedHeight(XUi::CardHeaderHeight);
     QHBoxLayout *layout = new QHBoxLayout(header);
     layout->setContentsMargins(XUi::CardPadding, 0, XUi::CardPadding, 0);
     layout->setSpacing(4);
@@ -113,7 +113,7 @@ QWidget *XUiPlaylistCard::buildHeader()
 QWidget *XUiPlaylistCard::buildFooter()
 {
     QWidget *footer = new QWidget(this);
-    footer->setFixedHeight(56);
+    footer->setFixedHeight(46);
     QHBoxLayout *layout = new QHBoxLayout(footer);
     layout->setContentsMargins(XUi::CardPadding, 0, XUi::CardPadding, 12);
     layout->setSpacing(8);
@@ -219,5 +219,5 @@ void XUiPlaylistCard::paintEvent(QPaintEvent *)
     p.drawRoundedRect(QRectF(rect()).adjusted(0.5, 0.5, -0.5, -0.5),
                       XUi::CardRadius, XUi::CardRadius);
     p.setPen(QPen(XUi::Border, 1));
-    p.drawLine(QPointF(1, HEADER_HEIGHT), QPointF(width() - 1, HEADER_HEIGHT));
+    p.drawLine(QPointF(1, XUi::CardHeaderHeight), QPointF(width() - 1, XUi::CardHeaderHeight));
 }

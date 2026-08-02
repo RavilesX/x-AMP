@@ -31,7 +31,7 @@ XUiIconButton::XUiIconButton(XUiIcons::Icon icon, QWidget *parent)
     : QWidget(parent), m_icon(icon)
 {
     setCursor(Qt::PointingHandCursor);
-    setFixedSize(m_iconSize + 16, m_iconSize + 16);
+    setFixedSize(m_iconSize + 12, m_iconSize + 12);
 }
 
 void XUiIconButton::setIcon(XUiIcons::Icon icon)
@@ -43,7 +43,7 @@ void XUiIconButton::setIcon(XUiIcons::Icon icon)
 void XUiIconButton::setIconSize(int size)
 {
     m_iconSize = size;
-    setFixedSize(size + 16, size + 16);
+    setFixedSize(size + 12, size + 12);
     update();
 }
 
@@ -121,7 +121,7 @@ void XUiIconButton::mouseReleaseEvent(QMouseEvent *e)
 XUiPlayButton::XUiPlayButton(QWidget *parent) : QWidget(parent)
 {
     setCursor(Qt::PointingHandCursor);
-    setFixedSize(78, 78);
+    setFixedSize(60, 60);
 }
 
 void XUiPlayButton::setPlaying(bool playing)
@@ -181,7 +181,7 @@ void XUiPlayButton::paintEvent(QPaintEvent *)
         p.drawArc(ring, 90 * 16, -int(m_progress * 360.0 * 16));
     }
 
-    const qreal glyph = 26.0;
+    const qreal glyph = 21.0;
     QRectF g(centre.x() - glyph / 2.0, centre.y() - glyph / 2.0, glyph, glyph);
     if(!m_playing)
         g.translate(1.5, 0); //optical centring for the triangle
@@ -338,8 +338,8 @@ void XUiSlider::leaveEvent(QEvent *)
 
 namespace
 {
-    constexpr qreal KNOB_H = 26.0;
-    constexpr qreal KNOB_W = 22.0;
+    constexpr qreal KNOB_H = 20.0;
+    constexpr qreal KNOB_W = 18.0;
     constexpr qreal RAIL_W = 3.0;
 }
 
@@ -347,7 +347,7 @@ XUiEqSlider::XUiEqSlider(QWidget *parent) : QWidget(parent)
 {
     setCursor(Qt::PointingHandCursor);
     setFixedWidth(int(KNOB_W) + 8);
-    setMinimumHeight(120);
+    setMinimumHeight(84);
 }
 
 void XUiEqSlider::setRange(double minimum, double maximum)
@@ -480,7 +480,7 @@ void XUiEqSlider::leaveEvent(QEvent *)
 XUiToggle::XUiToggle(QWidget *parent) : QWidget(parent)
 {
     setCursor(Qt::PointingHandCursor);
-    setFixedSize(44, 24);
+    setFixedSize(38, 20);
 }
 
 void XUiToggle::setChecked(bool checked)
@@ -520,7 +520,7 @@ XUiMenuButton::XUiMenuButton(const QString &text, QWidget *parent)
     : QWidget(parent), m_text(text)
 {
     setCursor(Qt::PointingHandCursor);
-    setFixedHeight(34);
+    setFixedHeight(28);
 }
 
 void XUiMenuButton::setText(const QString &text)
@@ -534,7 +534,7 @@ void XUiMenuButton::setText(const QString &text)
 
 QSize XUiMenuButton::sizeHint() const
 {
-    return QSize(QFontMetrics(font()).horizontalAdvance(m_text) + 54, 34);
+    return QSize(QFontMetrics(font()).horizontalAdvance(m_text) + 46, 28);
 }
 
 void XUiMenuButton::paintEvent(QPaintEvent *)
@@ -573,7 +573,7 @@ void XUiMenuButton::leaveEvent(QEvent *)
 
 XUiCoverArt::XUiCoverArt(QWidget *parent) : QWidget(parent)
 {
-    setFixedSize(132, 132);
+    setFixedSize(96, 96);
 }
 
 void XUiCoverArt::setCover(const QPixmap &cover)
@@ -640,7 +640,7 @@ XUiChip::XUiChip(QWidget *parent) : QWidget(parent)
     QFont f = font();
     f.setPointSizeF(f.pointSizeF() * 0.85);
     setFont(f);
-    setFixedHeight(22);
+    setFixedHeight(20);
 }
 
 void XUiChip::setText(const QString &text)
@@ -654,7 +654,7 @@ void XUiChip::setText(const QString &text)
 
 QSize XUiChip::sizeHint() const
 {
-    return QSize(QFontMetrics(font()).horizontalAdvance(m_text) + 18, 22);
+    return QSize(QFontMetrics(font()).horizontalAdvance(m_text) + 16, 20);
 }
 
 void XUiChip::paintEvent(QPaintEvent *)

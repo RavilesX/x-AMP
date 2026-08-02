@@ -58,7 +58,7 @@ XUiMainWindow::XUiMainWindow(QWidget *parent) : QWidget(parent)
     //no hand-picked minimum: an explicit one smaller than the cards need lets
     //Qt squeeze them past their own minimums, which crushes the player card.
     //Let the layout derive it instead.
-    resize(820, 900);
+    resize(700, 720);
 
     QVBoxLayout *root = new QVBoxLayout(this);
     //margin leaves room for the rounded corners to show the desktop through

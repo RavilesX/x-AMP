@@ -71,10 +71,10 @@ XUiPlayerCard::XUiPlayerCard(QWidget *parent) : QWidget(parent)
     QVBoxLayout *root = new QVBoxLayout(this);
     root->setContentsMargins(XUi::CardPadding, XUi::CardPadding,
                              XUi::CardPadding, XUi::CardPadding);
-    root->setSpacing(14);
+    root->setSpacing(10);
 
     QHBoxLayout *top = new QHBoxLayout;
-    top->setSpacing(18);
+    top->setSpacing(14);
     m_cover = new XUiCoverArt(this);
     top->addWidget(m_cover, 0, Qt::AlignTop);
     top->addWidget(buildDetails(), 1);
@@ -103,12 +103,12 @@ QWidget *XUiPlayerCard::buildDetails()
     QWidget *panel = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(panel);
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(6);
+    layout->setSpacing(4);
 
     //title row: track name on the left, per-track actions on the right
     QHBoxLayout *titleRow = new QHBoxLayout;
     titleRow->setSpacing(2);
-    m_title = makeLabel(XUi::Text, 1.55, true);
+    m_title = makeLabel(XUi::Text, 1.3, true);
     titleRow->addWidget(m_title, 1);
     for(XUiIcons::Icon icon : { XUiIcons::Heart, XUiIcons::More, XUiIcons::Kebab })
     {
@@ -118,7 +118,7 @@ QWidget *XUiPlayerCard::buildDetails()
     }
     layout->addLayout(titleRow);
 
-    m_artist = makeLabel(XUi::Accent, 1.05);
+    m_artist = makeLabel(XUi::Accent, 1.0);
     layout->addWidget(m_artist);
 
     //format badges, and the channel indicator on the far right
@@ -143,14 +143,14 @@ QWidget *XUiPlayerCard::buildDetails()
 
     //spectrum, elapsed/total, level meters
     QHBoxLayout *visRow = new QHBoxLayout;
-    visRow->setSpacing(14);
+    visRow->setSpacing(10);
     m_spectrum = new XUiSpectrum(panel);
-    m_spectrum->setMinimumHeight(46);
+    m_spectrum->setMinimumHeight(34);
     visRow->addWidget(m_spectrum, 1);
     m_time = makeLabel(XUi::TextDim, 1.0, true);
     visRow->addWidget(m_time, 0, Qt::AlignBottom);
     m_vu = new XUiVuMeter(panel);
-    m_vu->setFixedSize(84, 52);
+    m_vu->setFixedSize(66, 40);
     visRow->addWidget(m_vu, 0, Qt::AlignBottom);
     layout->addLayout(visRow);
 

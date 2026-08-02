@@ -50,12 +50,15 @@ namespace XUi
     inline const QColor TextDim   = QColor(0x8b, 0x96, 0xa8);
     inline const QColor TextFaint = QColor(0x4d, 0x57, 0x67);
 
-    //metrics
-    inline constexpr int CardRadius     = 14;
-    inline constexpr int CardGap        = 12;
-    inline constexpr int CardPadding    = 18;
-    inline constexpr int WindowRadius   = 16;
-    inline constexpr int TitleBarHeight = 46;
+    //Metrics. Kept deliberately tight: three stacked cards add up fast, and
+    //the window's minimum size is derived from them, so every pixel here is
+    //a pixel the user cannot shrink the window below.
+    inline constexpr int CardRadius       = 12;
+    inline constexpr int CardGap          = 10;
+    inline constexpr int CardPadding      = 14;
+    inline constexpr int WindowRadius     = 14;
+    inline constexpr int TitleBarHeight   = 38;
+    inline constexpr int CardHeaderHeight = 46;
 }
 
 #endif

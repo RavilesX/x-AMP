@@ -632,6 +632,14 @@ interesante (pista actual, selección, posición en cola) ya vive en el modelo.
 pista *más* la interfaz para guardarlos; a medias es justo lo que quiero
 evitar. Pasa a la 5.4.
 
+**Nota sobre el tamaño.** El zoom 150 % de la Fase 4 es exclusivo de
+`skinned`: `xui` no toca `Skin` y no le afecta. Si `xui` se ve grande es por
+sus propias métricas, todas en [xuitheme.h](src/plugins/Ui/xui/xuitheme.h) más
+los tamaños fijos de los controles. Ajustadas para que quepa en pantallas
+pequeñas: por defecto 700×720, y **se puede encoger hasta 474×664**. La lista
+conserva un mínimo de tres filas a propósito: una tarjeta de lista con solo
+cabecera y pie parece rota.
+
 Trampa: **el suelo del analizador no puede ser logarítmico a secas.** Con
 `log(raw/32768)` los graves saturan y los agudos caen a cero, dejando muerta
 la mitad derecha del espectro. Hay que normalizar contra el máximo real que

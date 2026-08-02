@@ -83,7 +83,7 @@ XUiEqualizerCard::XUiEqualizerCard(QWidget *parent) : QWidget(parent)
 QWidget *XUiEqualizerCard::buildHeader()
 {
     QWidget *header = new QWidget(this);
-    header->setFixedHeight(58);
+    header->setFixedHeight(XUi::CardHeaderHeight);
     QHBoxLayout *layout = new QHBoxLayout(header);
     layout->setContentsMargins(XUi::CardPadding, 0, XUi::CardPadding, 0);
     layout->setSpacing(12);
@@ -278,5 +278,5 @@ void XUiEqualizerCard::paintEvent(QPaintEvent *)
 
     //separator under the header, as in the design
     p.setPen(QPen(XUi::Border, 1));
-    p.drawLine(QPointF(1, 58), QPointF(width() - 1, 58));
+    p.drawLine(QPointF(1, XUi::CardHeaderHeight), QPointF(width() - 1, XUi::CardHeaderHeight));
 }
