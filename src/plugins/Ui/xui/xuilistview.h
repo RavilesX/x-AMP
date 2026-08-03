@@ -72,14 +72,28 @@ private:
     int visibleRows() const;
     void updateScrollBar();
     void ensureVisible(int row);
-    /*! Model indices currently shown, honouring the filter. */
-    const QList<int> &rows() const { return m_rows; }
+    /*!
+     * One visible line: either a track, or a heading naming the folder the
+     * tracks below it come from. Both occupy a full row, so all the geometry
+     * stays a simple multiple of ROW_HEIGHT.
+     */
+    struct Row
+    {
+        int track = -1;   //-1 marks a heading
+        QString folder;   //set on headings only
+        bool isHeading() const { return track < 0; }
+    };
+
     void rebuildRows();
+    /*! Display row showing \b trackIndex, or -1. */
+    int rowForTrack(int trackIndex) const;
+    /*! First track row at or after \b row, for drops and keyboard moves. */
+    int trackRowFrom(int row, int step) const;
 
     PlayListManager *m_manager;
     PlayListModel *m_model = nullptr;
     QScrollBar *m_scrollBar;
-    QList<int> m_rows;
+    QList<Row> m_rows;
     QString m_filter;
     int m_anchor = -1; //for shift-extended selection
 

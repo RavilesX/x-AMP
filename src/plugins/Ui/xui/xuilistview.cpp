@@ -18,6 +18,9 @@
  ***************************************************************************/
 
 #include <QContextMenuEvent>
+#include <QDir>
+#include <QFileInfo>
+#include <QSet>
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeData>
@@ -91,7 +94,7 @@ void XUiListView::onModelChanged()
     if(m_model && m_model->currentIndex() != m_lastCurrent)
     {
         m_lastCurrent = m_model->currentIndex();
-        ensureVisible(m_rows.indexOf(m_lastCurrent));
+        ensureVisible(rowForTrack(m_lastCurrent));
     }
     update();
 }
@@ -101,17 +104,64 @@ void XUiListView::rebuildRows()
     m_rows.clear();
     if(!m_model)
         return;
+
+    //First pass: which tracks are shown, and the folder each one sits in.
+    QList<int> tracks;
+    QStringList folders;
     for(int i = 0; i < m_model->trackCount(); ++i)
     {
-        if(m_filter.isEmpty())
-        {
-            m_rows.append(i);
-            continue;
-        }
         PlayListTrack *track = m_model->track(i);
-        if(track && track->formattedTitle(0).contains(m_filter, Qt::CaseInsensitive))
-            m_rows.append(i);
+        if(!track)
+            continue;
+        if(!m_filter.isEmpty()
+           && !track->formattedTitle(0).contains(m_filter, Qt::CaseInsensitive))
+            continue;
+        tracks.append(i);
+        folders.append(QFileInfo(track->path()).absolutePath());
     }
+
+    //Headings would be noise on a playlist that is all one folder, so they
+    //only appear once there is more than one to tell apart.
+    const bool heading = QSet<QString>(folders.cbegin(), folders.cend()).size() > 1;
+
+    QString previous;
+    for(int i = 0; i < tracks.size(); ++i)
+    {
+        if(heading && folders.at(i) != previous)
+        {
+            previous = folders.at(i);
+            Row head;
+            //the folder's own name, not the whole path: the point is to tell
+            //neighbouring groups apart, not to spell out where they live
+            head.folder = QDir(previous).dirName();
+            if(head.folder.isEmpty())
+                head.folder = previous; //filesystem root, or a bare URL
+            m_rows.append(head);
+        }
+        Row row;
+        row.track = tracks.at(i);
+        m_rows.append(row);
+    }
+}
+
+int XUiListView::rowForTrack(int trackIndex) const
+{
+    for(int i = 0; i < m_rows.size(); ++i)
+    {
+        if(m_rows.at(i).track == trackIndex)
+            return i;
+    }
+    return -1;
+}
+
+int XUiListView::trackRowFrom(int row, int step) const
+{
+    for(int i = row; i >= 0 && i < m_rows.size(); i += step)
+    {
+        if(!m_rows.at(i).isHeading())
+            return i;
+    }
+    return -1;
 }
 
 void XUiListView::setFilter(const QString &filter)
@@ -191,12 +241,21 @@ void XUiListView::mousePressEvent(QMouseEvent *e)
         return;
     }
 
-    const int index = m_rows.at(row);
+    if(m_rows.at(row).isHeading())
+    {
+        update(); //a heading is a label, not something to select or drag
+        return;
+    }
+
+    const int index = m_rows.at(row).track;
     if(e->modifiers() & Qt::ShiftModifier && m_anchor >= 0)
     {
         m_model->setSelectedLines(0, m_model->trackCount() - 1, false);
         for(int r = qMin(m_anchor, row); r <= qMax(m_anchor, row); ++r)
-            m_model->setSelected(m_model->track(m_rows.at(r)), true);
+        {
+            if(!m_rows.at(r).isHeading())
+                m_model->setSelected(m_model->track(m_rows.at(r).track), true);
+        }
     }
     else if(e->modifiers() & Qt::ControlModifier)
     {
@@ -250,9 +309,14 @@ void XUiListView::mouseReleaseEvent(QMouseEvent *e)
     {
         //moveTracks moves the whole selection, taking the pressed row as its
         //reference; with no filter a row index is the track index
-        const int to = qMin(m_dropRow, m_rows.size() - 1);
-        if(to != m_pressRow)
-            m_model->moveTracks(m_pressRow, to);
+        //moveTracks works in track indices, so map both ends off the
+        //display rows, which may have headings interleaved
+        const int fromRow = trackRowFrom(m_pressRow, 1);
+        int toRow = trackRowFrom(qMin(m_dropRow, m_rows.size() - 1), 1);
+        if(toRow < 0)
+            toRow = trackRowFrom(m_rows.size() - 1, -1); //dropped past the end
+        if(fromRow >= 0 && toRow >= 0 && fromRow != toRow)
+            m_model->moveTracks(m_rows.at(fromRow).track, m_rows.at(toRow).track);
     }
     m_dragging = false;
     m_pressRow = -1;
@@ -263,10 +327,10 @@ void XUiListView::mouseReleaseEvent(QMouseEvent *e)
 void XUiListView::mouseDoubleClickEvent(QMouseEvent *e)
 {
     const int row = rowAt(e->position().y());
-    if(row < 0 || !m_model)
+    if(row < 0 || !m_model || m_rows.at(row).isHeading())
         return;
     m_manager->activatePlayList(m_model);
-    m_model->setCurrent(m_rows.at(row));
+    m_model->setCurrent(m_rows.at(row).track);
     emit activated();
 }
 
@@ -296,12 +360,13 @@ void XUiListView::keyPressEvent(QKeyEvent *e)
     case Qt::Key_Down:
     {
         const int step = e->key() == Qt::Key_Down ? 1 : -1;
-        const int row = qBound(0, m_rows.indexOf(m_model->firstSelectedLine()) + step,
-                               m_rows.size() - 1);
-        if(!m_rows.isEmpty())
+        const int from = rowForTrack(m_model->firstSelectedLine());
+        //step past any heading that sits between the two tracks
+        const int row = trackRowFrom(from < 0 ? 0 : from + step, step);
+        if(row >= 0)
         {
             m_model->setSelectedLines(0, m_model->trackCount() - 1, false);
-            m_model->setSelected(m_model->track(m_rows.at(row)), true);
+            m_model->setSelected(m_model->track(m_rows.at(row).track), true);
             m_anchor = row;
             ensureVisible(row);
         }
@@ -373,8 +438,8 @@ void XUiListView::dropEvent(QDropEvent *e)
     if(m_model && e->mimeData()->hasUrls())
     {
         e->acceptProposedAction();
-        const int row = dropRowAt(e->position().y());
-        const int index = row < m_rows.size() ? m_rows.at(row) : m_model->trackCount();
+        const int row = trackRowFrom(dropRowAt(e->position().y()), 1);
+        const int index = row >= 0 ? m_rows.at(row).track : m_model->trackCount();
         m_model->insertUrls(index, e->mimeData()->urls());
     }
     m_dropRow = -1;
@@ -439,12 +504,41 @@ void XUiListView::paintEvent(QPaintEvent *)
     QFontMetrics metrics(font());
     for(int row = first; row < last; ++row)
     {
-        const int index = m_rows.at(row);
+        const QRectF box(0, (row - first) * ROW_HEIGHT, width(), ROW_HEIGHT);
+
+        if(m_rows.at(row).isHeading())
+        {
+            //Discreet: small dim caps with a hairline running to the edge, so
+            //it reads as a divider rather than competing with the track names.
+            const QString name = m_rows.at(row).folder;
+            QFont small = font();
+            small.setPointSizeF(small.pointSizeF() * 0.82);
+            small.setBold(true);
+            small.setLetterSpacing(QFont::AbsoluteSpacing, 0.8);
+            p.setFont(small);
+
+            const int textWidth = QFontMetrics(small).horizontalAdvance(name);
+            p.setPen(XUi::TextFaint);
+            p.drawText(QRectF(PADDING, box.top(), textWidth + 2, ROW_HEIGHT),
+                       Qt::AlignVCenter | Qt::AlignLeft, name);
+
+            const qreal lineY = box.center().y() + 0.5;
+            const qreal lineFrom = PADDING + textWidth + 10;
+            const qreal lineTo = width() - PADDING - SCROLLBAR_WIDTH;
+            if(lineTo > lineFrom)
+            {
+                p.setPen(QPen(XUi::Border, 1));
+                p.drawLine(QPointF(lineFrom, lineY), QPointF(lineTo, lineY));
+            }
+            p.setFont(font());
+            continue;
+        }
+
+        const int index = m_rows.at(row).track;
         PlayListTrack *track = m_model->track(index);
         if(!track)
             continue;
 
-        const QRectF box(0, (row - first) * ROW_HEIGHT, width(), ROW_HEIGHT);
         const bool isCurrent = index == current;
 
         if(track->isSelected())
