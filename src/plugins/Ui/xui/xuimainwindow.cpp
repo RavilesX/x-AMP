@@ -250,30 +250,38 @@ void XUiMainWindow::applyCardVisibility()
     const bool showPlaylist = settings.value(XUiSettings::ShowPlaylistKey, true).toBool();
     m_hideOnClose = settings.value(XUiSettings::HideOnCloseKey, false).toBool();
 
+    const bool shown = isVisible(); //false while the window is still being built
+
     //Grow and shrink the window by exactly what each card occupied, rather
     //than snapping to sizeHint(): that discarded whatever height the user had
     //dragged the window to, so re-showing a card reset it to the default.
     int delta = 0;
     auto toggle = [&](QWidget *card, bool show, int *remembered) {
-        if(card->isVisible() == show)
+        //isHidden(), not isVisible(): every child reads as not visible until
+        //the window itself is shown, so at startup a card that should stay
+        //hidden matched "already hidden" and was never told to hide -- then
+        //appeared along with the window. isHidden() reflects an explicit hide,
+        //whatever the parent is doing.
+        if(!card->isHidden() == show)
             return;
         if(show)
         {
             delta += (*remembered > 0 ? *remembered : card->sizeHint().height()) + XUi::CardGap;
         }
-        else
+        else if(shown)
         {
+            //before the window is up, height() is a layout placeholder rather
+            //than anything worth restoring later
             *remembered = card->height();
             delta -= card->height() + XUi::CardGap;
         }
         card->setVisible(show);
     };
 
-    const bool first = !isVisible(); //startup: nothing to grow or shrink yet
     toggle(m_equalizerCard, showEqualizer, &m_equalizerHeight);
     toggle(m_playlistCard, showPlaylist, &m_playlistHeight);
 
-    if(!first && delta != 0)
+    if(shown && delta != 0)
         resize(width(), qMax(minimumSizeHint().height(), height() + delta));
 }
 
