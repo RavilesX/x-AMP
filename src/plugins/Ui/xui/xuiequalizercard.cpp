@@ -94,16 +94,23 @@ namespace
         }
     }
 
-    void writePreset(const QString &path, const QString &name, int slot,
-                     const EqSettings &preset)
+    //Rewrites the file from scratch. Removing an entry means the index has to
+    //be renumbered and the old group dropped, so writing the whole set is both
+    //simpler and the only way to leave no orphan groups behind.
+    void writePresets(const QString &path, const QStringList &names,
+                      const QList<EqSettings> &presets)
     {
         QSettings file(path, QSettings::IniFormat);
-        file.setValue(QStringLiteral("Presets/Preset%1").arg(slot + 1), name);
-        file.beginGroup(name);
-        for(int i = 0; i < EqSettings::EQ_BANDS_10; ++i)
-            file.setValue(QStringLiteral("Band%1").arg(i), preset.gain(i));
-        file.setValue(QStringLiteral("Preamp"), preset.preamp());
-        file.endGroup();
+        file.clear();
+        for(int i = 0; i < names.size(); ++i)
+        {
+            file.setValue(QStringLiteral("Presets/Preset%1").arg(i + 1), names.at(i));
+            file.beginGroup(names.at(i));
+            for(int band = 0; band < EqSettings::EQ_BANDS_10; ++band)
+                file.setValue(QStringLiteral("Band%1").arg(band), presets.at(i).gain(band));
+            file.setValue(QStringLiteral("Preamp"), presets.at(i).preamp());
+            file.endGroup();
+        }
         file.sync();
     }
 }
@@ -281,15 +288,17 @@ void XUiEqualizerCard::saveAutoPreset()
     if(key.isEmpty())
         return;
 
-    EqSettings preset(EqSettings::EQ_BANDS_10);
-    preset.setPreamp(m_preamp->value());
-    for(int i = 0; i < m_bands.size(); ++i)
-        preset.setGain(i, m_bands.at(i)->value());
-
-    int slot = m_autoPresetNames.indexOf(key);
+    const int slot = m_autoPresetNames.indexOf(key);
     if(slot < 0)
-        slot = m_autoPresetNames.size();
-    writePreset(autoPresetPath(), key, slot, preset);
+    {
+        m_autoPresetNames.append(key);
+        m_autoPresets.append(currentSettings());
+    }
+    else
+    {
+        m_autoPresets[slot] = currentSettings();
+    }
+    writePresets(autoPresetPath(), m_autoPresetNames, m_autoPresets);
     loadPresets();
     m_auto->setChecked(true); //saving one implies wanting it applied
 }
@@ -311,19 +320,54 @@ void XUiEqualizerCard::savePreset()
     if(!accepted || name.isEmpty())
         return;
 
+    //replacing an existing name keeps its slot rather than adding a duplicate
+    const int slot = m_presetNames.indexOf(name);
+    if(slot < 0)
+    {
+        m_presetNames.append(name);
+        m_presets.append(currentSettings());
+    }
+    else
+    {
+        m_presets[slot] = currentSettings();
+    }
+    writePresets(presetPath(), m_presetNames, m_presets);
+
+    loadPresets();
+    m_presetButton->setText(name);
+}
+
+EqSettings XUiEqualizerCard::currentSettings() const
+{
     EqSettings preset(EqSettings::EQ_BANDS_10);
     preset.setPreamp(m_preamp->value());
     for(int i = 0; i < m_bands.size(); ++i)
         preset.setGain(i, m_bands.at(i)->value());
+    return preset;
+}
 
-    //replacing an existing name keeps its slot rather than adding a duplicate
-    int slot = m_presetNames.indexOf(name);
-    if(slot < 0)
-        slot = m_presetNames.size();
-    writePreset(presetPath(), name, slot, preset);
-
+void XUiEqualizerCard::removePreset(int index)
+{
+    if(index < 0 || index >= m_presetNames.size())
+        return;
+    const QString removed = m_presetNames.takeAt(index);
+    m_presets.removeAt(index);
+    writePresets(presetPath(), m_presetNames, m_presets);
     loadPresets();
-    m_presetButton->setText(name);
+    if(m_presetButton->text() == removed)
+        m_presetButton->setText(tr("Presets")); //it no longer names anything
+}
+
+void XUiEqualizerCard::removeAutoPreset()
+{
+    const int index = m_autoPresetNames.indexOf(currentTrackKey());
+    if(index < 0)
+        return;
+    m_autoPresetNames.removeAt(index);
+    m_autoPresets.removeAt(index);
+    writePresets(autoPresetPath(), m_autoPresetNames, m_autoPresets);
+    loadPresets();
+    applyAutoPreset(); //nothing saved for this track now, so back to flat
 }
 
 void XUiEqualizerCard::showPresetMenu()
@@ -343,6 +387,20 @@ void XUiEqualizerCard::showPresetMenu()
     QAction *forTrack = menu.addAction(tr("Save for This Track"));
     forTrack->setEnabled(!currentTrackKey().isEmpty());
     connect(forTrack, &QAction::triggered, this, &XUiEqualizerCard::saveAutoPreset);
+
+    menu.addSeparator();
+    QMenu *remove = menu.addMenu(tr("Remove"));
+    remove->setEnabled(!m_presetNames.isEmpty());
+    for(int i = 0; i < m_presetNames.size(); ++i)
+    {
+        connect(remove->addAction(m_presetNames.at(i)), &QAction::triggered,
+                this, [this, i] { removePreset(i); });
+    }
+
+    QAction *forgetTrack = menu.addAction(tr("Remove for This Track"));
+    forgetTrack->setEnabled(m_autoPresetNames.contains(currentTrackKey()));
+    connect(forgetTrack, &QAction::triggered, this, &XUiEqualizerCard::removeAutoPreset);
+
     menu.exec(m_presetButton->mapToGlobal(QPoint(0, m_presetButton->height() + 2)));
 }
 

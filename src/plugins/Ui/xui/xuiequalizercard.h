@@ -61,6 +61,10 @@ private:
     void applyPreset(const EqSettings &preset, const QString &name);
     void savePreset();
     void saveAutoPreset();
+    void removePreset(int index);
+    void removeAutoPreset();
+    /*! The bands as they stand, ready to be stored as a preset. */
+    EqSettings currentSettings() const;
     void setFlat();
     /*! File name of the current track, which is what auto presets key on. */
     QString currentTrackKey() const;

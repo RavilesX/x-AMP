@@ -213,6 +213,7 @@ public:
     explicit XUiMenuButton(XUiIcons::Icon icon, QWidget *parent = nullptr);
 
     void setText(const QString &text);
+    QString text() const { return m_text; }
 
 signals:
     void clicked();
