@@ -28,6 +28,7 @@ namespace
     constexpr int REFRESH_MS = 40;      //25 fps, enough to look fluid
     constexpr qreal FALLOFF = 0.055;    //bar decay per frame
     constexpr qreal PEAK_FALLOFF = 0.012;
+    constexpr qreal PEAK_HEIGHT = 2.0; //thickness of the falling cap
     constexpr int BAR_WIDTH = 4;
     constexpr int BAR_GAP = 2;
 
@@ -159,6 +160,17 @@ void XUiSpectrum::paintEvent(QPaintEvent *)
         const qreal barHeight = qMax(2.0, m_bands[i] * h);
         p.setBrush(brush);
         p.drawRoundedRect(QRectF(x, h - barHeight, BAR_WIDTH, barHeight), 1.5, 1.5);
+
+        //The cap that hangs at each band's recent maximum and sinks back
+        //towards the bar, as the classic analyser does. Drawn only once it
+        //has separated from the bar, so it reads as a marker rather than as
+        //a lid the bars always wear.
+        const qreal peakHeight = m_peaks[i] * h;
+        if(peakHeight > barHeight + PEAK_HEIGHT)
+        {
+            p.setBrush(XUi::AccentBright);
+            p.drawRect(QRectF(x, h - peakHeight - PEAK_HEIGHT, BAR_WIDTH, PEAK_HEIGHT));
+        }
     }
 }
 
