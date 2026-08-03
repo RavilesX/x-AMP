@@ -837,6 +837,29 @@ de clic previo, así que basta con implementar `wheelEvent`:
 Escalar por `delta / 120` en vez de contar muescas, que los paneles táctiles
 mandan deltas más finos. Y no emitir la señal si el valor ya está topado.
 
+### ⚠️ Archivos sin extensión: se descartaban en silencio
+
+Añadir un archivo de audio **sin extensión** no hacía nada: ni entraba en la
+lista ni avisaba. No es cosa de `xui`, es del motor y afecta a las tres
+interfaces.
+
+`MetaDataManager::createPlayList()` pide el decodificador con
+`Decoder::findByFilePath(path, determineFileTypeByContent())`. Ese ajuste
+—«Determinar el tipo de archivo por contenido»— viene **apagado de fábrica**
+(`Misc/determine_file_by_content`, por rendimiento: encenderlo hace olfatear
+todos los archivos). Apagado, la búsqueda es solo por extensión; sin
+extensión no casa nada, no hay fábrica, y la pista se borra sin más.
+
+Arreglado en [metadatamanager.cpp](src/qmmp/metadatamanager.cpp): si el
+archivo **no tiene extensión alguna**, se mira el contenido aunque el ajuste
+esté apagado. Es gratis —solo se paga en archivos que de otro modo se
+rechazarían— y no toca el caso normal.
+
+**Límite conocido:** añadir una *carpeta* llena de archivos sin extensión
+sigue sin verlos. Ese camino es `FileLoader::addDirectory()`, que filtra con
+`QDir::entryInfoList(nameFilters())` antes de mirar nada; ampliarlo a `*`
+obligaría a olfatear cada archivo del directorio.
+
 ### Huecos conocidos de `xui` frente a `skinned`
 
 Lista para una 5.6, si llega:

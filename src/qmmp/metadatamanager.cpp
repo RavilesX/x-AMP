@@ -133,6 +133,15 @@ MetaDataManager::~MetaDataManager()
     delete d_ptr;
 }
 
+//x-AMP: a file with no extension at all cannot be matched by extension, so
+//reading its content is the only chance of identifying it. Doing that only
+//for such files keeps the cost off ordinary libraries, which is why the
+//"determine file type by content" setting is off by default.
+static bool shouldUseContent(const QString &path, bool settingEnabled)
+{
+    return settingEnabled || QFileInfo(path).suffix().isEmpty();
+}
+
 QList<TrackInfo> MetaDataManager::createPlayList(const QString &path, TrackInfo::Parts parts, QStringList *ignoredPaths) const
 {
     QList<TrackInfo> list;
@@ -147,7 +156,8 @@ QList<TrackInfo> MetaDataManager::createPlayList(const QString &path, TrackInfo:
         if(!QFile::exists(path))
             return list;
 
-        if(!(fact = Decoder::findByFilePath(path, d_ptr->settings->determineFileTypeByContent())))
+        if(!(fact = Decoder::findByFilePath(path,
+                shouldUseContent(path, d_ptr->settings->determineFileTypeByContent()))))
             efact = AbstractEngine::findByFilePath(path);
     }
     else
@@ -194,7 +204,8 @@ MetaDataModel *MetaDataManager::createMetaDataModel(const QString &path, bool re
     {
         if(!QFile::exists(path))
             return nullptr;
-        if((fact = Decoder::findByFilePath(path, d_ptr->settings->determineFileTypeByContent())))
+        if((fact = Decoder::findByFilePath(path,
+                shouldUseContent(path, d_ptr->settings->determineFileTypeByContent()))))
             return fact->createMetaDataModel(path, readOnly);
         if((efact = AbstractEngine::findByFilePath(path)))
             return efact->createMetaDataModel(path, readOnly);
