@@ -17,6 +17,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
+#include <QApplication>
+#include <QIcon>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
@@ -691,13 +693,25 @@ void XUiCoverArt::paintEvent(QPaintEvent *)
     p.setBrush(g);
     p.drawRect(rect());
 
-    //placeholder wordmark: an X in the accent colour
-    QFont f = font();
-    f.setPointSizeF(height() * 0.42);
-    f.setBold(true);
-    p.setFont(f);
-    p.setPen(XUi::Accent);
-    p.drawText(rect(), Qt::AlignCenter, QStringLiteral("X"));
+    //Placeholder: the application's own logo, taken from the icon the app is
+    //already carrying rather than a second copy of the artwork. Falls back to
+    //a drawn X if the icon is somehow unavailable.
+    const QIcon logo = qApp->windowIcon();
+    if(!logo.isNull())
+    {
+        const int side = qRound(height() * 0.62);
+        const QRect box((width() - side) / 2, (height() - side) / 2, side, side);
+        logo.paint(&p, box, Qt::AlignCenter, QIcon::Normal);
+    }
+    else
+    {
+        QFont f = font();
+        f.setPointSizeF(height() * 0.42);
+        f.setBold(true);
+        p.setFont(f);
+        p.setPen(XUi::Accent);
+        p.drawText(rect(), Qt::AlignCenter, QStringLiteral("X"));
+    }
 
     p.setClipping(false);
     p.setPen(QPen(XUi::Border, 1));

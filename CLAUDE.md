@@ -50,6 +50,8 @@ In user-visible text the name is spelled **x-AMP**: window titles, About dialogs
 
 Asset files keep their upstream names on disk; the fork's name is applied at install time with `install(... RENAME ...)`. Do not rename the sources — [src/app/images/images.qrc](src/app/images/images.qrc) and [main.cpp](src/app/main.cpp) reference them by their plain names.
 
+The application icons under [src/app/images/](src/app/images/) are generated from [logo.png](logo.png) in the repository root by `python3 utils/make_icons.py`. Edit the logo and re-run it rather than touching the sizes by hand; the script picks the mark alone below 48 px, where the lettering turns to mud.
+
 Two strings must keep saying Qmmp: the upstream copyright line in [aboutdialog.cpp](src/qmmpui/aboutdialog.cpp) (their attribution, not ours to reword) and the "Based on Qmmp" note in [qmmpstarter.cpp](src/app/qmmpstarter.cpp). `Qmmp` is also the namespace and a class-name prefix, so never search-and-replace it outside string literals.
 
 API docs: `cd doc && doxygen Doxyfile`.
