@@ -860,6 +860,23 @@ sigue sin verlos. Ese camino es `FileLoader::addDirectory()`, que filtra con
 `QDir::entryInfoList(nameFilters())` antes de mirar nada; ampliarlo a `*`
 obligaría a olfatear cada archivo del directorio.
 
+### Color de acento configurable
+
+El azul es **el único color no neutro** de la interfaz, así que es el único
+que merece ofrecerse. Preferencias → Interfaz → Color, con `QColorDialog` y un
+botón de restablecer.
+
+- `XUi::Accent` y compañía dejan de ser `const` para poder cambiar en
+  ejecución; los ~26 usos siguen compilando sin tocarlos.
+- **Las variantes clara y oscura se derivan, no se eligen.** Medido sobre el
+  azul original: la clara está ~14 % más arriba en luminosidad y la oscura
+  ~17 % más abajo, con el mismo tono y saturación. Derivarlas mantiene
+  cualquier color elegido como una familia y no como tres aciertos sueltos.
+- Al aplicar hay que **reconstruir paleta y hoja de estilos**, que llevan el
+  color incrustado, y repintar las tarjetas, que se dibujan solas. El wordmark
+  del título lleva el color en su marcado HTML, así que se reescribe aparte.
+- El logo **no** se recolorea: es la marca, no parte del tema.
+
 ### Huecos conocidos de `xui` frente a `skinned`
 
 Lista para una 5.6, si llega:

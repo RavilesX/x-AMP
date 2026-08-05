@@ -22,6 +22,7 @@
 
 #include <QWidget>
 
+class QLabel;
 class QMenu;
 class UiHelper;
 class SoundCore;
@@ -64,6 +65,9 @@ private:
     QWidget *buildTitleBar();
     void createShortcuts();
     void applyCardVisibility();
+    /*! Re-reads the accent and repaints everything that uses it. */
+    void applyAccent();
+    void updateWordmark();
     /*! Which window edges the pointer is over, for resize cursors. */
     Qt::Edges edgesAt(const QPoint &pos) const;
     void readSettings();
@@ -75,6 +79,7 @@ private:
     PlayListManager *m_playListManager;
 
     QWidget *m_titleBar;
+    QLabel *m_wordmark;
     XUiPlayerCard *m_playerCard;
     XUiEqualizerCard *m_equalizerCard;
     XUiPlaylistCard *m_playlistCard;

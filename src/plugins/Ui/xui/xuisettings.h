@@ -20,9 +20,11 @@
 #ifndef XUISETTINGS_H
 #define XUISETTINGS_H
 
+#include <QColor>
 #include <QWidget>
 
 class QCheckBox;
+class QPushButton;
 
 /*!
  * Preferences page for this interface, added to the shared ConfigDialog.
@@ -44,7 +46,16 @@ public:
     static const QString ShowPlaylistKey;
     static const QString HideOnCloseKey;
 
+private slots:
+    void pickAccent();
+    void resetAccent();
+
 private:
+    /*! Paints the chosen colour onto the swatch button. */
+    void showAccent();
+    QColor m_accent;
+    QPushButton *m_accentButton;
+
     QCheckBox *m_showEqualizer;
     QCheckBox *m_showPlaylist;
     QCheckBox *m_hideOnClose;

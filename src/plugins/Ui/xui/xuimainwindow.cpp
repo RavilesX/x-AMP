@@ -25,6 +25,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
+#include <QColor>
 #include <QSettings>
 #include <QVBoxLayout>
 #include <QWindow>
@@ -61,6 +62,10 @@ XUiMainWindow::XUiMainWindow(QWidget *parent) : QWidget(parent)
     setMouseTracking(true);
     //menus, tooltips and dialogs are plain Qt widgets and would otherwise
     //follow the desktop's theme, which need not be dark like the cards
+    //the accent has to be in place before the palette and sheet are built,
+    //since both bake it in
+    XUi::setAccent(QSettings().value(XUi::AccentKey, XUi::defaultAccent()).value<QColor>());
+
     //Applied to the whole application rather than to this window: the shared
     //dialogs from libqmmpui (track details, preferences) are separate
     //top-level windows, and only one interface is ever loaded per process,
@@ -98,6 +103,7 @@ XUiMainWindow::XUiMainWindow(QWidget *parent) : QWidget(parent)
     connect(m_player, &MediaPlayer::playbackFinished, this, &XUiMainWindow::updateWindowTitle);
     connect(m_uiHelper, &UiHelper::showMainWindowCalled, this, &QWidget::show);
 
+    updateWordmark();
     createShortcuts();
     readSettings();
     applyCardVisibility();
@@ -122,17 +128,16 @@ QWidget *XUiMainWindow::buildTitleBar()
     connect(menuButton, &XUiIconButton::clicked, this, &XUiMainWindow::showMainMenu);
     layout->addWidget(menuButton);
 
-    //wordmark: the leading X carries the accent, as in the brand
-    QLabel *wordmark = new QLabel(bar);
-    QFont f = wordmark->font();
+    //wordmark: the leading X carries the accent, as in the brand. Kept as a
+    //member because the colour is baked into its markup, so it has to be
+    //rewritten when the accent changes.
+    m_wordmark = new QLabel(bar);
+    QFont f = m_wordmark->font();
     f.setPointSizeF(f.pointSizeF() * 1.25);
     f.setBold(true);
-    wordmark->setFont(f);
-    wordmark->setText(QStringLiteral("<span style='color:%1'>X</span>"
-                                     "<span style='color:%2'>-AMP</span>")
-                      .arg(XUi::Accent.name(), XUi::Text.name()));
+    m_wordmark->setFont(f);
     layout->addSpacing(6);
-    layout->addWidget(wordmark);
+    layout->addWidget(m_wordmark);
     layout->addStretch(1);
 
     XUiIconButton *minimise = new XUiIconButton(XUiIcons::Minimize, bar);
@@ -213,6 +218,7 @@ void XUiMainWindow::showPreferences()
     if(dialog.exec() == QDialog::Accepted)
     {
         page->writeSettings();
+        applyAccent();
         applyCardVisibility();
     }
 }
@@ -241,6 +247,32 @@ void XUiMainWindow::createShortcuts()
                   m_playlistCard, &XUiPlaylistCard::toggleSearch);
     new QShortcut(QKeySequence(QStringLiteral("Ctrl+Q")), this,
                   this, [this] { m_uiHelper->exit(); });
+}
+
+void XUiMainWindow::updateWordmark()
+{
+    m_wordmark->setText(QStringLiteral("<span style='color:%1'>X</span>"
+                                       "<span style='color:%2'>-AMP</span>")
+                        .arg(XUi::Accent.name(), XUi::Text.name()));
+}
+
+void XUiMainWindow::applyAccent()
+{
+    const QColor chosen = QSettings().value(XUi::AccentKey,
+                                            XUi::defaultAccent()).value<QColor>();
+    if(chosen == XUi::Accent)
+        return;
+
+    XUi::setAccent(chosen);
+    //the palette and the sheet both hold copies of the colour, so they have to
+    //be rebuilt; the cards paint themselves and only need telling to repaint
+    qApp->setPalette(XUi::palette());
+    qApp->setStyleSheet(XUi::styleSheet());
+    updateWordmark();
+    const QList<QWidget *> children = findChildren<QWidget *>();
+    for(QWidget *child : children)
+        child->update();
+    update();
 }
 
 void XUiMainWindow::applyCardVisibility()

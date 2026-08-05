@@ -42,10 +42,38 @@ namespace XUi
     inline const QColor Border     = QColor(0x1c, 0x23, 0x30);
     inline const QColor Hover      = QColor(0x1f, 0x27, 0x35);
 
-    //accent
-    inline const QColor Accent       = QColor(0x2f, 0x86, 0xf6);
-    inline const QColor AccentBright = QColor(0x6f, 0xb4, 0xff);
-    inline const QColor AccentDeep   = QColor(0x0d, 0x47, 0xc4);
+    //Accent. Not const: the user picks this one, and everything else in the
+    //interface is a fixed neutral. The bright and deep variants are derived
+    //rather than picked, so any colour keeps the same internal relationships
+    //the original blue had -- see setAccent().
+    inline QColor Accent       = QColor(0x2f, 0x86, 0xf6);
+    inline QColor AccentBright = QColor(0x6f, 0xb4, 0xff);
+    inline QColor AccentDeep   = QColor(0x0d, 0x47, 0xc4);
+
+    /*! The blue the interface ships with, for the reset button. */
+    inline QColor defaultAccent() { return QColor(0x2f, 0x86, 0xf6); }
+
+    inline const QString AccentKey = QStringLiteral("XUi/accent");
+
+    /*!
+     * Sets the accent and derives its two variants.
+     *
+     * Measured off the original blue: the bright one sits about 14% higher in
+     * lightness and the deep one about 17% lower, at the same hue and
+     * saturation. Deriving them keeps a chosen colour looking like one family
+     * instead of three unrelated picks.
+     */
+    inline void setAccent(const QColor &colour)
+    {
+        if(!colour.isValid())
+            return;
+        Accent = colour;
+        const float h = colour.hslHueF() < 0 ? 0.0f : colour.hslHueF(); //greys report -1
+        const float s = colour.hslSaturationF();
+        const float l = colour.lightnessF();
+        AccentBright = QColor::fromHslF(h, s, qMin(1.0f, l + 0.145f));
+        AccentDeep = QColor::fromHslF(h, s, qMax(0.0f, l - 0.165f));
+    }
 
     //text
     inline const QColor Text      = QColor(0xe9, 0xee, 0xf6);
