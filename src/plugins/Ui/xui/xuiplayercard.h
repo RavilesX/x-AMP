@@ -49,6 +49,15 @@ class XUiPlayerCard : public QWidget
 public:
     explicit XUiPlayerCard(QWidget *parent = nullptr);
 
+    /*!
+     * Re-applies the accent to the labels that hold it in their palette.
+     *
+     * Those are set once, when the label is built, and a repaint does not
+     * recompute them -- so without this the artist name and the active
+     * MONO/STEREO word keep whatever colour was current at construction.
+     */
+    void applyAccent();
+
 protected:
     void paintEvent(QPaintEvent *) override;
 

@@ -269,6 +269,8 @@ void XUiMainWindow::applyAccent()
     qApp->setPalette(XUi::palette());
     qApp->setStyleSheet(XUi::styleSheet());
     updateWordmark();
+    //labels keep their colour in a palette, which a repaint does not revisit
+    m_playerCard->applyAccent();
     const QList<QWidget *> children = findChildren<QWidget *>();
     for(QWidget *child : children)
         child->update();

@@ -100,6 +100,14 @@ XUiPlayerCard::XUiPlayerCard(QWidget *parent) : QWidget(parent)
     updateVolume(m_core->volume());
 }
 
+void XUiPlayerCard::applyAccent()
+{
+    QPalette pal = m_artist->palette();
+    pal.setColor(QPalette::WindowText, XUi::Accent);
+    m_artist->setPalette(pal);
+    updateTrackInfo(); //repaints the MONO/STEREO pair with the new accent
+}
+
 QWidget *XUiPlayerCard::buildDetails()
 {
     QWidget *panel = new QWidget(this);
