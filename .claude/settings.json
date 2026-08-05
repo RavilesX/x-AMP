@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python3 -c ' *)"
+      "Bash(python3 -c ' *)",
+      "Bash(wmctrl -i -a 0x0560012e)",
+      "Bash(gnome-screenshot -w -f /tmp/claude-1000/-home-ravilesx-Documentos-Proyectos-Github-x-AMP/ff12f28e-b5a2-4672-aea6-8ab72e49d3cf/scratchpad/fhxui/picker2.png)"
     ]
   }
 }

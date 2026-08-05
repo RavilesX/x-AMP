@@ -276,7 +276,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="216"/>
+        <location filename="../xuimainwindow.cpp" line="217"/>
         <source>Interface</source>
         <translation type="unfinished"></translation>
     </message>
@@ -284,62 +284,62 @@
 <context>
     <name>XUiPlayerCard</name>
     <message>
-        <location filename="../xuiplayercard.cpp" line="121"/>
+        <location filename="../xuiplayercard.cpp" line="129"/>
         <source>Track details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="155"/>
+        <location filename="../xuiplayercard.cpp" line="163"/>
         <source>MONO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="157"/>
+        <location filename="../xuiplayercard.cpp" line="165"/>
         <source>STEREO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="209"/>
+        <location filename="../xuiplayercard.cpp" line="217"/>
         <source>Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="214"/>
+        <location filename="../xuiplayercard.cpp" line="222"/>
         <source>Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="262"/>
+        <location filename="../xuiplayercard.cpp" line="270"/>
         <source>x-AMP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="264"/>
+        <location filename="../xuiplayercard.cpp" line="272"/>
         <source>Not playing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="270"/>
+        <location filename="../xuiplayercard.cpp" line="278"/>
         <source>%1 kHz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="298"/>
+        <location filename="../xuiplayercard.cpp" line="306"/>
         <source>%1 kbps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="393"/>
+        <location filename="../xuiplayercard.cpp" line="401"/>
         <source>Repeat track</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="394"/>
+        <location filename="../xuiplayercard.cpp" line="402"/>
         <source>Repeat playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="394"/>
+        <location filename="../xuiplayercard.cpp" line="402"/>
         <source>No repeat</source>
         <translation type="unfinished"></translation>
     </message>
@@ -445,48 +445,53 @@
 <context>
     <name>XUiSettings</name>
     <message>
-        <location filename="../xuisettings.cpp" line="41"/>
+        <location filename="../xuisettings.cpp" line="42"/>
         <source>Sections</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="47"/>
+        <location filename="../xuisettings.cpp" line="48"/>
         <source>Show equalizer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="51"/>
+        <location filename="../xuisettings.cpp" line="52"/>
         <source>Show playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="57"/>
+        <location filename="../xuisettings.cpp" line="58"/>
         <source>Colour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="66"/>
+        <location filename="../xuisettings.cpp" line="67"/>
         <source>Accent colour:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="72"/>
+        <location filename="../xuisettings.cpp" line="73"/>
         <source>Reset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="79"/>
+        <location filename="../xuisettings.cpp" line="80"/>
         <source>Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="84"/>
+        <location filename="../xuisettings.cpp" line="85"/>
         <source>Hide instead of quitting when closed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="103"/>
+        <location filename="../xuisettings.cpp" line="109"/>
         <source>Accent colour</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuisettings.cpp" line="114"/>
+        <source>See the colour on the interface, keeping this open</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

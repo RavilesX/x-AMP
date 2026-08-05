@@ -46,9 +46,17 @@ public:
     static const QString ShowPlaylistKey;
     static const QString HideOnCloseKey;
 
+signals:
+    /*!
+     * The accent was applied without closing the dialog, so whoever built
+     * this page should repaint. Emitted by the Apply button only.
+     */
+    void accentApplied();
+
 private slots:
     void pickAccent();
     void resetAccent();
+    void applyAccent();
 
 private:
     /*! Paints the chosen colour onto the swatch button. */

@@ -19,6 +19,7 @@
 
 #include <QCheckBox>
 #include <QColorDialog>
+#include <QDialogButtonBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -99,18 +100,45 @@ void XUiSettings::writeSettings()
 
 void XUiSettings::pickAccent()
 {
-    const QColor picked = QColorDialog::getColor(m_accent, this,
-                                                 tr("Accent colour"));
-    if(!picked.isValid())
-        return; //cancelled
-    m_accent = picked;
-    showAccent();
+    //Built rather than taken from getColor(), so an Apply button can be put
+    //in its button box: judging a colour means seeing it on the interface,
+    //not on a swatch. DontUseNativeDialog is what guarantees that box is
+    //Qt's own and can be reached.
+    QColorDialog dialog(m_accent, this);
+    dialog.setOption(QColorDialog::DontUseNativeDialog);
+    dialog.setWindowTitle(tr("Accent colour"));
+
+    if(QDialogButtonBox *box = dialog.findChild<QDialogButtonBox *>())
+    {
+        QPushButton *apply = box->addButton(QDialogButtonBox::Apply);
+        apply->setToolTip(tr("See the colour on the interface, keeping this open"));
+        connect(apply, &QPushButton::clicked, this, [this, &dialog] {
+            m_accent = dialog.currentColor();
+            showAccent();
+            applyAccent();
+        });
+    }
+
+    if(dialog.exec() == QDialog::Accepted && dialog.selectedColor().isValid())
+    {
+        m_accent = dialog.selectedColor();
+        showAccent();
+    }
 }
 
 void XUiSettings::resetAccent()
 {
     m_accent = XUi::defaultAccent();
     showAccent();
+}
+
+void XUiSettings::applyAccent()
+{
+    //applyAccent() on the window reads the stored value, so it has to be
+    //written first; like any Apply, this sticks even if the dialog is
+    //cancelled afterwards
+    QSettings().setValue(XUi::AccentKey, m_accent);
+    emit accentApplied();
 }
 
 void XUiSettings::showAccent()

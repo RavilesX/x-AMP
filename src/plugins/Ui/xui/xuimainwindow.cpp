@@ -212,6 +212,7 @@ void XUiMainWindow::showPreferences()
 {
     ConfigDialog dialog(this);
     XUiSettings *page = new XUiSettings(&dialog);
+    connect(page, &XUiSettings::accentApplied, this, &XUiMainWindow::applyAccent);
     //the other pages carry icons, so ours would sit oddly without one
     dialog.addPage(tr("Interface"), page,
                    XUiIcons::toIcon(XUiIcons::Equalizer, 32, XUi::Text));
