@@ -877,6 +877,62 @@ botón de restablecer.
   del título lleva el color en su marcado HTML, así que se reescribe aparte.
 - El logo **no** se recolorea: es la marca, no parte del tema.
 
+## Fase 5.6 — Lista desacoplable 📋 analizada, sin empezar
+
+Petición: que la lista pueda **separarse** y **redimensionarse aparte** del
+ecualizador y del reproductor, como en el Qmmp original.
+
+Son dos cosas distintas y se pueden entregar por separado: hoy `xui` no
+permite ninguna de las dos, porque las tres tarjetas viven en un
+`QVBoxLayout` donde la lista se queda con el espacio sobrante y el reparto no
+se puede tocar.
+
+### Lo que hay en el árbol como referencia
+
+- **`skinned`** — tres ventanas de nivel superior (`Qt::Tool`/`Drawer` +
+  `FramelessWindowHint`) más [dock.cpp](src/plugins/Ui/skinned/dock.cpp), 290
+  líneas de imán entre ventanas. Es el comportamiento que se echa de menos.
+- **`qsui`** — cinco `QDockWidget` dentro de un `QMainWindow`. Gratis, porque
+  Qt lo da hecho… pero **exige `QMainWindow`**, y la ventana de `xui` es un
+  `QWidget` sin marco, translúcido y con barra de título propia. Convertirla
+  no es gratis.
+
+### Dato que abarata la opción B
+
+**La tarjeta de la lista no menciona a su padre ni a su ventana ni una sola
+vez**: habla solo con `PlayListManager`, `MediaPlayer` y `UiHelper`, que son
+singletons. Reparentarla a otra ventana no la rompe. Y las piezas para una
+segunda ventana sin marco ya están escritas: `startSystemMove()`,
+redimensionado por bordes, barra de título, y paleta y hoja de estilos que van
+a `qApp` y por tanto la heredaría.
+
+### Opciones
+
+| | Qué da | Coste |
+|---|---|---|
+| **A. `QSplitter` vertical** | Redimensionar cada tarjeta arrastrando el divisor. Una sola ventana | Bajo |
+| **B. Reparentar a ventana propia** | Las dos cosas: separar y redimensionar | Medio |
+| **C. Tres ventanas con imán, como `skinned`** | Lo mismo que B, más acople magnético entre ventanas | Alto |
+
+Recomendado **A y luego B**: A es barato, resuelve la mitad de la petición y
+no estorba a B. C solo si el imán entre ventanas importa por sí mismo.
+
+### Trampas previstas
+
+- **`applyCardVisibility()` choca con el divisor.** Hoy calcula a mano cuánto
+  crece o encoge la ventana al ocultar una tarjeta. Un `QSplitter` es dueño de
+  los tamaños, así que esa aritmética se sustituye por guardar y restaurar el
+  estado del divisor — sale más simple que ahora.
+- **Al desacoplar, la tarjeta necesita marco.** Se pinta a sí misma como
+  tarjeta, pero como ventana quiere el redondeo del borde, forma de moverla y
+  forma de cerrarla (o sea, volver a acoplarse).
+- **Estado a persistir:** si está separada y su geometría, además del reparto
+  del divisor.
+- El filtro de [xuidialogs.cpp](src/plugins/Ui/xui/xuidialogs.cpp) solo toca
+  `QDialog`, así que una ventana `QWidget` suelta no le afecta.
+- El espectro y los VU están en la tarjeta del reproductor, así que desacoplar
+  la lista no toca su registro en `Visual`.
+
 ### Huecos conocidos de `xui` frente a `skinned`
 
 Lista para una 5.6, si llega:
