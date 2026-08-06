@@ -119,14 +119,12 @@ XUiEqualizerCard::XUiEqualizerCard(QWidget *parent) : QWidget(parent)
 {
     m_settings = QmmpSettings::instance();
     m_core = SoundCore::instance();
-    //without this the card stretches to fill whatever the playlist leaves
-    //behind when it is hidden; its content has a natural height
-    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 
     QVBoxLayout *root = new QVBoxLayout(this);
     root->setContentsMargins(0, 0, 0, 0);
     root->setSpacing(0);
-    root->addWidget(buildHeader());
+    m_header = buildHeader();
+    root->addWidget(m_header);
     root->addWidget(buildBands(), 1);
 
     loadPresets();
@@ -145,7 +143,7 @@ QWidget *XUiEqualizerCard::buildHeader()
     layout->setContentsMargins(XUi::CardPadding, 0, XUi::CardPadding, 0);
     layout->setSpacing(12);
 
-    QLabel *title = makeLabel(tr("EQUALIZER"), XUi::Text, 1.05);
+    QLabel *title = makeLabel(tr("EQ"), XUi::Text, 1.05);
     QFont f = title->font();
     f.setBold(true);
     f.setLetterSpacing(QFont::AbsoluteSpacing, 1.4);
@@ -180,8 +178,13 @@ QWidget *XUiEqualizerCard::buildHeader()
     layout->addWidget(m_auto);
     layout->addWidget(autoLabel);
     layout->addStretch(1);
+    XUiIconButton *close = new XUiIconButton(XUiIcons::Close, header);
+    close->setToolTip(tr("Hide the equalizer"));
+    connect(close, &XUiIconButton::clicked, this, &XUiEqualizerCard::closeRequested);
+
     layout->addWidget(m_presetButton);
     layout->addWidget(reset);
+    layout->addWidget(close);
     return header;
 }
 

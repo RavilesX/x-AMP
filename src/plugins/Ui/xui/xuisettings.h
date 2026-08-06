@@ -24,6 +24,7 @@
 #include <QWidget>
 
 class QCheckBox;
+class QLabel;
 class QPushButton;
 
 /*!
@@ -45,6 +46,7 @@ public:
     static const QString ShowEqualizerKey;
     static const QString ShowPlaylistKey;
     static const QString HideOnCloseKey;
+    static const QString BackgroundKey;
 
 signals:
     /*!
@@ -53,16 +55,34 @@ signals:
      */
     void accentApplied();
 
+    /*! The playlist's background image was chosen or cleared. */
+    void backgroundApplied();
+
 private slots:
     void pickAccent();
     void resetAccent();
     void applyAccent();
+    void pickBackground();
+    void clearBackground();
 
 private:
     /*! Paints the chosen colour onto the swatch button. */
     void showAccent();
     QColor m_accent;
     QPushButton *m_accentButton;
+
+    /*!
+     * Writes the chosen image to the settings and announces it.
+     *
+     * Applied the moment it is picked rather than on OK: the whole point of
+     * the effect is what it looks like, and an image cannot be judged from a
+     * file name. Clear puts it back.
+     */
+    void applyBackground();
+    /*! Shows the chosen file's name, elided, next to its buttons. */
+    void showBackground();
+    QString m_background;
+    QLabel *m_backgroundName;
 
     QCheckBox *m_showEqualizer;
     QCheckBox *m_showPlaylist;

@@ -23,6 +23,8 @@
 #include <QLineEdit>
 #include <QMenu>
 #include <QPainter>
+#include <QPainterPath>
+#include <QSettings>
 #include <QVBoxLayout>
 #include <qmmpui/mediaplayer.h>
 #include <qmmpui/playlistmanager.h>
@@ -31,6 +33,7 @@
 #include "xuitheme.h"
 #include "xuicontrols.h"
 #include "xuilistview.h"
+#include "xuisettings.h"
 #include "xuiplaylistcard.h"
 
 XUiPlaylistCard::XUiPlaylistCard(QWidget *parent) : QWidget(parent)
@@ -43,7 +46,8 @@ XUiPlaylistCard::XUiPlaylistCard(QWidget *parent) : QWidget(parent)
     root->setContentsMargins(0, 0, 0, 0);
     root->setSpacing(0);
 
-    root->addWidget(buildHeader());
+    m_header = buildHeader();
+    root->addWidget(m_header);
 
     m_list = new XUiListView(m_manager, this);
     connect(m_list, &XUiListView::activated, this, [this] {
@@ -56,6 +60,8 @@ XUiPlaylistCard::XUiPlaylistCard(QWidget *parent) : QWidget(parent)
     root->addWidget(m_list, 1);
 
     root->addWidget(buildFooter());
+
+    reloadBackground();
 }
 
 QWidget *XUiPlaylistCard::buildHeader()
@@ -92,7 +98,13 @@ QWidget *XUiPlaylistCard::buildHeader()
     XUiIconButton *search = new XUiIconButton(XUiIcons::Search, header);
     search->setToolTip(tr("Search (Ctrl+F)"));
     connect(search, &XUiIconButton::clicked, this, &XUiPlaylistCard::toggleSearch);
+
+    XUiIconButton *close = new XUiIconButton(XUiIcons::Close, header);
+    close->setToolTip(tr("Hide the playlist"));
+    connect(close, &XUiIconButton::clicked, this, &XUiPlaylistCard::closeRequested);
+
     layout->addWidget(search);
+    layout->addWidget(close);
     return header;
 }
 
@@ -199,6 +211,91 @@ void XUiPlaylistCard::showPlaylistsMenu()
     menu.exec(QCursor::pos());
 }
 
+void XUiPlaylistCard::reloadBackground()
+{
+    const QString path = QSettings().value(XUiSettings::BackgroundKey).toString();
+    m_backdrop = path.isEmpty() ? QImage() : QImage(path);
+    //an unreadable or deleted file leaves a null image, which simply means no
+    //engraving -- not worth an error the user would meet on every startup
+    buildEngraving();
+    update();
+}
+
+void XUiPlaylistCard::buildEngraving()
+{
+    m_engraving = QPixmap();
+    if(m_backdrop.isNull() || width() <= 0 || height() <= 0)
+        return;
+
+    const qreal ratio = devicePixelRatioF();
+    const QSize target = (QSizeF(size()) * ratio).toSize();
+
+    //Cover the card and crop what hangs over, rather than stretching: a
+    //photograph squeezed to the card's proportions is the one thing that
+    //would give the effect away as a pasted-in picture.
+    QImage grey = m_backdrop.scaled(target, Qt::KeepAspectRatioByExpanding,
+                                    Qt::SmoothTransformation)
+                      .convertToFormat(QImage::Format_Grayscale8);
+    grey = grey.copy(QRect(QPoint((grey.width() - target.width()) / 2,
+                                  (grey.height() - target.height()) / 2), target));
+
+    //The engraving itself. Not a greyscale: the 256 levels of brightness are
+    //mapped onto a ramp that starts at the card's own colour and rises only
+    //DEPTH in lightness at the same hue and saturation, so the image reads as
+    //the surface being lit rather than as a picture lying on top of it.
+    constexpr float DEPTH = 0.115f;
+    const float h = XUi::Card.hslHueF() < 0 ? 0.0f : XUi::Card.hslHueF();
+    const float s = XUi::Card.hslSaturationF();
+    const float l = XUi::Card.lightnessF();
+    QList<QRgb> ramp;
+    ramp.reserve(256);
+    for(int i = 0; i < 256; ++i)
+        ramp.append(QColor::fromHslF(h, s, qMin(1.0f, l + DEPTH * i / 255.0f)).rgb());
+
+    //Grayscale8 and Indexed8 hold one byte per pixel alike, so the ramp can be
+    //hung off the existing buffer instead of walking every pixel by hand.
+    //`grey` has to outlive `tinted`, which borrows its memory.
+    QImage tinted(grey.constBits(), grey.width(), grey.height(),
+                  grey.bytesPerLine(), QImage::Format_Indexed8);
+    tinted.setColorTable(ramp);
+    QImage engraving = tinted.convertToFormat(QImage::Format_ARGB32_Premultiplied);
+
+    //Fade towards the top. The first rows of the list are the ones most often
+    //read, and the header sits over the same pixels, so the image is let in
+    //gradually and only reaches full strength near the footer.
+    {
+        QPainter fading(&engraving);
+        fading.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+        QLinearGradient fade(0, 0, 0, target.height());
+        fade.setColorAt(0.0, QColor(0, 0, 0, 30));
+        fade.setColorAt(0.35, QColor(0, 0, 0, 105));
+        fade.setColorAt(1.0, QColor(0, 0, 0, 165));
+        fading.fillRect(engraving.rect(), fade);
+    }
+
+    //Flattened onto the card's own gradient, in a format that has no alpha
+    //channel at all. The window is translucent so its corners can be rounded,
+    //which means anything left partly transparent here is not blended with the
+    //card behind: it is a hole through to the desktop. RGB32 cannot make one.
+    QImage flat(target, QImage::Format_RGB32);
+    QPainter p(&flat);
+    QLinearGradient card(0, 0, 0, target.height());
+    card.setColorAt(0.0, XUi::CardTop);
+    card.setColorAt(1.0, XUi::Card);
+    p.fillRect(flat.rect(), card);
+    p.drawImage(0, 0, engraving);
+    p.end();
+
+    m_engraving = QPixmap::fromImage(flat);
+    m_engraving.setDevicePixelRatio(ratio);
+}
+
+void XUiPlaylistCard::resizeEvent(QResizeEvent *e)
+{
+    buildEngraving();
+    QWidget::resizeEvent(e);
+}
+
 void XUiPlaylistCard::paintEvent(QPaintEvent *)
 {
     QPainter p(this);
@@ -210,6 +307,20 @@ void XUiPlaylistCard::paintEvent(QPaintEvent *)
     p.setBrush(g);
     p.drawRoundedRect(QRectF(rect()).adjusted(0.5, 0.5, -0.5, -0.5),
                       XUi::CardRadius, XUi::CardRadius);
+
+    if(!m_engraving.isNull())
+    {
+        //clipped a pixel inside the card so the image cannot eat the border it
+        //sits within
+        QPainterPath inside;
+        inside.addRoundedRect(QRectF(rect()).adjusted(1, 1, -1, -1),
+                              XUi::CardRadius - 1, XUi::CardRadius - 1);
+        p.save();
+        p.setClipPath(inside);
+        p.drawPixmap(0, 0, m_engraving);
+        p.restore();
+    }
+
     p.setPen(QPen(XUi::Border, 1));
     p.drawLine(QPointF(1, XUi::CardHeaderHeight), QPointF(width() - 1, XUi::CardHeaderHeight));
 }

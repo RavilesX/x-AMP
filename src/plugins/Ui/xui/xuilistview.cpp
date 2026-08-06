@@ -578,7 +578,9 @@ void XUiListView::paintEvent(QPaintEvent *)
 
         if(!duration.isEmpty())
         {
-            p.setPen(XUi::TextDim);
+            //the playing row is accented end to end; a dim duration next to an
+            //accented title read as a different row
+            p.setPen(isCurrent ? XUi::Accent : XUi::TextDim);
             p.drawText(QRectF(width() - PADDING - SCROLLBAR_WIDTH - durationWidth,
                               box.top(), durationWidth, ROW_HEIGHT),
                        Qt::AlignVCenter | Qt::AlignRight, duration);

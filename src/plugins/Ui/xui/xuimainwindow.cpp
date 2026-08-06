@@ -17,18 +17,18 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
+#include <QAction>
 #include <QApplication>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QMenu>
 #include <QShortcut>
 #include <QMouseEvent>
-#include <QPainter>
-#include <QPainterPath>
 #include <QColor>
+#include <QGuiApplication>
+#include <QScreen>
 #include <QSettings>
 #include <QVBoxLayout>
-#include <QWindow>
 #include <qmmp/soundcore.h>
 #include <qmmpui/mediaplayer.h>
 #include <qmmpui/playlistmanager.h>
@@ -42,24 +42,27 @@
 #include "xuisettings.h"
 #include "xuistyle.h"
 #include "xuidialogs.h"
+#include "xuidock.h"
+#include "xuiwindow.h"
 #include "xuimainwindow.h"
 
 namespace
 {
-    //grab area for resizing along the window border
-    constexpr int RESIZE_MARGIN = 6;
+    //first-run sizes: the three windows stacked come to roughly what the
+    //single window used to be
+    constexpr int COLUMN_WIDTH = 560;
+    constexpr int PLAYER_HEIGHT = 330;
+    constexpr int EQUALIZER_HEIGHT = 250;
+    constexpr int PLAYLIST_HEIGHT = 380;
 }
 
-XUiMainWindow::XUiMainWindow(QWidget *parent) : QWidget(parent)
+XUiMainWindow::XUiMainWindow(QWidget *parent) : XUiWindow(QStringLiteral("player"), parent)
 {
     m_uiHelper = UiHelper::instance();
     m_core = SoundCore::instance();
     m_player = MediaPlayer::instance();
     m_playListManager = PlayListManager::instance();
 
-    setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
-    setAttribute(Qt::WA_TranslucentBackground); //rounded corners need this
-    setMouseTracking(true);
     //menus, tooltips and dialogs are plain Qt widgets and would otherwise
     //follow the desktop's theme, which need not be dark like the cards
     //the accent has to be in place before the palette and sheet are built,
@@ -77,39 +80,71 @@ XUiMainWindow::XUiMainWindow(QWidget *parent) : QWidget(parent)
     //dialogs drop the window manager's grey frame; their accent border and
     //their own buttons take over from it
     XUiDialogs::install();
-    //no hand-picked minimum: an explicit one smaller than the cards need lets
-    //Qt squeeze them past their own minimums, which crushes the player card.
-    //Let the layout derive it instead.
-    resize(700, 720);
-
+    //This window is now only the title bar and the player; the equalizer and
+    //the playlist each get one of their own, so all three can be moved and
+    //sized apart and snapped back together.
     QVBoxLayout *root = new QVBoxLayout(this);
     //margin leaves room for the rounded corners to show the desktop through
-    root->setContentsMargins(XUi::CardGap, 0, XUi::CardGap, XUi::CardGap);
+    root->setContentsMargins(XUi::CardGap, XUi::CardGap / 2, XUi::CardGap, XUi::CardGap);
     root->setSpacing(XUi::CardGap);
 
     m_titleBar = buildTitleBar();
     root->addWidget(m_titleBar);
+    setDragHandle(m_titleBar);
 
     m_playerCard = new XUiPlayerCard(this);
-    root->addWidget(m_playerCard);
+    root->addWidget(m_playerCard, 1);
 
-    m_equalizerCard = new XUiEqualizerCard(this);
-    root->addWidget(m_equalizerCard);
+    XUiDock::instance()->setMainWindow(this);
 
-    m_playlistCard = new XUiPlaylistCard(this);
-    root->addWidget(m_playlistCard, 1); //the list absorbs spare height
+    auto companion = [this](QWidget *card, const QString &key, const QString &title) {
+        //Qt::Tool, and owned by the player: the three then minimise and raise
+        //together and only the player takes a slot in the task bar, which is
+        //how the skinned interface's windows behave.
+        XUiWindow *window = new XUiWindow(key, this);
+        window->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+        window->setWindowTitle(title);
+        QVBoxLayout *layout = new QVBoxLayout(window);
+        layout->setContentsMargins(XUi::CardGap, XUi::CardGap,
+                                   XUi::CardGap, XUi::CardGap);
+        layout->addWidget(card);
+        card->setParent(window);
+        return window;
+    };
+
+    m_equalizerCard = new XUiEqualizerCard;
+    m_equalizerWindow = companion(m_equalizerCard, QStringLiteral("equalizer"),
+                                  tr("x-AMP Equalizer"));
+    //the card's own header bar is what drags its window
+    m_equalizerWindow->setDragHandle(m_equalizerCard->header());
+    connect(m_equalizerCard, &XUiEqualizerCard::closeRequested, this, [this] {
+        hideCompanion(XUiSettings::ShowEqualizerKey, m_equalizerAction);
+    });
+
+    m_playlistCard = new XUiPlaylistCard;
+    m_playlistWindow = companion(m_playlistCard, QStringLiteral("playlist"),
+                                 tr("x-AMP Playlist"));
+    m_playlistWindow->setDragHandle(m_playlistCard->header());
+    connect(m_playlistCard, &XUiPlaylistCard::closeRequested, this, [this] {
+        hideCompanion(XUiSettings::ShowPlaylistKey, m_playlistAction);
+    });
 
     connect(m_core, &SoundCore::trackInfoChanged, this, &XUiMainWindow::updateWindowTitle);
     connect(m_player, &MediaPlayer::playbackFinished, this, &XUiMainWindow::updateWindowTitle);
-    connect(m_uiHelper, &UiHelper::showMainWindowCalled, this, &QWidget::show);
+    connect(m_uiHelper, &UiHelper::showMainWindowCalled, this, [this] {
+        show();
+        applyCardVisibility(); //the companions were hidden along with us
+    });
 
     updateWordmark();
     createShortcuts();
     readSettings();
-    applyCardVisibility();
     updateWindowTitle();
     //the starter only constructs the interface; showing it is ours to do
     show();
+    //after show(): placing a companion needs this window's real geometry
+    stackCompanions();
+    applyCardVisibility();
 }
 
 XUiMainWindow::~XUiMainWindow() = default;
@@ -182,17 +217,19 @@ void XUiMainWindow::showMainMenu()
                         m_playlistCard, &XUiPlaylistCard::toggleSearch);
         view->addSeparator();
         QSettings settings;
-        QAction *equalizer = view->addAction(tr("&Equalizer"));
-        equalizer->setCheckable(true);
-        equalizer->setChecked(settings.value(XUiSettings::ShowEqualizerKey, true).toBool());
-        connect(equalizer, &QAction::toggled, this, [this](bool on) {
+        m_equalizerAction = view->addAction(tr("&Equalizer"));
+        m_equalizerAction->setCheckable(true);
+        m_equalizerAction->setChecked(settings.value(XUiSettings::ShowEqualizerKey,
+                                                     true).toBool());
+        connect(m_equalizerAction, &QAction::toggled, this, [this](bool on) {
             QSettings().setValue(XUiSettings::ShowEqualizerKey, on);
             applyCardVisibility();
         });
-        QAction *playlist = view->addAction(tr("&Playlist"));
-        playlist->setCheckable(true);
-        playlist->setChecked(settings.value(XUiSettings::ShowPlaylistKey, true).toBool());
-        connect(playlist, &QAction::toggled, this, [this](bool on) {
+        m_playlistAction = view->addAction(tr("&Playlist"));
+        m_playlistAction->setCheckable(true);
+        m_playlistAction->setChecked(settings.value(XUiSettings::ShowPlaylistKey,
+                                                    true).toBool());
+        connect(m_playlistAction, &QAction::toggled, this, [this](bool on) {
             QSettings().setValue(XUiSettings::ShowPlaylistKey, on);
             applyCardVisibility();
         });
@@ -213,14 +250,16 @@ void XUiMainWindow::showPreferences()
     ConfigDialog dialog(this);
     XUiSettings *page = new XUiSettings(&dialog);
     connect(page, &XUiSettings::accentApplied, this, &XUiMainWindow::applyAccent);
+    connect(page, &XUiSettings::backgroundApplied,
+            m_playlistCard, &XUiPlaylistCard::reloadBackground);
     //the other pages carry icons, so ours would sit oddly without one
-    dialog.addPage(tr("Interface"), page,
-                   XUiIcons::toIcon(XUiIcons::Equalizer, 32, XUi::Text));
+    dialog.addPage(tr("Interface"), page, QIcon(QStringLiteral(":/xui/interface.png")));
     if(dialog.exec() == QDialog::Accepted)
     {
         page->writeSettings();
         applyAccent();
         applyCardVisibility();
+        m_playlistCard->reloadBackground();
     }
 }
 
@@ -278,46 +317,63 @@ void XUiMainWindow::applyAccent()
     update();
 }
 
+void XUiMainWindow::stackCompanions()
+{
+    QSettings settings;
+    struct { XUiWindow *window; QString key; int height; } items[] = {
+        { m_equalizerWindow, QStringLiteral("XUi/equalizer_geometry"), EQUALIZER_HEIGHT },
+        { m_playlistWindow, QStringLiteral("XUi/playlist_geometry"), PLAYLIST_HEIGHT },
+    };
+
+    int y = geometry().bottom() + 1;
+    for(const auto &item : items)
+    {
+        item.window->restoreGeometry(QSize(width(), item.height));
+        if(settings.contains(item.key))
+            continue; //placed by the user already; leave it where it was
+
+        //first run: line them up under the player, flush and touching, so the
+        //three read as one window until the user pulls them apart
+        item.window->resize(width(), item.height);
+        item.window->move(geometry().left(), y);
+        //the asked-for height, not height(): a window that is not on screen
+        //yet may still be reporting whatever its layout last worked out
+        y += item.height + 1;
+    }
+}
+
+void XUiMainWindow::hideCompanion(const QString &key, QAction *action)
+{
+    //Only the explicit gestures -- this button, the menu, the preferences --
+    //write the setting. A window closed on the way out of the application must
+    //not be read as the user putting the card away, or every card would come
+    //back unticked after a quit.
+    QSettings().setValue(key, false);
+    if(action)
+        action->setChecked(false); //keeps the menu in step with the button
+    applyCardVisibility();
+}
+
 void XUiMainWindow::applyCardVisibility()
 {
     QSettings settings;
-    const bool showEqualizer = settings.value(XUiSettings::ShowEqualizerKey, true).toBool();
-    const bool showPlaylist = settings.value(XUiSettings::ShowPlaylistKey, true).toBool();
     m_hideOnClose = settings.value(XUiSettings::HideOnCloseKey, false).toBool();
 
-    const bool shown = isVisible(); //false while the window is still being built
-
-    //Grow and shrink the window by exactly what each card occupied, rather
-    //than snapping to sizeHint(): that discarded whatever height the user had
-    //dragged the window to, so re-showing a card reset it to the default.
-    int delta = 0;
-    auto toggle = [&](QWidget *card, bool show, int *remembered) {
-        //isHidden(), not isVisible(): every child reads as not visible until
-        //the window itself is shown, so at startup a card that should stay
-        //hidden matched "already hidden" and was never told to hide -- then
-        //appeared along with the window. isHidden() reflects an explicit hide,
-        //whatever the parent is doing.
-        if(!card->isHidden() == show)
-            return;
+    //Each card is a window of its own now, so showing one is no longer the
+    //height arithmetic the single window needed -- every window keeps the
+    //geometry it was last given.
+    auto toggle = [](XUiWindow *window, bool show) {
         if(show)
+            window->show();
+        else if(!window->isHidden())
         {
-            delta += (*remembered > 0 ? *remembered : card->sizeHint().height()) + XUi::CardGap;
+            window->saveGeometry();
+            window->hide();
         }
-        else if(shown)
-        {
-            //before the window is up, height() is a layout placeholder rather
-            //than anything worth restoring later
-            *remembered = card->height();
-            delta -= card->height() + XUi::CardGap;
-        }
-        card->setVisible(show);
     };
 
-    toggle(m_equalizerCard, showEqualizer, &m_equalizerHeight);
-    toggle(m_playlistCard, showPlaylist, &m_playlistHeight);
-
-    if(shown && delta != 0)
-        resize(width(), qMax(minimumSizeHint().height(), height() + delta));
+    toggle(m_equalizerWindow, settings.value(XUiSettings::ShowEqualizerKey, true).toBool());
+    toggle(m_playlistWindow, settings.value(XUiSettings::ShowPlaylistKey, true).toBool());
 }
 
 void XUiMainWindow::toggleMaximised()
@@ -335,107 +391,46 @@ void XUiMainWindow::updateWindowTitle()
                                    : QStringLiteral("%1 - x-AMP").arg(title));
 }
 
-Qt::Edges XUiMainWindow::edgesAt(const QPoint &pos) const
-{
-    if(isMaximized())
-        return {};
-    Qt::Edges edges;
-    if(pos.x() <= RESIZE_MARGIN)
-        edges |= Qt::LeftEdge;
-    if(pos.x() >= width() - RESIZE_MARGIN)
-        edges |= Qt::RightEdge;
-    if(pos.y() <= RESIZE_MARGIN)
-        edges |= Qt::TopEdge;
-    if(pos.y() >= height() - RESIZE_MARGIN)
-        edges |= Qt::BottomEdge;
-    return edges;
-}
-
-void XUiMainWindow::mouseMoveEvent(QMouseEvent *e)
-{
-    const Qt::Edges edges = edgesAt(e->pos());
-    if((edges & Qt::LeftEdge && edges & Qt::TopEdge) ||
-       (edges & Qt::RightEdge && edges & Qt::BottomEdge))
-        setCursor(Qt::SizeFDiagCursor);
-    else if((edges & Qt::RightEdge && edges & Qt::TopEdge) ||
-            (edges & Qt::LeftEdge && edges & Qt::BottomEdge))
-        setCursor(Qt::SizeBDiagCursor);
-    else if(edges & (Qt::LeftEdge | Qt::RightEdge))
-        setCursor(Qt::SizeHorCursor);
-    else if(edges & (Qt::TopEdge | Qt::BottomEdge))
-        setCursor(Qt::SizeVerCursor);
-    else
-        unsetCursor();
-}
-
-void XUiMainWindow::leaveEvent(QEvent *)
-{
-    //Qt sends Leave when the pointer moves onto a child widget too. Without
-    //clearing here, a resize cursor picked up at the window edge stayed set
-    //and every child without a cursor of its own inherited it -- the pointer
-    //kept showing the horizontal resize arrows over the playlist.
-    unsetCursor();
-}
-
-void XUiMainWindow::mousePressEvent(QMouseEvent *e)
-{
-    if(e->button() != Qt::LeftButton)
-        return;
-
-    //Hand both gestures to the compositor. Moving the window by hand from
-    //mouseMoveEvent works on X11 but not on Wayland, where clients are not
-    //allowed to position themselves.
-    const Qt::Edges edges = edgesAt(e->pos());
-    if(edges)
-    {
-        windowHandle()->startSystemResize(edges);
-        return;
-    }
-    if(m_titleBar->geometry().contains(e->pos()))
-        windowHandle()->startSystemMove();
-}
-
 void XUiMainWindow::mouseDoubleClickEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton && m_titleBar->geometry().contains(e->pos()))
         toggleMaximised();
 }
 
-void XUiMainWindow::paintEvent(QPaintEvent *)
-{
-    QPainter p(this);
-    p.setRenderHint(QPainter::Antialiasing, true);
-    QRectF body = QRectF(rect()).adjusted(XUi::CardGap - 1, 0,
-                                          -(XUi::CardGap - 1), -(XUi::CardGap - 1));
-    p.setPen(QPen(XUi::Border, 1));
-    p.setBrush(XUi::Background);
-    p.drawRoundedRect(body, XUi::WindowRadius, XUi::WindowRadius);
-}
-
 void XUiMainWindow::readSettings()
 {
-    QSettings settings;
-    settings.beginGroup(QStringLiteral("XUi"));
-    const QSize size = settings.value(QStringLiteral("size")).toSize();
-    //expandToMinimum: a size saved before a card was added would clip it
-    if(size.isValid())
-        resize(size.expandedTo(minimumSizeHint()));
-    const QPoint pos = settings.value(QStringLiteral("position")).toPoint();
-    if(!pos.isNull())
-        move(pos);
-    settings.endGroup();
+    {
+        //left behind by the single-window layout, where one size and position
+        //covered all three cards
+        QSettings settings;
+        settings.remove(QStringLiteral("XUi/size"));
+        settings.remove(QStringLiteral("XUi/position"));
+    }
+
+    //the player card alone is far shorter than the old single window
+    if(restoreGeometry(QSize(COLUMN_WIDTH, PLAYER_HEIGHT)))
+        return;
+
+    //Nothing saved: place the window rather than leaving it to the window
+    //manager, which would drop it wherever it pleased -- and stackCompanions()
+    //reads this geometry to line the other two up underneath.
+    QScreen *screen = QGuiApplication::primaryScreen();
+    if(!screen)
+        return;
+    const QRect available = screen->availableGeometry();
+    const int column = PLAYER_HEIGHT + EQUALIZER_HEIGHT + PLAYLIST_HEIGHT + 2;
+    move(available.left() + (available.width() - width()) / 2,
+         qMax(available.top(), available.top() + (available.height() - column) / 2));
 }
 
 void XUiMainWindow::writeSettings()
 {
-    QSettings settings;
-    settings.beginGroup(QStringLiteral("XUi"));
-    if(!isMaximized())
-    {
-        settings.setValue(QStringLiteral("size"), size());
-        settings.setValue(QStringLiteral("position"), pos());
-    }
-    settings.endGroup();
+    saveGeometry();
+    //a hidden companion saved its geometry when it was hidden
+    if(!m_equalizerWindow->isHidden())
+        m_equalizerWindow->saveGeometry();
+    if(!m_playlistWindow->isHidden())
+        m_playlistWindow->saveGeometry();
 }
 
 void XUiMainWindow::closeEvent(QCloseEvent *e)
@@ -445,6 +440,10 @@ void XUiMainWindow::closeEvent(QCloseEvent *e)
     {
         //something else can bring us back (tray icon, MPRIS, --toggle-visibility)
         hide();
+        //the companions are windows of their own now: left alone they would
+        //stay on screen after the player had gone
+        m_equalizerWindow->hide();
+        m_playlistWindow->hide();
         e->ignore();
         return;
     }

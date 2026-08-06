@@ -44,6 +44,13 @@ class XUiEqualizerCard : public QWidget
 public:
     explicit XUiEqualizerCard(QWidget *parent = nullptr);
 
+    /*! The header bar, which doubles as the drag handle of its window. */
+    QWidget *header() const { return m_header; }
+
+signals:
+    /*! The card's own close button was pressed. */
+    void closeRequested();
+
 protected:
     void paintEvent(QPaintEvent *) override;
 
@@ -56,6 +63,7 @@ private slots:
 
 private:
     QWidget *buildHeader();
+    QWidget *m_header = nullptr;
     QWidget *buildBands();
     void loadPresets();
     void applyPreset(const EqSettings &preset, const QString &name);

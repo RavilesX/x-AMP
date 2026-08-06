@@ -21,7 +21,9 @@
 #define XUIMAINWINDOW_H
 
 #include <QWidget>
+#include "xuiwindow.h"
 
+class QAction;
 class QLabel;
 class QMenu;
 class UiHelper;
@@ -33,14 +35,14 @@ class XUiEqualizerCard;
 class XUiPlaylistCard;
 
 /*!
- * Frameless main window with a title bar of its own.
+ * The player window: title bar, player card, and the menu that drives the
+ * whole interface.
  *
- * Frameless costs us the window manager's move, resize and snap behaviour,
- * so those are handed back to the compositor through startSystemMove() and
- * startSystemResize() rather than reimplemented by tracking the pointer --
- * that is the only approach that behaves identically on X11 and Wayland.
+ * The equalizer and the playlist are top-level windows of their own, so each
+ * can be moved and sized apart from the others; XUiDock snaps them back
+ * together and carries the docked ones along when this window moves.
  */
-class XUiMainWindow : public QWidget
+class XUiMainWindow : public XUiWindow
 {
     Q_OBJECT
 public:
@@ -48,11 +50,7 @@ public:
     ~XUiMainWindow();
 
 protected:
-    void paintEvent(QPaintEvent *) override;
-    void mousePressEvent(QMouseEvent *) override;
     void mouseDoubleClickEvent(QMouseEvent *) override;
-    void mouseMoveEvent(QMouseEvent *) override;
-    void leaveEvent(QEvent *) override;
     void closeEvent(QCloseEvent *) override;
 
 private slots:
@@ -64,12 +62,18 @@ private slots:
 private:
     QWidget *buildTitleBar();
     void createShortcuts();
+    /*! Shows or hides the companion windows to match the settings. */
     void applyCardVisibility();
+    /*! Puts a companion away and records that the user asked for it. */
+    void hideCompanion(const QString &key, QAction *action);
+    /*!
+     * Restores the companions' geometry, stacking any that has never been
+     * placed under this window so the three read as one column at first run.
+     */
+    void stackCompanions();
     /*! Re-reads the accent and repaints everything that uses it. */
     void applyAccent();
     void updateWordmark();
-    /*! Which window edges the pointer is over, for resize cursors. */
-    Qt::Edges edgesAt(const QPoint &pos) const;
     void readSettings();
     void writeSettings();
 
@@ -83,11 +87,15 @@ private:
     XUiPlayerCard *m_playerCard;
     XUiEqualizerCard *m_equalizerCard;
     XUiPlaylistCard *m_playlistCard;
+    //each companion card lives in its own top-level window, so it can be
+    //moved and resized on its own and snapped back against this one
+    XUiWindow *m_equalizerWindow = nullptr;
+    XUiWindow *m_playlistWindow = nullptr;
     QMenu *m_mainMenu = nullptr;
+    //kept so closing a companion by its own button unticks it in the menu
+    QAction *m_equalizerAction = nullptr;
+    QAction *m_playlistAction = nullptr;
     bool m_hideOnClose = false;
-    //last height each card had, so re-showing restores it instead of a default
-    int m_equalizerHeight = 0;
-    int m_playlistHeight = 0;
 };
 
 #endif

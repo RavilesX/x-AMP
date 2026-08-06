@@ -3,6 +3,7 @@ project(xui)
 set(libxui_SRCS
     xuicontrols.cpp
     xuidialogs.cpp
+    xuidock.cpp
     xuiequalizercard.cpp
     xuifactory.cpp
     xuiicons.cpp
@@ -13,7 +14,9 @@ set(libxui_SRCS
     xuisettings.cpp
     xuistyle.cpp
     xuivisualization.cpp
+    xuiwindow.cpp
     translations/translations.qrc
+    images/images.qrc
 )
 
 add_library(xui MODULE ${libxui_SRCS})

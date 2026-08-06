@@ -74,7 +74,10 @@ void XUiIconButton::paintEvent(QPaintEvent *)
         p.drawRoundedRect(rect().adjusted(1, 1, -1, -1), 9, 9);
     }
 
-    const QColor color = m_checked ? XUi::Accent : (m_hovered ? XUi::Text : XUi::TextDim);
+    //the glyphs carry the user's accent: held back at rest, full on when the
+    //button is a toggle that is on, brightest under the pointer
+    const QColor color = m_hovered ? XUi::AccentBright
+                                   : (m_checked ? XUi::Accent : XUi::AccentMuted);
     const QRectF box((width() - m_iconSize) / 2.0, (height() - m_iconSize) / 2.0,
                      m_iconSize, m_iconSize);
     XUiIcons::paint(&p, m_icon, box, color);
@@ -188,7 +191,8 @@ void XUiPlayButton::paintEvent(QPaintEvent *)
     if(!m_playing)
         g.translate(1.5, 0); //optical centring for the triangle
     XUiIcons::paint(&p, m_playing ? XUiIcons::Pause : XUiIcons::Play, g,
-                    m_pressed ? XUi::TextDim : XUi::Text);
+                    m_pressed ? XUi::AccentMuted
+                              : (m_hovered ? XUi::AccentBright : XUi::Accent));
 }
 
 void XUiPlayButton::enterEvent(QEnterEvent *)
@@ -613,7 +617,7 @@ void XUiMenuButton::paintEvent(QPaintEvent *)
     {
         XUiIcons::paint(&p, m_icon,
                         QRectF(12, (height() - GLYPH_SIZE) / 2.0, GLYPH_SIZE, GLYPH_SIZE),
-                        m_hovered ? XUi::Text : XUi::TextDim);
+                        m_hovered ? XUi::AccentBright : XUi::AccentMuted);
     }
     else
     {
@@ -622,7 +626,8 @@ void XUiMenuButton::paintEvent(QPaintEvent *)
                    Qt::AlignVCenter | Qt::AlignLeft, m_text);
     }
     XUiIcons::paint(&p, XUiIcons::ChevronDown,
-                    QRectF(width() - 26.0, height() / 2.0 - 8.0, 16, 16), XUi::TextDim);
+                    QRectF(width() - 26.0, height() / 2.0 - 8.0, 16, 16),
+                    XUi::AccentMuted);
 }
 
 void XUiMenuButton::mouseReleaseEvent(QMouseEvent *e)

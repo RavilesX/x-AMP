@@ -20,14 +20,105 @@
 #include <QApplication>
 #include <QAbstractButton>
 #include <QDialog>
+#include <QListWidget>
 #include <QMouseEvent>
+#include <QPainter>
+#include <QStyledItemDelegate>
 #include <QWindow>
+#include "xuitheme.h"
+#include "xuiicons.h"
 #include "xuidialogs.h"
 
 namespace
 {
     //marks a dialog already dealt with, so re-showing it does not loop
     const char *HANDLED = "xui_frameless";
+    //the settings dialog's list of pages, named in configdialog.ui
+    const char *PAGE_LIST = "contentsWidget";
+
+    /*!
+     * The page list of the settings dialog.
+     *
+     * Filling the selected row with the accent put white text on whatever
+     * colour the user had picked, and against a light one the label vanished.
+     * The row is marked with an accent chevron in the gutter instead, and the
+     * fill stays a neutral grey, so the text is legible under any accent.
+     */
+    class PageDelegate : public QStyledItemDelegate
+    {
+    public:
+        using QStyledItemDelegate::QStyledItemDelegate;
+
+    protected:
+        void paint(QPainter *painter, const QStyleOptionViewItem &option,
+                   const QModelIndex &index) const override
+        {
+            QStyleOptionViewItem opt(option);
+            const bool selected = opt.state & QStyle::State_Selected;
+            const bool hovered = opt.state & QStyle::State_MouseOver;
+
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing, true);
+            if(selected || hovered)
+            {
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(selected ? XUi::Border : XUi::Hover);
+                painter->drawRoundedRect(QRectF(opt.rect).adjusted(3, 2, -3, -2), 8, 8);
+            }
+            if(selected)
+            {
+                const qreal size = 20.0;
+                XUiIcons::paint(painter, XUiIcons::ChevronRight,
+                                QRectF(opt.rect.left() + 3.0,
+                                       opt.rect.center().y() - size / 2.0, size, size),
+                                XUi::Accent);
+            }
+            painter->restore();
+
+            //the fill is drawn above, so the style must not draw its own
+            opt.state &= ~(QStyle::State_Selected | QStyle::State_MouseOver);
+            opt.palette.setColor(QPalette::HighlightedText, XUi::Text);
+            opt.palette.setColor(QPalette::Text, XUi::Text);
+            QStyledItemDelegate::paint(painter, opt, index);
+        }
+    };
+
+    /*!
+     * Keeps one page always marked.
+     *
+     * A click on the empty strip below the last row cleared the selection: the
+     * page stayed on screen with nothing pointing at it. Presses that land on
+     * no row are dropped.
+     */
+    class KeepSelection : public QObject
+    {
+    public:
+        explicit KeepSelection(QListWidget *list) : QObject(list), m_list(list)
+        {
+            m_list->viewport()->installEventFilter(this);
+        }
+
+    protected:
+        bool eventFilter(QObject *, QEvent *event) override
+        {
+            switch(event->type())
+            {
+            case QEvent::MouseButtonPress:
+            case QEvent::MouseButtonDblClick:
+            case QEvent::MouseButtonRelease:
+            {
+                const QPoint pos = static_cast<QMouseEvent *>(event)
+                                   ->position().toPoint();
+                return !m_list->indexAt(pos).isValid();
+            }
+            default:
+                return false;
+            }
+        }
+
+    private:
+        QListWidget *m_list;
+    };
 }
 
 void XUiDialogs::install()
@@ -60,6 +151,11 @@ bool XUiDialogs::eventFilter(QObject *watched, QEvent *event)
     {
         dialog->setProperty(HANDLED, true);
         stripLabelledIcons(dialog);
+        if(QListWidget *pages = dialog->findChild<QListWidget *>(QLatin1String(PAGE_LIST)))
+        {
+            pages->setItemDelegate(new PageDelegate(pages));
+            new KeepSelection(pages); //owned by the list
+        }
         //setWindowFlags hides the widget, so it has to be shown again; doing
         //this on Show rather than at construction keeps it to one frame and
         //works for dialogs built elsewhere

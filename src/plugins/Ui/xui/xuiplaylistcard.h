@@ -20,6 +20,8 @@
 #ifndef XUIPLAYLISTCARD_H
 #define XUIPLAYLISTCARD_H
 
+#include <QImage>
+#include <QPixmap>
 #include <QWidget>
 
 class QLineEdit;
@@ -42,8 +44,25 @@ public:
     /*! Shows or hides the search field. Driven by Ctrl+F on the window. */
     void toggleSearch();
 
+    /*! The header bar, which doubles as the drag handle of its window. */
+    QWidget *header() const { return m_header; }
+
+public slots:
+    /*!
+     * Re-reads the background image from the settings and repaints.
+     *
+     * Called when the preferences page changes it; the file is only read
+     * here, never in paintEvent().
+     */
+    void reloadBackground();
+
+signals:
+    /*! The card's own close button was pressed. */
+    void closeRequested();
+
 protected:
     void paintEvent(QPaintEvent *) override;
+    void resizeEvent(QResizeEvent *) override;
 
 private slots:
     void showAddMenu();
@@ -53,7 +72,20 @@ private slots:
 
 private:
     QWidget *buildHeader();
+    QWidget *m_header = nullptr;
     QWidget *buildFooter();
+
+    /*!
+     * Renders m_backdrop at the current size as the engraving drawn behind
+     * the list: the image reduced to one tone of the card's own colour, faded
+     * towards the top so the track names keep their contrast.
+     *
+     * Costly enough to be worth caching -- it runs on a resize or on a change
+     * of image, not on every paint.
+     */
+    void buildEngraving();
+    QImage m_backdrop;   //the file as loaded, at its own size
+    QPixmap m_engraving; //m_backdrop tinted and scaled to this widget
 
     UiHelper *m_uiHelper;
     MediaPlayer *m_player;

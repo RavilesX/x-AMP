@@ -277,8 +277,8 @@
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="58"/>
-        <source>Playlist</source>
-        <translation>Lista de reproducción</translation>
+        <source>Playlists</source>
+        <translation>Playlists</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="67"/>

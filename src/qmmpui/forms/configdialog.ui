@@ -55,7 +55,7 @@
       </property>
       <item>
        <property name="text">
-        <string>Playlist</string>
+        <string>Playlists</string>
        </property>
        <property name="icon">
         <iconset resource="../images/qmmpui_images.qrc">

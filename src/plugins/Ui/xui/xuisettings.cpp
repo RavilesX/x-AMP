@@ -20,6 +20,9 @@
 #include <QCheckBox>
 #include <QColorDialog>
 #include <QDialogButtonBox>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QFontMetrics>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -31,6 +34,7 @@
 const QString XUiSettings::ShowEqualizerKey = QStringLiteral("XUi/show_equalizer");
 const QString XUiSettings::ShowPlaylistKey  = QStringLiteral("XUi/show_playlist");
 const QString XUiSettings::HideOnCloseKey   = QStringLiteral("XUi/hide_on_close");
+const QString XUiSettings::BackgroundKey    = QStringLiteral("XUi/playlist_background");
 
 XUiSettings::XUiSettings(QWidget *parent) : QWidget(parent)
 {
@@ -77,6 +81,31 @@ XUiSettings::XUiSettings(QWidget *parent) : QWidget(parent)
     layout->addLayout(accentRow);
     showAccent();
 
+    //Background image for the playlist. Drawn as an engraving -- reduced to
+    //the card's own colour -- so any picture keeps the interface readable
+    //instead of turning into a wallpaper the track names have to fight.
+    m_background = settings.value(BackgroundKey).toString();
+
+    QLabel *playlist = new QLabel(tr("Playlist"), this);
+    playlist->setFont(bold);
+    layout->addSpacing(6);
+    layout->addWidget(playlist);
+
+    QHBoxLayout *backgroundRow = new QHBoxLayout;
+    backgroundRow->setSpacing(8);
+    backgroundRow->addWidget(new QLabel(tr("Playlist background:"), this));
+    m_backgroundName = new QLabel(this);
+    m_backgroundName->setMinimumWidth(120);
+    backgroundRow->addWidget(m_backgroundName, 1);
+    QPushButton *choose = new QPushButton(tr("Choose..."), this);
+    connect(choose, &QPushButton::clicked, this, &XUiSettings::pickBackground);
+    backgroundRow->addWidget(choose);
+    QPushButton *clear = new QPushButton(tr("Clear"), this);
+    connect(clear, &QPushButton::clicked, this, &XUiSettings::clearBackground);
+    backgroundRow->addWidget(clear);
+    layout->addLayout(backgroundRow);
+    showBackground();
+
     QLabel *window = new QLabel(tr("Window"), this);
     window->setFont(bold);
     layout->addSpacing(6);
@@ -96,6 +125,7 @@ void XUiSettings::writeSettings()
     settings.setValue(ShowPlaylistKey, m_showPlaylist->isChecked());
     settings.setValue(HideOnCloseKey, m_hideOnClose->isChecked());
     settings.setValue(XUi::AccentKey, m_accent);
+    settings.setValue(BackgroundKey, m_background);
 }
 
 void XUiSettings::pickAccent()
@@ -139,6 +169,50 @@ void XUiSettings::applyAccent()
     //cancelled afterwards
     QSettings().setValue(XUi::AccentKey, m_accent);
     emit accentApplied();
+}
+
+void XUiSettings::pickBackground()
+{
+    const QString path = QFileDialog::getOpenFileName(
+        this, tr("Playlist background"),
+        m_background.isEmpty() ? QString() : QFileInfo(m_background).absolutePath(),
+        tr("Images (*.png *.jpg *.jpeg *.bmp *.webp *.tif *.tiff);;All files (*)"));
+    if(path.isEmpty())
+        return;
+    m_background = path;
+    showBackground();
+    applyBackground();
+}
+
+void XUiSettings::clearBackground()
+{
+    m_background.clear();
+    showBackground();
+    applyBackground();
+}
+
+void XUiSettings::applyBackground()
+{
+    //the card reads the stored value, so it has to be written first
+    QSettings().setValue(BackgroundKey, m_background);
+    emit backgroundApplied();
+}
+
+void XUiSettings::showBackground()
+{
+    if(m_background.isEmpty())
+    {
+        m_backgroundName->setText(tr("None"));
+        m_backgroundName->setToolTip(QString());
+        return;
+    }
+    //a fixed width rather than the label's own: this also runs before the
+    //dialog has been laid out, when the label is still a few pixels wide
+    constexpr int ROOM = 170;
+    const QString name = QFileInfo(m_background).fileName();
+    m_backgroundName->setText(
+        m_backgroundName->fontMetrics().elidedText(name, Qt::ElideMiddle, ROOM));
+    m_backgroundName->setToolTip(m_background);
 }
 
 void XUiSettings::showAccent()

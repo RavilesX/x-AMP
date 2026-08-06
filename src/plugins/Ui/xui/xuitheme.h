@@ -49,6 +49,9 @@ namespace XUi
     inline QColor Accent       = QColor(0x2f, 0x86, 0xf6);
     inline QColor AccentBright = QColor(0x6f, 0xb4, 0xff);
     inline QColor AccentDeep   = QColor(0x0d, 0x47, 0xc4);
+    //resting colour of the glyph buttons: the accent, held back enough that a
+    //toggled-on button still reads as brighter than a toggled-off one
+    inline QColor AccentMuted  = QColor(0x2a, 0x66, 0xaf);
 
     /*! The blue the interface ships with, for the reset button. */
     inline QColor defaultAccent() { return QColor(0x2f, 0x86, 0xf6); }
@@ -73,6 +76,7 @@ namespace XUi
         const float l = colour.lightnessF();
         AccentBright = QColor::fromHslF(h, s, qMin(1.0f, l + 0.145f));
         AccentDeep = QColor::fromHslF(h, s, qMax(0.0f, l - 0.165f));
+        AccentMuted = QColor::fromHslF(h, s * 0.72f, qMax(0.0f, l - 0.13f));
     }
 
     //text
@@ -145,7 +149,9 @@ namespace XUi
             "  border-radius: 6px;"
             "  color: %3;"
             "}"
-            "QMenu::item:selected { background-color: %4; color: #ffffff; }"
+            //neutral highlight, not the accent: white text on a pale accent
+            //was unreadable, and a menu row has no room for a marker
+            "QMenu::item:selected { background-color: %8; color: %3; }"
             "QMenu::item:disabled { color: %5; }"
             "QMenu::separator { height: 1px; background: %2; margin: 5px 10px; }"
             //checkable entries: a small accent square instead of the style's box
@@ -205,6 +211,16 @@ namespace XUi
             //which came out dark against the accent
             "QAbstractItemView::item:selected { background: %4; color: #ffffff; }"
             "QAbstractItemView::item:hover { background: %8; }"
+            //the settings dialog's page list paints itself (see xuidialogs.cpp):
+            //no accent fill, and a gutter on the left for the accent chevron
+            "QListWidget#contentsWidget { border: none; background: transparent; }"
+            "QListWidget#contentsWidget::item {"
+            "  padding: 4px 6px 4px 26px; border-radius: 8px;"
+            "}"
+            "QListWidget#contentsWidget::item:selected,"
+            "QListWidget#contentsWidget::item:hover {"
+            "  background: transparent; color: %3;"
+            "}"
             "QPushButton, QToolButton {"
             "  background: %6; border: 1px solid %2; border-radius: 7px;"
             "  padding: 6px 14px; color: %3;"

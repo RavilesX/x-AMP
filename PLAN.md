@@ -54,7 +54,9 @@ Hecho:
 - [x] **Fase 3 — integración continua.**
 - [x] **Fase 4 — mejoras propias:** zoom 150 %, arreglo del cuelgue con
       shuffle, barra de transporte duplicada fuera.
-- [x] **Fase 5 — interfaz nueva (`xui`).** 5.1–5.5 hechas. Disponible con `--ui xui`; el defecto sigue siendo `skinned`.
+- [x] **Fase 5 — interfaz nueva (`xui`).** 5.1–5.6 hechas: la 5.6 la parte en
+      tres ventanas con imán. Disponible con `--ui xui`; el defecto sigue
+      siendo `skinned`.
 
 Lo tocado del código de Qmmp hasta ahora: dos arreglos de build (Fase 1), el
 rebranding (Fase 2) y las mejoras de la Fase 4. El motor de audio, los
@@ -877,7 +879,7 @@ botón de restablecer.
   del título lleva el color en su marcado HTML, así que se reescribe aparte.
 - El logo **no** se recolorea: es la marca, no parte del tema.
 
-## Fase 5.6 — Lista desacoplable 📋 analizada, sin empezar
+## Fase 5.6 — Tres ventanas con imán ✅ hecha (opción C)
 
 Petición: que la lista pueda **separarse** y **redimensionarse aparte** del
 ecualizador y del reproductor, como en el Qmmp original.
@@ -917,7 +919,51 @@ a `qApp` y por tanto la heredaría.
 Recomendado **A y luego B**: A es barato, resuelve la mitad de la petición y
 no estorba a B. C solo si el imán entre ventanas importa por sí mismo.
 
-### Trampas previstas
+**Elegida C.** El imán era justo lo que se echaba de menos del Qmmp original.
+
+### Lo entregado
+
+- **[xuiwindow.cpp](src/plugins/Ui/xui/xuiwindow.cpp)** — base de toda ventana
+  sin marco: fondo redondeado, redimensionado por los bordes, arrastre por un
+  «tirador» declarado con `setDragHandle()`, y geometría guardada bajo una
+  clave (`XUi/<clave>_geometry`).
+- **[xuidock.cpp](src/plugins/Ui/xui/xuidock.cpp)** — el imán. Ajusta contra
+  las demás ventanas y contra los bordes de la pantalla (`SNAP = 12 px`), y al
+  mover la del reproductor arrastra consigo las que estaban pegadas, con el
+  desfase que tenían al empezar el arrastre.
+- **[xuimainwindow.cpp](src/plugins/Ui/xui/xuimainwindow.cpp)** — se queda con
+  la barra de título y la tarjeta del reproductor. El ecualizador y la lista
+  pasan a ventanas propias, con la cabecera de cada tarjeta como tirador y su
+  botón de cerrar ya existente.
+
+Las dos compañeras son `Qt::Tool` con el reproductor por padre: se minimizan y
+se levantan con él y no ocupan sitio en la barra de tareas, igual que en
+`skinned`. En el primer arranque se apilan pegadas bajo el reproductor
+(560×330 + 560×250 + 560×380), centradas en la pantalla principal.
+
+### Trampas encontradas al hacerlo
+
+- **`startSystemMove()` es incompatible con el imán.** Entrega el gesto entero
+  al compositor y no devuelve nada, así que no hay coordenadas que ajustar. El
+  arrastre se rastrea a mano con `move()`, que en Wayland un cliente no puede
+  hacer: `XUiDock::canSnap()` comprueba `platformName() == "xcb"` y, si no,
+  vuelve a `startSystemMove()` — se mueve igual, solo se pierde el imán.
+- **Cerrar la aplicación desmarcaba las tarjetas.** Al salir, Qt cierra las
+  ventanas, y el `closeEvent` de las compañeras escribía `show_*=false`: al
+  volver a abrir no salía ninguna. Solo las órdenes explícitas (menú,
+  preferencias, botón de cerrar de la tarjeta) tocan ese ajuste; el
+  `closeEvent` se limita a guardar la geometría.
+- **`geometry()` justo después de `show()` aún no es la definitiva**: el gestor
+  de ventanas coloca la ventana después, y las compañeras se apilaban contra la
+  posición equivocada. Si no hay geometría guardada, la ventana del reproductor
+  se coloca ella misma antes de mostrarse, y de ahí salen las otras dos.
+- **`height()` de una ventana sin mostrar** devuelve lo que su disposición
+  calculó, no lo que se acaba de pedir: apilar usa la altura pedida.
+- **El tirador no es hijo directo de la ventana** (la cabecera de la tarjeta
+  está dos niveles más abajo), así que `onHandle()` mapea el punto con
+  `mapFrom()` en vez de comparar `geometry()`.
+
+### Trampas previstas (del análisis, antes de empezar)
 
 - **`applyCardVisibility()` choca con el divisor.** Hoy calcula a mano cuánto
   crece o encoge la ventana al ocultar una tarjeta. Un `QSplitter` es dueño de

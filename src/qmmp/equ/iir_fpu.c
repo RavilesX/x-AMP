@@ -150,8 +150,20 @@ __inline__ int eq_iir(float *d, int samples, int nch)
            output. This substitutes the multiplication by 0.25
            Go back to use the floating point multiplication before the
            conversion to give more dynamic range
+
+           x-AMP: the 0.25 is undone again by the factor of four below.
+           Inherited from XMMS, it left the dry signal 12 dB down, and a band
+           at 0 dB contributes nothing, so merely switching the equalizer on
+           -- with every band flat -- made the player 12 dB quieter than every
+           other one on the system. Measured at exactly 12.03 dB.
+
+           Scaling the whole sum rather than dropping the 0.25 keeps the
+           filters' share of the result intact, so the shape of the curve is
+           the one the bands ask for; only the level it sits at changes.
+           Presets with boosts are now as loud as they claim to be, which is
+           what the clamp on the next line is for.
            */
-        out[channel] += pcm[channel]*0.25;
+        out[channel] = (out[channel] + pcm[channel]*0.25) * 4.0;
         data[index+channel] = out[channel] > 1.0 ? 1.0 : (out[channel] < -1.0 ? -1.0 : out[channel]);
       }
       else

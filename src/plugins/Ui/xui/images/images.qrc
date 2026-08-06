@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/xui">
+        <file>interface.png</file>
+    </qresource>
+</RCC>
