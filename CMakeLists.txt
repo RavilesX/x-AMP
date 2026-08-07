@@ -89,14 +89,43 @@ endif(QT_LRELEASE_EXECUTABLE)
 
 message(STATUS "Generating translations ...")
 
-#x-AMP: prune the build directory. With an in-source build it lives under
-#CMAKE_CURRENT_SOURCE_DIR, and CMake's own compiler_depend.ts timestamp files
-#match *.ts, so lrelease gets fed a couple hundred non-XML files.
+#x-AMP: done in CMake rather than through upstream's "find ... | xargs
+#lrelease". That pipeline needs a Unix find and xargs; on Windows the name
+#resolves to the shell's own find.exe, which searches text, and since
+#execute_process() here checks no result the configure step would report
+#success having written no .qm at all. The build then dies much later in
+#AUTORCC, on a translations.qrc pointing at a file that was never generated.
+file(GLOB_RECURSE TS_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.ts")
+#CMake drops compiler_depend.ts timestamp stamps into every target's
+#CMakeFiles directory, and those match the glob. Feeding one to lrelease is
+#an error per file, a couple of hundred of them in an in-source build.
+list(FILTER TS_FILES EXCLUDE REGEX "/CMakeFiles/")
+if(NOT CMAKE_BINARY_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    list(FILTER TS_FILES EXCLUDE REGEX "^${CMAKE_BINARY_DIR}/")
+endif()
+
+set(LRELEASE_ARGS -silent)
 if(SVN_VERSION)
-    execute_process(COMMAND find ${CMAKE_CURRENT_SOURCE_DIR} -path ${CMAKE_BINARY_DIR} -prune -o -name *.ts -print0 COMMAND xargs -0 ${QT_LRELEASE_EXECUTABLE} -silent -nounfinished)
-else(SVN_VERSION)
-    execute_process(COMMAND find ${CMAKE_CURRENT_SOURCE_DIR} -path ${CMAKE_BINARY_DIR} -prune -o -name *.ts -print0 COMMAND xargs -0 ${QT_LRELEASE_EXECUTABLE} -silent)
+    list(APPEND LRELEASE_ARGS -nounfinished)
 endif(SVN_VERSION)
+
+#In batches: the tree carries a couple of thousand .ts files, so one call
+#would build a command line of several hundred kilobytes -- far past the 32 KB
+#a process can be started with on Windows.
+set(TS_BATCH "")
+set(TS_BATCH_SIZE 0)
+foreach(TS_FILE ${TS_FILES})
+    list(APPEND TS_BATCH "${TS_FILE}")
+    math(EXPR TS_BATCH_SIZE "${TS_BATCH_SIZE} + 1")
+    if(TS_BATCH_SIZE GREATER_EQUAL 50)
+        execute_process(COMMAND ${QT_LRELEASE_EXECUTABLE} ${LRELEASE_ARGS} ${TS_BATCH})
+        set(TS_BATCH "")
+        set(TS_BATCH_SIZE 0)
+    endif()
+endforeach()
+if(TS_BATCH)
+    execute_process(COMMAND ${QT_LRELEASE_EXECUTABLE} ${LRELEASE_ARGS} ${TS_BATCH})
+endif()
 
 #x-AMP: installs alongside upstream qmmp. APP_NAME_SUFFIX keeps the internal
 #artefacts apart (libqmmp-xamp.so, lib/qmmp-2.4-xamp, share/qmmp-xamp); the

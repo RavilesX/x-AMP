@@ -42,6 +42,7 @@ public:
 private:
     Ui::AboutDialog *m_ui;
     QString loadAbout();
+    QString loadAuthors();
     QString getStringFromResource(const QString& res_file);
 };
 

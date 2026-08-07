@@ -1,6 +1,27 @@
+x-AMP
+=====
+
+Lead Developer:
+
+    Ricardo Aviles Sanders <ravilesx@gmail.com> - x-AMP fork, xui interface,
+    artwork and maintenance
+        https://Ravilesx.org
+        https://github.com/RavilesX
+
+
+Qmmp
+====
+
+x-AMP is built on Qmmp, by Ilya Kotov and the Qmmp Development Team. The
+engine, the plugin architecture and most of the decoders are their work, and
+x-AMP would not exist without it. Everyone listed from here down, including
+the translators, is credited for that earlier work. They are not involved in
+x-AMP and are not to be contacted about it; bug reports belong at
+https://github.com/RavilesX/x-AMP/issues instead.
+
 Core Developers:
 
-    Ilya Kotov <forkotov02@ya.ru>, <trialuser02@gmail.com>, 
+    Ilya Kotov <forkotov02@ya.ru>, <trialuser02@gmail.com>,
     <iokotov@astralinux.ru> - idea and base code
 
 Former Developers:

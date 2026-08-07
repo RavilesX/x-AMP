@@ -35,6 +35,10 @@ cmake ./ -DSVN_VERSION=1                # appends svn rev; also drops unfinished
 
 Plugin availability is auto-detected via `pkg_check_modules`; a `USE_X=ON` with a missing library silently yields a disabled plugin. The configure summary printed at the end of [CMakeLists.txt](CMakeLists.txt) is the authoritative check for what actually got enabled.
 
+A version bump also changes the libraries' SONAME (`libqmmp-xamp.so.<major>`), and `make install` does not refresh the dynamic linker's cache. Since `/usr/local/lib` is reached through `ld.so.conf`, a stale cache is not a miss the loader recovers from — it only falls back to `/lib` and `/usr/lib` — so the binary dies with `cannot open shared object file` for a library that is sitting right there. Run `sudo ldconfig` after installing. `make uninstall` leaves the old plugin directory behind empty, too, since the manifest lists files and not directories.
+
+Bumping the version in [qmmp.h](src/qmmp/qmmp.h) does **not** move the plugins in an existing build directory: `PLUGIN_DIR` is a `CACHE STRING`, so it keeps the value from the first configure and the build goes on installing to the old `qmmp-<major>.<minor>-xamp`. Pass it by hand after a version change — `cmake -B build -DPLUGIN_DIR=lib/qmmp-1.0-xamp` — or configure into a fresh directory. Run `make uninstall` *before* installing the new version, while the manifest still lists the old paths, or the previous version's plugin directory is left behind for good.
+
 **No test suite exists.** Verification is manual: build, install (or run from the build tree), play files.
 
 ### Fork naming
@@ -50,7 +54,11 @@ In user-visible text the name is spelled **x-AMP**: window titles, About dialogs
 
 Asset files keep their upstream names on disk; the fork's name is applied at install time with `install(... RENAME ...)`. Do not rename the sources — [src/app/images/images.qrc](src/app/images/images.qrc) and [main.cpp](src/app/main.cpp) reference them by their plain names.
 
-The application icons under [src/app/images/](src/app/images/) are generated from [logo.png](logo.png) in the repository root by `python3 utils/make_icons.py`. Edit the logo and re-run it rather than touching the sizes by hand; the script picks the mark alone below 48 px, where the lettering turns to mud.
+The application icons under [src/app/images/](src/app/images/) are generated from [logo.png](logo.png) in the repository root by `python3 utils/make_icons.py`. Edit the logo and re-run it rather than touching the sizes by hand; the script picks the mark alone below 48 px, where the lettering turns to mud. It also writes the two multi-resolution `.ico` under [src/app/images/ico/](src/app/images/ico/) that the Windows executable embeds, so a logo change reaches Windows without a second step.
+
+The Windows resource script is [qmmp.rc.in](src/app/qmmp.rc.in), configured into the build tree rather than committed as a `.rc`: upstream writes the version out by hand there, which drifts from [qmmp.h](src/qmmp/qmmp.h) the moment anyone cuts a release. Keep it a template.
+
+The preferences-page icons have masters of their own under [artwork/](artwork/), which is sources only — nothing there is compiled or installed. Three of them are named after the page rather than the file they become, so [artwork/README.md](artwork/README.md) carries the mapping; consult it before editing one.
 
 Two strings must keep saying Qmmp: the upstream copyright line in [aboutdialog.cpp](src/qmmpui/aboutdialog.cpp) (their attribution, not ours to reword) and the "Based on Qmmp" note in [qmmpstarter.cpp](src/app/qmmpstarter.cpp). `Qmmp` is also the namespace and a class-name prefix, so never search-and-replace it outside string literals.
 
@@ -119,7 +127,7 @@ Two UIs ship: `skinned` (XMMS/Winamp 2.x skins, needs X11/xcb) and `qsui` (plain
 1. Create `src/plugins/<Category>/<name>/` with factory + implementation.
 2. Add a `CMakeLists.txt` following [src/plugins/Input/vorbis/CMakeLists.txt](src/plugins/Input/vorbis/CMakeLists.txt): `pkg_check_modules(... IMPORTED_TARGET)`, guard `add_library(... MODULE)` on `<LIB>_FOUND`, `install(TARGETS ... DESTINATION ${PLUGIN_DIR}/<Category>)`.
 3. Register the subdir + `option(USE_X ...)` in the category `CMakeLists.txt`, and add a `PRINT_SUMMARY` line in the top-level summary block.
-4. Add `translations/translations.qrc` + `<name>_plugin_en.ts`, then extract the strings: `/usr/lib/qt6/bin/lupdate <plugin dir> -ts <plugin dir>/translations/<name>_plugin_en.ts -no-obsolete`. Do **not** add an entry to [.tx/config](.tx/config): it points at `qmmp-development-team:p:qmmp`, upstream's Transifex project, which this fork cannot publish to. x-AMP-only plugins ship the English source and whatever translations arrive by pull request.
+4. Add `translations/translations.qrc` + `<name>_plugin_en.ts`, then extract the strings: `/usr/lib/qt6/bin/lupdate <plugin dir> -ts <plugin dir>/translations/<name>_plugin_en.ts -no-obsolete`. There is no Transifex side to keep in step: upstream's `.tx/config` pointed at `qmmp-development-team:p:qmmp`, which this fork cannot publish to, so it and `utils/update_tx.sh` were deleted. A `git merge upstream` will bring both back — delete them again. x-AMP-only plugins ship the English source and whatever translations arrive by pull request.
 
 ### Single instance / CLI
 
@@ -131,4 +139,4 @@ Two UIs ship: `skinned` (XMMS/Winamp 2.x skins, needs X11/xcb) and `qsui` (plain
 - Qt strictness is enabled globally: `QT_NO_CAST_FROM_ASCII`, `QT_NO_CAST_FROM_BYTEARRAY`, `QT_NO_FOREACH`, `QT_DISABLE_DEPRECATED_BEFORE`. Use `u"..."_s` / `"..."_L1` string literals (the `Qt::StringLiterals` namespace is pulled in by [qmmp.h](src/qmmp/qmmp.h)) and range-for, never `foreach`.
 - Logging goes through the `core` and `plugin` `QLoggingCategory` objects (`qCDebug(plugin) << ...`).
 - Built with `-Wall -Wextra`; AUTOMOC/AUTOUIC/AUTORCC are on, so no manual moc wiring.
-- Translations: `.ts` files under each `translations/` dir, compiled at configure time. `utils/update_ts.sh` runs `lupdate` across the tree; `utils/update_tx.sh` syncs Transifex. Do not hand-edit `.qm`.
+- Translations: `.ts` files under each `translations/` dir, compiled at configure time. `utils/update_ts.sh` runs `lupdate` across the tree. Do not hand-edit `.qm`. Re-running CMake rewrites all ~2100 `.qm` unconditionally, which invalidates every `translations.qrc` and rebuilds the tree; to refresh one translation run `lrelease` on that `.ts` alone rather than reconfiguring.

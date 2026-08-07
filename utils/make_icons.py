@@ -10,8 +10,10 @@ Run from the repository root:
 
     python3 utils/make_icons.py
 
-Writes src/app/images/<size>/qmmp.png. The file names stay as upstream has
-them; the fork's name is applied at install time (see CLAUDE.md).
+Writes src/app/images/<size>/qmmp.png, the two .svgz under scalable/, and the
+pair of .ico under ico/ that the Windows executable embeds through qmmp.rc.in.
+The file names stay as upstream has them; the fork's name is applied at
+install time (see CLAUDE.md).
 """
 
 import base64
@@ -24,6 +26,13 @@ from PIL import Image
 
 #Sizes CMake installs, from src/app/CMakeLists.txt.
 SIZES = [16, 32, 48, 56, 64, 128, 256]
+
+#What goes inside a .ico. Windows picks per context -- 16 in the title bar, 32
+#in the task bar, 256 in large-icon view -- so an .ico carrying one size is
+#resampled by the shell and looks it. 24 and 64 are here because Windows asks
+#for them at some display scalings and interpolates from a neighbour if they
+#are missing.
+ICO_SIZES = [16, 24, 32, 48, 64, 128, 256]
 
 #Under this, drop the lettering and use the X on its own.
 LETTERING_MIN = 48
@@ -86,6 +95,25 @@ def write_svgz(art: Image.Image, path: pathlib.Path, size: int = 256) -> None:
     print(f"{path.relative_to(ROOT)}  {size}x{size}  embedded raster")
 
 
+def write_ico(pick, path: pathlib.Path, note: str) -> None:
+    """Writes a multi-resolution .ico, choosing the artwork per size.
+
+    pick(size) returns the image to use at that size, so the same rule that
+    governs the PNGs -- lettering above 48 pixels, the mark alone below --
+    applies inside the icon too.
+
+    Pillow writes one frame per size and matches them against append_images by
+    exact dimensions, but it also skips any size larger than the image it was
+    called on. The largest frame therefore has to be the one that is saved,
+    with the rest appended; the other order silently yields a 16x16 icon.
+    """
+    frames = [fitted(pick(size), size) for size in sorted(ICO_SIZES, reverse=True)]
+    frames[0].save(path, format="ICO",
+                   sizes=[(size, size) for size in ICO_SIZES],
+                   append_images=frames[1:])
+    print(f"{path.relative_to(ROOT)}  {'/'.join(str(s) for s in ICO_SIZES)}  {note}")
+
+
 def main() -> int:
     if not SOURCE.exists():
         print(f"missing {SOURCE}", file=sys.stderr)
@@ -107,6 +135,16 @@ def main() -> int:
     scalable = TARGET / "scalable"
     write_svgz(logo, scalable / "qmmp.svgz")
     write_svgz(mark, scalable / "qmmp-simple.svgz")
+
+    #Windows. qmmp.ico is the executable's own icon; qmmp_file.ico is what the
+    #shell puts on the audio files associated with the player, and it uses the
+    #mark at every size -- it appears at small sizes throughout a file listing,
+    #where the lettering would be unreadable anyway.
+    ico = TARGET / "ico"
+    ico.mkdir(parents=True, exist_ok=True)
+    write_ico(lambda size: logo if size >= LETTERING_MIN else mark,
+              ico / "qmmp.ico", "application")
+    write_ico(lambda size: mark, ico / "qmmp_file.ico", "file association")
     return 0
 
 

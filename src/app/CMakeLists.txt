@@ -13,7 +13,11 @@ target_link_libraries(qmmp PRIVATE Qt6::Widgets Qt6::Network libqmmp libqmmpui)
 set_target_properties(qmmp PROPERTIES OUTPUT_NAME ${APP_BINARY_NAME})
 
 if(WIN32)
-    target_sources(qmmp PRIVATE qmmp.rc)
+    #x-AMP: the version strings Windows shows in the file's Properties come
+    #from qmmp.h through this, rather than being written out by hand where a
+    #release bump would leave them behind
+    configure_file(qmmp.rc.in "${CMAKE_CURRENT_BINARY_DIR}/qmmp.rc" @ONLY)
+    target_sources(qmmp PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/qmmp.rc")
     target_compile_definitions(qmmp PRIVATE QMMP_NO_CLI)
     set_target_properties(qmmp PROPERTIES WIN32_EXECUTABLE TRUE)    
     #cli version

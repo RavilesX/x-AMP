@@ -24,10 +24,16 @@
 #include <QLoggingCategory>
 #include "qmmp_export.h"
 
-#define QMMP_VERSION_MAJOR 2
-#define QMMP_VERSION_MINOR 4
+//x-AMP: the fork's own version, not the Qmmp release it grew from. CMake
+//parses these four lines, so they set the version everywhere: the string in
+//the About dialog, the shared libraries' SOVERSION, and PLUGIN_DIR, which is
+//why bumping the major or minor moves the plugins to a new directory and
+//strands whatever an older build installed. STABLE drops the "-dev" suffix
+//from the version string; it belongs at 0 between releases.
+#define QMMP_VERSION_MAJOR 1
+#define QMMP_VERSION_MINOR 0
 #define QMMP_VERSION_PATCH 0
-#define QMMP_VERSION_STABLE 0
+#define QMMP_VERSION_STABLE 1
 
 #define QMMP_VERSION_INT (QMMP_VERSION_MAJOR<<16 | QMMP_VERSION_MINOR<<8 | QMMP_VERSION_PATCH)
 #define QMMP_VERSION_CHECK(major, minor, patch) ((major<<16)|(minor<<8)|(patch))

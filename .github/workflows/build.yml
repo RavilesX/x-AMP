@@ -114,3 +114,104 @@ jobs:
             configure.log
             build.log
           retention-days: 14
+
+  # Windows is not a platform x-AMP is released for, but the tree carries a
+  # good deal of Windows-only code -- the named-pipe IPC, the taskbar and
+  # rdetect plugins, the .rc the executable embeds -- and none of it is
+  # exercised by the Linux job. Without this, that code can rot for months
+  # unnoticed. Failures here are worth reading, not worth blocking on.
+  windows:
+    runs-on: windows-2022
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # aqtinstall rather than a Qt action from the marketplace: it is one pip
+      # package and no third-party workflow gets a look at the job. qttools,
+      # which carries lrelease and the Qt6LinguistTools CMake package the
+      # configure step insists on, ships inside the base archive for this
+      # build -- no extra module needed.
+      - name: Install Qt
+        run: |
+          python -m pip install --quiet aqtinstall
+          python -m aqt install-qt windows desktop 6.8.3 win64_msvc2022_64 \
+            --outputdir "$RUNNER_TEMP/Qt"
+          echo "QT_ROOT=$RUNNER_TEMP/Qt/6.8.3/msvc2022_64" >> "$GITHUB_ENV"
+
+      # Not for finding anything: every optional dependency is absent here and
+      # is meant to be. But src/plugins/CMakeLists.txt calls pkg_search_module
+      # unconditionally, and FindPkgConfig answers a missing tool with
+      # SEND_ERROR, which stops CMake from generating at all.
+      - name: Install pkg-config
+        run: choco install pkgconfiglite -y --no-progress --allow-empty-checksums
+
+      - name: Configure
+        run: |
+          cmake -B build -G "Visual Studio 17 2022" -A x64 \
+            -DCMAKE_PREFIX_PATH="$QT_ROOT" 2>&1 | tee configure-windows.log
+
+      # Only Qt is present, so the interfaces and the Windows-only plugins are
+      # what actually gets compiled. That is the code this job exists for.
+      - name: Report what was enabled
+        run: |
+          {
+            echo "### Windows configure summary"
+            echo '```'
+            sed -n '/^--$/,$p' configure-windows.log | grep -E '\.\.\.|:' | head -60
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Build
+        run: cmake --build build --config Release --parallel 2>&1 | tee build-windows.log
+
+      # The .rc is the one file no other job can check: it is only ever fed to
+      # a resource compiler here, and it is generated from qmmp.h, so a version
+      # bump can break it without anyone touching it.
+      - name: Check the executable and its resources
+        run: |
+          exe=$(find build -name 'xamp.exe' | head -1)
+          if [ -z "$exe" ]; then
+            echo "::error::xamp.exe was not produced."
+            exit 1
+          fi
+          echo "Built $exe"
+          rc="build/src/app/qmmp.rc"
+          if [ ! -f "$rc" ]; then
+            echo "::error::qmmp.rc was never configured from qmmp.rc.in."
+            exit 1
+          fi
+          v() { grep -Po "#define QMMP_VERSION_$1\s+\K[0-9]+" src/qmmp/qmmp.h; }
+          want="$(v MAJOR),$(v MINOR),$(v PATCH),0"
+          if ! grep -qF "$want" "$rc"; then
+            echo "::error::The resource script says $(grep -m1 FILEVERSION "$rc") but qmmp.h says $want."
+            exit 1
+          fi
+          echo "Resource version matches qmmp.h: $want"
+
+      - name: Report compiler warnings
+        if: always()
+        run: |
+          count=$(grep -c 'warning ' build-windows.log || true)
+          {
+            echo "### MSVC warnings: $count"
+            if [ "$count" -gt 0 ]; then
+              echo
+              echo '```'
+              grep 'warning ' build-windows.log | sort -u | head -50
+              echo '```'
+            fi
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-windows
+          path: |
+            configure-windows.log
+            build-windows.log
+          retention-days: 14

@@ -173,7 +173,7 @@ El código ya trae el mecanismo `APP_NAME_SUFFIX`, que renombra binario, librer�
 | Librerías | `libqmmp.so`, `libqmmpui.so` | `libqmmp-xamp.so`, `libqmmpui-xamp.so` |
 | Config | `~/.config/qmmp` | `~/.config/xamp` |
 | Datos | `share/qmmp` | `share/qmmp-xamp` |
-| Plugins | `lib/qmmp-2.4` | `lib/qmmp-2.4-xamp` |
+| Plugins | `lib/qmmp-2.4` | `lib/qmmp-1.0-xamp` |
 | Socket | `/tmp/qmmp.sock.$UID` | `/tmp/xamp.sock.$UID` |
 | MPRIS | `org.mpris.MediaPlayer2.qmmp` | `org.mpris.MediaPlayer2.xamp` |
 | Nombre visible | Qmmp | x-AMP |
@@ -307,7 +307,7 @@ Dos identificadores en CMake, y la separación es intencionada:
 - `APP_BINARY_NAME` = `xamp` — lo que el usuario teclea o ve en disco:
   ejecutable, `xamp.desktop`, `xamp.png`.
 - `APP_NAME_SUFFIX` = `-xamp` — solo artefactos internos: `libqmmp-xamp.so`,
-  `lib/qmmp-2.4-xamp`, `share/qmmp-xamp`, `qmmp-xamp.pc`. Ahí el prefijo
+  `lib/qmmp-1.0-xamp`, `share/qmmp-xamp`, `qmmp-xamp.pc`. Ahí el prefijo
   `qmmp` se conserva a propósito: documenta el linaje y abarata los merges.
 
 En texto, la forma es **x-AMP**; `xamp` queda para comando e identificadores
@@ -702,10 +702,11 @@ pueda, que sí es concluyente.
 - **81 cadenas extraídas** con `lupdate` al `.ts` en inglés, que era un
   esqueleto vacío.
 
-**Trampa heredada:** [.tx/config](.tx/config) apunta a
-`qmmp-development-team:p:qmmp`, el proyecto Transifex de **upstream**. Un
-plugin propio de x-AMP no puede registrarse ahí. CLAUDE.md decía lo contrario
-en el paso 4 de «Adding a plugin»; corregido.
+**Trampa heredada:** `.tx/config` apuntaba a `qmmp-development-team:p:qmmp`, el
+proyecto Transifex de **upstream**. Un plugin propio de x-AMP no puede
+registrarse ahí. CLAUDE.md decía lo contrario en el paso 4 de «Adding a
+plugin»; corregido. El archivo y `utils/update_tx.sh` acabaron borrados: no
+había forma de usarlos y solo invitaban a un sync que falla.
 
 **La paleta no basta para los menús.** `QStyle` dibuja `QMenu`, `QToolTip` y
 las barras de desplazamiento con sus propios marcos y degradados, así que con
@@ -1007,8 +1008,8 @@ Lista para una 5.6, si llega:
 - **`create()` fija las bandas del EQ:** `qsui` llama a
   `QmmpSettings::readEqSettings(EqSettings::EQ_BANDS_15)`. `xui` debe pedir
   `EQ_BANDS_10` para cuadrar con el mockup.
-- **Traducciones:** `.ts` propio + `translations.qrc` + alta en
-  [.tx/config](.tx/config), como cualquier plugin nuevo (ver CLAUDE.md).
+- **Traducciones:** `.ts` propio + `translations.qrc`, y nada más: no hay
+  Transifex al que dar de alta un plugin de x-AMP (ver CLAUDE.md).
 - **Regla del zoom:** la lección de la Fase 4 se traduce aquí a componer y
   escalar una sola vez. Con QPainter no hay pixmaps que redondeen distinto,
   pero sí hay que respetar `devicePixelRatio` en cualquier pixmap cacheado.
@@ -1034,7 +1035,16 @@ Qmmp, así que cada `git merge upstream` los reintroducirá como conflicto
 ```sh
 git merge upstream
 git diff --name-only --diff-filter=U | grep -E '\.(pro|pri)$' | xargs -r git rm -q
+git rm -q --ignore-unmatch .tx/config utils/update_tx.sh ChangeLog.rus src/app/qmmp.rc
 ```
+
+La segunda línea cubre el resto de lo borrado por ser de upstream y no
+utilizable aquí: el `.tx/config` y su script (ver más abajo), el changelog en
+ruso, y `src/app/qmmp.rc`, que aquí es `qmmp.rc.in` y lo genera CMake para que
+la versión salga de `qmmp.h` en vez de estar escrita a mano. Vuelven en cada
+merge por la misma razón que los `.pro`. **Si upstream cambia su `qmmp.rc`,
+mira el diff antes de borrarlo** y traslada a mano lo que valga la pena: es el
+único de los cuatro que puede traer algo aprovechable.
 
 `utils/update_ts.sh` no depende de qmake: invoca `lupdate` sobre los
 directorios de fuentes con `-extensions cpp,ui`, no sobre archivos `.pro`.

@@ -5,8 +5,8 @@
     <name>AboutDialog</name>
     <message>
         <location filename="../forms/aboutdialog.ui" line="14"/>
-        <source>About Qmmp</source>
-        <translation>Acerca de Qmmp</translation>
+        <source>About x-AMP</source>
+        <translation>Acerca de x-AMP</translation>
     </message>
     <message>
         <location filename="../forms/aboutdialog.ui" line="49"/>
@@ -34,82 +34,112 @@
         <translation>Contrato de licencia</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="69"/>
-        <source>Qt-based Multimedia Player (Qmmp)</source>
-        <translation>Qt-based Multimedia Player (Qmmp)</translation>
-    </message>
-    <message>
         <location filename="../aboutdialog.cpp" line="72"/>
         <source>Version: %1</source>
         <translation>Versión %1</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="79"/>
+        <location filename="../aboutdialog.cpp" line="83"/>
+        <source>(c) %1 x-AMP contributors</source>
+        <translation>(c) %1 colaboradores de x-AMP</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="85"/>
+        <source>Lead developer: %1</source>
+        <translation>Desarrollador principal: %1</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="90"/>
+        <source>Based on Qmmp:</source>
+        <translation>Basado en Qmmp:</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="91"/>
         <source>(c) %1-%2 Qmmp Development Team</source>
         <translation>(c) %1-%2 Equipo de desarrollo de Qmmp</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="84"/>
+        <location filename="../aboutdialog.cpp" line="96"/>
         <source>Transports:</source>
         <translation>Transportes:</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="90"/>
+        <location filename="../aboutdialog.cpp" line="102"/>
         <source>Decoders:</source>
         <translation>Decodificadores:</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="98"/>
+        <location filename="../aboutdialog.cpp" line="110"/>
         <source>Engines:</source>
         <translation>Motores:</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="105"/>
+        <location filename="../aboutdialog.cpp" line="117"/>
         <source>Effects:</source>
         <translation>Efectos:</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="134"/>
+        <location filename="../aboutdialog.cpp" line="146"/>
         <source>File dialogs:</source>
         <translation>Diálogos de archivo:</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="143"/>
+        <location filename="../aboutdialog.cpp" line="155"/>
         <source>User interfaces:</source>
         <translation>Interfaces de usuario:</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="126"/>
+        <location filename="../aboutdialog.cpp" line="177"/>
+        <source>Lead Developer:</source>
+        <translation>Desarrollador Principal:</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="179"/>
+        <source>x-AMP fork, xui interface, artwork and maintenance</source>
+        <translation>fork x-AMP, interfaz xui, arte y mantenimiento</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="182"/>
+        <source>x-AMP is built on Qmmp, by Ilya Kotov and the Qmmp Development Team. The engine, the plugin architecture and most of the decoders are their work, and x-AMP would not exist without it. The people listed below are credited for that earlier work. They are not involved in x-AMP and should not be contacted about it.</source>
+        <translation>x-AMP está construido sobre Qmmp, de Ilya Kotov y el equipo de desarrollo de Qmmp. El motor, la arquitectura de módulos y la mayoría de los decodificadores son obra suya, y x-AMP no existiría sin ellos. Las personas listadas a continuación figuran como crédito por ese trabajo previo. No participan en x-AMP y no deben ser contactadas por asuntos de este.</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="138"/>
         <source>Output plugins:</source>
         <translation>Módulos de salida: </translation>
     </message>
     <message>
+        <location filename="../aboutdialog.cpp" line="69"/>
+        <source>Qt-based Multimedia Player (x-AMP)</source>
+        <translation>Reproductor multimedia basado en Qt (x-AMP)</translation>
+    </message>
+    <message>
         <location filename="../aboutdialog.cpp" line="73"/>
         <source>Qt version: %1 (compiled with %2)</source>
-        <translation type="unfinished"></translation>
+        <translation>Versión de Qt: %1 (compilado con %2)</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="74"/>
         <source>Qt platform: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Plataforma Qt: %1</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="75"/>
         <source>System: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Sistema: %1</translation>
     </message>
     <message>
         <location filename="../aboutdialog.cpp" line="76"/>
         <source>Build ABI: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>ABI de compilación: %1</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="113"/>
+        <location filename="../aboutdialog.cpp" line="125"/>
         <source>Visual plugins:</source>
         <translation>Módulos visuales: </translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="120"/>
+        <location filename="../aboutdialog.cpp" line="132"/>
         <source>General plugins:</source>
         <translation>Módulos generales: </translation>
     </message>
@@ -271,11 +301,6 @@
 <context>
     <name>ConfigDialog</name>
     <message>
-        <location filename="../forms/configdialog.ui" line="14"/>
-        <source>Qmmp Settings</source>
-        <translation>Configuración de Qmmp</translation>
-    </message>
-    <message>
         <location filename="../forms/configdialog.ui" line="58"/>
         <source>Playlists</source>
         <translation>Playlists</translation>
@@ -337,6 +362,11 @@
         <location filename="../forms/configdialog.ui" line="169"/>
         <source>Read tags while loading a playlist</source>
         <translation>Leer etiquetas mientras se carga la lista de reproducción</translation>
+    </message>
+    <message>
+        <location filename="../forms/configdialog.ui" line="14"/>
+        <source>x-AMP Settings</source>
+        <translation>Ajustes de x-AMP</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="193"/>
@@ -1619,14 +1649,14 @@ Do you want to replace it?</source>
 <context>
     <name>WinFileAssocPage</name>
     <message>
-        <location filename="../forms/winfileassocpage.ui" line="43"/>
-        <source>Media files handled by Qmmp:</source>
-        <translation>Archivos de medios gestionados por Qmmp</translation>
-    </message>
-    <message>
         <location filename="../forms/winfileassocpage.ui" line="17"/>
         <source>Select All</source>
         <translation>Seleccionar todo</translation>
+    </message>
+    <message>
+        <location filename="../forms/winfileassocpage.ui" line="43"/>
+        <source>Media files handled by x-AMP:</source>
+        <translation>Archivos multimedia gestionados por x-AMP:</translation>
     </message>
 </context>
 </TS>

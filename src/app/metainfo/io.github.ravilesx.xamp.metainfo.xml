@@ -71,9 +71,31 @@
   <content_rating type="oars-1.1" />
   <url type="bugtracker">https://github.com/RavilesX/x-AMP/issues</url>
   <url type="homepage">https://github.com/RavilesX/x-AMP</url>
+  <url type="vcs-browser">https://github.com/RavilesX/x-AMP</url>
+  <url type="contact">https://Ravilesx.org</url>
   <project_group>none</project_group>
   <launchable type="desktop-id">xamp.desktop</launchable>
   <developer id="io.github.ravilesx">
-    <name>x-AMP contributors</name>
+    <name>Ricardo Aviles Sanders</name>
   </developer>
+  <releases>
+    <release version="1.0.0" date="2026-08-06">
+      <description>
+        <p>First release of x-AMP as its own player.</p>
+        <ul>
+          <li>New xui interface: cards painted with QPainter, a user-chosen accent colour, and a detachable playlist and equalizer.</li>
+          <li>Optional background image for the playlist, reduced to one tone of the interface's own colour.</li>
+          <li>Equalizer level fixed: switching it on no longer costs 12 dB.</li>
+          <li>Its own name, icons and settings directory, so it installs beside Qmmp without colliding.</li>
+        </ul>
+        <p xml:lang="es">Primera versión de x-AMP como reproductor propio.</p>
+        <ul xml:lang="es">
+          <li>Nueva interfaz xui: tarjetas dibujadas con QPainter, color de acento a elección y lista de reproducción y ecualizador desacoplables.</li>
+          <li>Imagen de fondo opcional para la lista, reducida a un solo tono del color de la propia interfaz.</li>
+          <li>Corregido el nivel del ecualizador: activarlo ya no cuesta 12 dB.</li>
+          <li>Nombre, iconos y directorio de ajustes propios, para instalarse junto a Qmmp sin chocar.</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
 </component>

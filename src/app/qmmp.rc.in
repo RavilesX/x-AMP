@@ -1,0 +1,48 @@
+// Generated into the build directory by CMake -- edit qmmp.rc.in, not the
+// copy next to the object files.
+//
+// x-AMP: upstream ships this as a plain .rc with the version written out by
+// hand, which means the numbers Windows shows in the file's Properties drift
+// away from qmmp.h the moment anyone bumps a release. Templating it puts the
+// one authority for the version in charge of this file too.
+//
+// The icon paths are absolute because this file is configured into the build
+// tree, where the relative path to images/ico no longer holds. Forward
+// slashes are accepted by both windres and rc.exe.
+
+#include <winver.h>
+
+#define XAMP_FILEVERSION @QMMP_VERSION_MAJOR@,@QMMP_VERSION_MINOR@,@QMMP_VERSION_PATCH@,0
+#define XAMP_PRODUCTVERSION "@QMMP_VERSION@.0"
+
+IDI_ICON1		ICON		DISCARDABLE	"@CMAKE_CURRENT_SOURCE_DIR@/images/ico/qmmp.ico"
+IDI_ICON2		ICON		DISCARDABLE	"@CMAKE_CURRENT_SOURCE_DIR@/images/ico/qmmp_file.ico"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION XAMP_FILEVERSION
+ PRODUCTVERSION XAMP_FILEVERSION
+ FILEFLAGS 0x0L
+ FILEFLAGSMASK 0x3fL
+ FILEOS 0x00040004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000004b0"
+        BEGIN
+            VALUE "CompanyName", "Ricardo Aviles Sanders"
+            VALUE "FileDescription", "Qt-based Multimedia Player"
+            VALUE "FileVersion", XAMP_PRODUCTVERSION
+            VALUE "LegalCopyright", "Copyright (C) 2026 x-AMP contributors. Based on Qmmp, Copyright (C) 2006-2026 Qmmp Development Team"
+            VALUE "InternalName", "@APP_BINARY_NAME@"
+            VALUE "OriginalFilename", "@APP_BINARY_NAME@.exe"
+            VALUE "ProductName", "x-AMP"
+            VALUE "ProductVersion", XAMP_PRODUCTVERSION
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0, 1200
+    END
+END

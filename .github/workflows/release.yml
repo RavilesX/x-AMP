@@ -1,0 +1,161 @@
+name: release
+
+# Driven by the tag, so cutting a release is "git tag v1.0.0 && git push --tags".
+# workflow_dispatch is there to rehearse one without publishing: without a tag
+# the job builds and packages, then stops short of creating the release.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write # required to create the release and upload to it
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # git archive and the changelog need the full history
+
+      # The version lives in src/qmmp/qmmp.h and nowhere else -- CMake parses
+      # that header. A tag that disagrees with it would ship a tarball whose
+      # About dialog reports a different version from the release it sits in,
+      # which is the kind of thing nobody notices until a bug report is
+      # unreproducible. Cheapest possible guard, so it runs first.
+      - name: Check the tag matches the version in the source
+        run: |
+          v() { grep -Po "#define QMMP_VERSION_$1\s+\K[0-9]+" src/qmmp/qmmp.h; }
+          version="$(v MAJOR).$(v MINOR).$(v PATCH)"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          echo "Version in qmmp.h: $version"
+
+          if [ "$(v STABLE)" != "1" ]; then
+            echo "::error::QMMP_VERSION_STABLE is 0, so the version string would" \
+                 "carry a -dev suffix. Set it to 1 before tagging a release."
+            exit 1
+          fi
+
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            tag="${GITHUB_REF_NAME#v}"
+            if [ "$tag" != "$version" ]; then
+              echo "::error::Tag $GITHUB_REF_NAME does not match qmmp.h ($version)."
+              exit 1
+            fi
+            echo "Tag matches."
+          else
+            echo "Manual run, no tag to check against."
+          fi
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            cmake build-essential pkg-config \
+            qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools \
+            qt6-l10n-tools qt6-multimedia-dev libgl1-mesa-dev \
+            libtag1-dev libasound2-dev libpulse-dev libpipewire-0.3-dev \
+            libjack-jackd2-dev libogg-dev libvorbis-dev libflac-dev \
+            libmad0-dev libmpg123-dev libopus-dev libopusfile-dev \
+            libsndfile1-dev libwavpack-dev libmpcdec-dev libgme-dev \
+            libsidplayfp-dev libxmp-dev libfaad-dev libwildmidi-dev \
+            libarchive-dev libcurl4-openssl-dev libmms-dev \
+            libavcodec-dev libavformat-dev libavutil-dev \
+            libcdio-dev libcdio-cdda-dev libcdio-paranoia-dev libcddb2-dev \
+            libshout3-dev libsoxr-dev libbs2b-dev libenca-dev \
+            libprojectm-dev ladspa-sdk libx11-dev libxcb1-dev \
+            desktop-file-utils appstream
+
+      # Publishing a tarball that does not compile is the one failure mode
+      # worth spending runner minutes to rule out, so the release build is a
+      # full one, not a smoke test.
+      - name: Configure
+        run: cmake -B build 2>&1 | tee configure.log
+
+      - name: Check for plugin regressions
+        run: ./ci/plugin-summary.sh configure.log
+
+      - name: Build
+        run: make -C build -j"$(nproc)"
+
+      - name: Staged install
+        run: |
+          make -C build install DESTDIR="$PWD/stage"
+          desktop-file-validate stage/usr/local/share/applications/*.desktop
+          appstreamcli validate --no-net \
+            stage/usr/local/share/metainfo/io.github.ravilesx.xamp.metainfo.xml
+
+      # git archive rather than tar of the working tree: it takes exactly what
+      # is committed, honours .gitattributes, and cannot pick up build output
+      # or a stray file someone left lying around.
+      - name: Build the source tarball
+        run: |
+          name="x-amp-${VERSION}"
+          git archive --format=tar --prefix="${name}/" "${GITHUB_SHA}" \
+            | gzip -9 > "${name}.tar.gz"
+          sha256sum "${name}.tar.gz" > "${name}.tar.gz.sha256"
+          echo "TARBALL=${name}.tar.gz" >> "$GITHUB_ENV"
+          ls -l "${name}.tar.gz"
+
+      # Proves the tarball is self-contained: it is unpacked somewhere else and
+      # configured from scratch. A file missing from git but present locally
+      # dies here rather than in a user's first build.
+      - name: Check the tarball configures on its own
+        run: |
+          work="$(mktemp -d)"
+          tar -xzf "${TARBALL}" -C "$work"
+          cmake -S "$work/x-amp-${VERSION}" -B "$work/build" > /dev/null
+          echo "The tarball configures standalone."
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-tarball
+          path: |
+            x-amp-*.tar.gz
+            x-amp-*.tar.gz.sha256
+          retention-days: 14
+
+      # gh is preinstalled on the runner, so no third-party action gets a token.
+      # --verify-tag refuses to invent a tag that is not really there.
+      - name: Publish the release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          notes="$(mktemp)"
+          {
+            echo "## x-AMP ${VERSION}"
+            echo
+            echo "Built and packaged from \`${GITHUB_SHA}\`."
+            echo
+            echo "### Install from source"
+            echo
+            echo '```sh'
+            echo "tar -xzf ${TARBALL}"
+            echo "cd x-amp-${VERSION}"
+            echo 'cmake -B build && make -C build -j"$(nproc)"'
+            echo 'sudo make -C build install'
+            echo '```'
+            echo
+            echo "Requires Qt 6.2 or newer and taglib; every other dependency is"
+            echo "optional and decides which plugins get built. The configure"
+            echo "summary lists what was enabled."
+            echo
+            echo "x-AMP is a fork of [Qmmp](https://qmmp.ylsoftware.com/) by Ilya"
+            echo "Kotov and the Qmmp Development Team, and installs alongside it"
+            echo "rather than over it."
+          } > "$notes"
+
+          gh release create "${GITHUB_REF_NAME}" \
+            --verify-tag \
+            --title "x-AMP ${VERSION}" \
+            --notes-file "$notes" \
+            "${TARBALL}" \
+            "${TARBALL}.sha256"

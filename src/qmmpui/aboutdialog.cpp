@@ -50,7 +50,7 @@ AboutDialog::AboutDialog(QWidget* parent)
     m_ui->setupUi(this);
     m_ui->licenseTextBrowser->setPlainText(getStringFromResource(u":COPYING"_s));
     m_ui->aboutTextBrowser->setHtml(loadAbout());
-    m_ui->authorsTextBrowser->setPlainText(getStringFromResource(u":authors"_s));
+    m_ui->authorsTextBrowser->setPlainText(loadAuthors());
     m_ui->thanksToTextBrowser->setPlainText(getStringFromResource(u":thanks"_s));
     m_ui->translatorsTextBrowser->setPlainText(getStringFromResource(u":translators"_s));
 }
@@ -81,6 +81,11 @@ QString AboutDialog::loadAbout()
     //rewording it would orphan its translations.
     text.append(u"<p>"_s);
     text.append(tr("(c) %1 x-AMP contributors").arg(2026) + u"<br>"_s);
+    //the name is a name: outside tr() so no translation can mangle it, and the
+    //same goes for the addresses below it
+    text.append(tr("Lead developer: %1").arg(u"Ricardo Aviles Sanders"_s) + u"<br>"_s);
+    text.append(u"<a href=\"https://Ravilesx.org\">https://Ravilesx.org</a> &middot; "_s);
+    text.append(u"<a href=\"https://github.com/RavilesX\">https://github.com/RavilesX</a><br>"_s);
     text.append(u"<a href=\"https://github.com/RavilesX/x-AMP\">https://github.com/RavilesX/x-AMP</a>"_s);
     text.append(u"</p>"_s);
 
@@ -158,6 +163,34 @@ QString AboutDialog::loadAbout()
     }
     text.append(u"<div>"_s);
 
+    return text;
+}
+
+QString AboutDialog::loadAuthors()
+{
+    //x-AMP: the fork's own credits are built here rather than written into
+    //authors.txt, because that resource has a translated copy per language --
+    //authors_es.txt and two dozen more -- and getStringFromResource() picks
+    //the one matching the user's locale. Editing the English file alone left
+    //x-AMP unattributed on every system not running in English. Going through
+    //tr() puts these lines in the same .ts files as the rest of the interface,
+    //so one edit covers every language, and upstream's files stay untouched:
+    //they are the credits for the earlier work, which is all they claim to be.
+    QString text = u"x-AMP\n=====\n\n"_s;
+    text += tr("Lead Developer:") + u"\n\n"_s;
+    text += u"    Ricardo Aviles Sanders <ravilesx@gmail.com> - "_s;
+    text += tr("x-AMP fork, xui interface, artwork and maintenance") + u"\n"_s;
+    text += u"        https://Ravilesx.org\n"_s;
+    text += u"        https://github.com/RavilesX\n\n\n"_s;
+
+    text += u"Qmmp\n====\n\n"_s;
+    text += tr("x-AMP is built on Qmmp, by Ilya Kotov and the Qmmp Development "
+               "Team. The engine, the plugin architecture and most of the "
+               "decoders are their work, and x-AMP would not exist without it. "
+               "The people listed below are credited for that earlier work. They "
+               "are not involved in x-AMP and should not be contacted about it.")
+            + u"\n\n"_s;
+    text += getStringFromResource(u":authors"_s);
     return text;
 }
 
