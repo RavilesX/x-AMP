@@ -65,13 +65,17 @@ jobs:
       # warning-free when this was set up, so any number here is worth reading.
       - name: Report compiler warnings
         run: |
-          count=$(grep -c 'warning:' build.log || true)
+          count=$(grep -c 'warning:' build.log 2>/dev/null || true)
+          count=${count:-0}
           {
             echo "### Compiler warnings: $count"
             if [ "$count" -gt 0 ]; then
               echo
               echo '```'
-              grep 'warning:' build.log | sort -u | head -50
+              # head closes the pipe early, which hands sort a SIGPIPE; under
+              # pipefail that would fail this step the first time a warning
+              # ever appears, which is precisely when the report is wanted
+              grep 'warning:' build.log | sort -u | head -50 || true
               echo '```'
             fi
           } | tee -a "$GITHUB_STEP_SUMMARY"
@@ -156,12 +160,19 @@ jobs:
 
       # Only Qt is present, so the interfaces and the Windows-only plugins are
       # what actually gets compiled. That is the code this job exists for.
+      #
+      # Reporting only. Every filter here ends in "|| true": grep exits 1 when
+      # it matches nothing, and under "bash -eo pipefail" that failure sinks
+      # the step and skips the build behind it -- which is exactly what
+      # happened on this job's first run, where the summary lines did not have
+      # the shape the filter expected and nothing was ever compiled.
       - name: Report what was enabled
+        continue-on-error: true
         run: |
           {
             echo "### Windows configure summary"
             echo '```'
-            sed -n '/^--$/,$p' configure-windows.log | grep -E '\.\.\.|:' | head -60
+            grep -E '\.{3,}|^-- ' configure-windows.log | tail -60 || true
             echo '```'
           } | tee -a "$GITHUB_STEP_SUMMARY"
 
@@ -195,13 +206,14 @@ jobs:
       - name: Report compiler warnings
         if: always()
         run: |
-          count=$(grep -c 'warning ' build-windows.log || true)
+          count=$(grep -c 'warning ' build-windows.log 2>/dev/null || true)
+          count=${count:-0} # the log is missing entirely when the build was skipped
           {
             echo "### MSVC warnings: $count"
             if [ "$count" -gt 0 ]; then
               echo
               echo '```'
-              grep 'warning ' build-windows.log | sort -u | head -50
+              grep 'warning ' build-windows.log | sort -u | head -50 || true
               echo '```'
             fi
           } | tee -a "$GITHUB_STEP_SUMMARY"
