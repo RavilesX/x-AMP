@@ -221,6 +221,41 @@ jobs:
           fi
           echo "Resource version matches qmmp.h: $want"
 
+      # xamp.exe on its own does not start: it needs the Qt DLLs, the qwindows
+      # platform plugin, the MinGW runtime, and x-AMP's own plugin tree beside
+      # it. The installed layout already puts the pieces where the player looks
+      # for them -- Qmmp::pluginPath() falls back to <exe>/../lib/qmmp-<ver>-xamp
+      # on Windows, and both libraries install their DLLs to bin -- so this
+      # stages the install and lets windeployqt fill in Qt.
+      #
+      # What comes out runs, but it does not play: this job builds against Qt
+      # alone, with no taglib and no codec libraries, so every Input plugin is
+      # absent. It is the interface, not a working player.
+      - name: Stage a runnable tree
+        run: |
+          cmake --install build --prefix "$PWD/stage" > /dev/null
+          plugins=$(find stage/lib -name '*.dll' 2>/dev/null || true)
+          "$QT_ROOT/bin/windeployqt.exe" --release --compiler-runtime \
+            --dir "$PWD/stage/bin" "$PWD/stage/bin/xamp.exe" $plugins
+
+          # Without the platform plugin the executable dies before it draws
+          # anything, and it is deployed to a subdirectory rather than beside
+          # the binary, which is easy to lose in a repackaging.
+          if [ ! -f stage/bin/platforms/qwindows.dll ]; then
+            echo "::error::The qwindows platform plugin was not deployed; the build would not start."
+            exit 1
+          fi
+          echo "Staged $(find stage -type f | wc -l) files, $(du -sm stage | cut -f1) MB"
+          echo "x-AMP plugins: $(printf '%s\n' "$plugins" | grep -c . || true)"
+
+      - name: Upload the Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          # upload-artifact zips whatever it is given, so no archiving step
+          name: x-amp-windows-x64
+          path: stage
+          retention-days: 14
+
       - name: Report compiler warnings
         if: always()
         run: |
