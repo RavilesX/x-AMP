@@ -134,28 +134,46 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # MinGW, not MSVC. The equalizer core carries __attribute__((aligned)) on
+      # every coefficient table (src/qmmp/equ/iir_cfs.c), which is GCC syntax
+      # MSVC does not accept at all -- upstream builds Windows with MinGW and
+      # the code says so. Qt's own MinGW build has to be matched by the same
+      # compiler that produced it, hence 6.8.3 against the 13.1.0 toolchain.
+      #
       # aqtinstall rather than a Qt action from the marketplace: it is one pip
       # package and no third-party workflow gets a look at the job. qttools,
       # which carries lrelease and the Qt6LinguistTools CMake package the
-      # configure step insists on, ships inside the base archive for this
-      # build -- no extra module needed.
-      - name: Install Qt
+      # configure step insists on, ships inside the base archive -- no extra
+      # module needed.
+      - name: Install Qt and the MinGW toolchain
         run: |
           python -m pip install --quiet aqtinstall
-          python -m aqt install-qt windows desktop 6.8.3 win64_msvc2022_64 \
+          python -m aqt install-qt windows desktop 6.8.3 win64_mingw \
             --outputdir "$RUNNER_TEMP/Qt"
-          echo "QT_ROOT=$RUNNER_TEMP/Qt/6.8.3/msvc2022_64" >> "$GITHUB_ENV"
+          python -m aqt install-tool windows desktop tools_mingw1310 \
+            qt.tools.win64_mingw1310 --outputdir "$RUNNER_TEMP/Qt"
+          echo "QT_ROOT=$RUNNER_TEMP/Qt/6.8.3/mingw_64" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/Qt/Tools/mingw1310_64/bin" >> "$GITHUB_PATH"
 
-      # Not for finding anything: every optional dependency is absent here and
-      # is meant to be. But src/plugins/CMakeLists.txt calls pkg_search_module
-      # unconditionally, and FindPkgConfig answers a missing tool with
-      # SEND_ERROR, which stops CMake from generating at all.
-      - name: Install pkg-config
-        run: choco install pkgconfiglite -y --no-progress --allow-empty-checksums
+      # Ninja rather than "MinGW Makefiles": this job runs its steps through
+      # Git bash, so sh.exe is on PATH, and that generator refuses to run when
+      # it is. pkg-config finds nothing here and is meant to -- but
+      # src/plugins/CMakeLists.txt calls pkg_search_module unconditionally, and
+      # FindPkgConfig answers a missing tool with SEND_ERROR, which stops CMake
+      # from generating at all.
+      - name: Install pkg-config and Ninja
+        run: |
+          choco install pkgconfiglite -y --no-progress --allow-empty-checksums
+          choco install ninja -y --no-progress
 
+      # The compilers are named explicitly: Visual Studio is present on the
+      # runner, so CMake would otherwise pick cl.exe and undo the point of
+      # installing MinGW at all.
       - name: Configure
         run: |
-          cmake -B build -G "Visual Studio 17 2022" -A x64 \
+          cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ \
             -DCMAKE_PREFIX_PATH="$QT_ROOT" 2>&1 | tee configure-windows.log
 
       # Only Qt is present, so the interfaces and the Windows-only plugins are
@@ -177,7 +195,7 @@ jobs:
           } | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Build
-        run: cmake --build build --config Release --parallel 2>&1 | tee build-windows.log
+        run: cmake --build build --parallel 2>&1 | tee build-windows.log
 
       # The .rc is the one file no other job can check: it is only ever fed to
       # a resource compiler here, and it is generated from qmmp.h, so a version
@@ -206,14 +224,14 @@ jobs:
       - name: Report compiler warnings
         if: always()
         run: |
-          count=$(grep -c 'warning ' build-windows.log 2>/dev/null || true)
+          count=$(grep -cE 'warning:' build-windows.log 2>/dev/null || true)
           count=${count:-0} # the log is missing entirely when the build was skipped
           {
-            echo "### MSVC warnings: $count"
+            echo "### MinGW warnings: $count"
             if [ "$count" -gt 0 ]; then
               echo
               echo '```'
-              grep 'warning ' build-windows.log | sort -u | head -50 || true
+              grep -E 'warning:' build-windows.log | sort -u | head -50 || true
               echo '```'
             fi
           } | tee -a "$GITHUB_STEP_SUMMARY"
