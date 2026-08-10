@@ -152,22 +152,31 @@ jobs:
       # that directory ahead of everything else on PATH.
       - name: Install the toolchain and the codec libraries
         run: |
-          export PATH="/c/msys64/usr/bin:$PATH"
-          pacman -Sy --noconfirm
-          pacman -S --noconfirm --needed \
-            mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja \
-            mingw-w64-x86_64-pkgconf mingw-w64-x86_64-ntldd \
-            mingw-w64-x86_64-qt6-base mingw-w64-x86_64-qt6-tools \
-            mingw-w64-x86_64-qt6-multimedia \
-            mingw-w64-x86_64-taglib \
-            mingw-w64-x86_64-mpg123 mingw-w64-x86_64-libmad \
-            mingw-w64-x86_64-libvorbis mingw-w64-x86_64-libogg \
-            mingw-w64-x86_64-flac mingw-w64-x86_64-opusfile \
-            mingw-w64-x86_64-wavpack mingw-w64-x86_64-libsndfile \
-            mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-libxmp \
-            mingw-w64-x86_64-libsidplayfp mingw-w64-x86_64-libcdio \
-            mingw-w64-x86_64-libbs2b mingw-w64-x86_64-soxr \
-            mingw-w64-x86_64-curl mingw-w64-x86_64-libarchive
+          # Through MSYS2's own login shell rather than by putting pacman on
+          # PATH: pacman is an MSYS program, Git bash is another MSYS runtime,
+          # and running one inside the other is what broke the first attempt.
+          # -l is what sets up the environment pacman expects.
+          msys() { C:/msys64/usr/bin/bash.exe -lc "$1"; }
+
+          msys 'pacman --version | head -1'
+
+          # The keyring is as old as the runner image, and pacman refuses
+          # packages it cannot verify.
+          msys 'pacman -Sy --noconfirm --needed --disable-download-timeout msys2-keyring'
+
+          # One variable rather than a quoted multi-line command: inside single
+          # quotes a trailing backslash is a literal backslash, not a line
+          # continuation, and pacman would be handed it as a package name.
+          p=mingw-w64-x86_64
+          packages="$p-gcc $p-cmake $p-ninja $p-pkgconf $p-ntldd"
+          packages="$packages $p-qt6-base $p-qt6-tools $p-qt6-multimedia"
+          packages="$packages $p-taglib"
+          packages="$packages $p-mpg123 $p-libmad $p-libvorbis $p-libogg"
+          packages="$packages $p-flac $p-opusfile $p-wavpack $p-libsndfile"
+          packages="$packages $p-ffmpeg $p-libxmp $p-libsidplayfp $p-libcdio"
+          packages="$packages $p-libbs2b $p-soxr $p-curl $p-libarchive"
+          msys "pacman -S --noconfirm --needed --disable-download-timeout $packages"
+
           echo "/c/msys64/mingw64/bin" >> "$GITHUB_PATH"
           echo "QT_ROOT=/c/msys64/mingw64" >> "$GITHUB_ENV"
 
