@@ -189,19 +189,35 @@ jobs:
               || echo "::warning::$one could not be installed; its plugin will be missing"
           done
 
-          echo "/c/msys64/mingw64/bin" >> "$GITHUB_PATH"
-          echo "QT_ROOT=/c/msys64/mingw64" >> "$GITHUB_ENV"
+          echo "C:\\msys64\\mingw64\\bin" >> "$GITHUB_PATH"
+          echo "QT_ROOT=C:/msys64/mingw64" >> "$GITHUB_ENV"
 
       # Ninja rather than "MinGW Makefiles": these steps run through Git bash,
       # so sh.exe is on PATH, and that generator refuses to run when it is.
       # The compilers are named explicitly because Visual Studio is on the
       # runner and CMake would otherwise find cl.exe.
+      # The log tail is re-emitted as an annotation on failure. A failed step
+      # otherwise says only "Process completed with exit code 1" to anything
+      # reading this run through the API, and the logs themselves need a token,
+      # so a broken build here is diagnosed by guesswork.
       - name: Configure
         run: |
-          cmake -B build -G Ninja \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ \
-            -DCMAKE_PREFIX_PATH=/c/msys64/mingw64 2>&1 | tee configure-windows.log
+          # %-escaping and one line per %0A is how a workflow command carries a
+          # multi-line message; a raw % would be read as the start of another.
+          annotate() {
+            printf '::error title=%s::%s\n' "$1" \
+              "$(tail -40 "$2" | sed 's/%/%25/g; s/\r//g' | awk '{printf "%s%%0A", $0}')"
+          }
+
+          if ! cmake -B build -G Ninja \
+                 -DCMAKE_BUILD_TYPE=Release \
+                 -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ \
+                 -DCMAKE_PREFIX_PATH=C:/msys64/mingw64 > configure-windows.log 2>&1; then
+            cat configure-windows.log
+            annotate "configure failed" configure-windows.log
+            exit 1
+          fi
+          cat configure-windows.log
 
       # The point of pulling the codec libraries in is the Input plugins, and
       # a silently empty set is the failure worth catching: pkg_check_modules
@@ -239,7 +255,19 @@ jobs:
           } | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Build
-        run: cmake --build build --parallel 2>&1 | tee build-windows.log
+        run: |
+          annotate() {
+            printf '::error title=%s::%s\n' "$1" \
+              "$(grep -iE 'error|Error' "$2" | tail -30 | sed 's/%/%25/g; s/\r//g' \
+                 | awk '{printf "%s%%0A", $0}')"
+          }
+
+          if ! cmake --build build --parallel > build-windows.log 2>&1; then
+            tail -100 build-windows.log
+            annotate "build failed" build-windows.log
+            exit 1
+          fi
+          tail -20 build-windows.log
 
       # The .rc is the one file no other job can check: it is only ever fed to
       # a resource compiler here, and it is generated from qmmp.h, so a version
