@@ -25,8 +25,13 @@
 #include "qmmpuiplugincache_p.h"
 #include "uiloader.h"
 
+//x-AMP: xui rather than upstream's skinned. This is the interface the fork
+//exists for, and it is what a first run should open on any platform -- until
+//now that only happened where a config already named it, so a fresh install
+//came up wearing Qmmp's Winamp skin. selected() falls back to the first
+//interface it finds if this one is missing, so -DUSE_XUI=OFF stays safe.
 #ifndef QMMP_DEFAULT_UI
-#define QMMP_DEFAULT_UI "skinned"
+#define QMMP_DEFAULT_UI "xui"
 #endif
 
 Q_GLOBAL_STATIC(QList<QmmpUiPluginCache *>, uiCache);

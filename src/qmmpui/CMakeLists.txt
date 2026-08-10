@@ -4,7 +4,9 @@ add_definitions(-DQMMPUI_LIBRARY)
 
 set(QMMP_DEFAULT_UI "" CACHE STRING "default user interface")
 if(QMMP_DEFAULT_UI)
-    set(libqmmpui_DEFINES ${libqmmpui_DEFINES} QMMP_DEFAULT_UI="${QMMP_DEFAULT_OUTPUT}")
+    #x-AMP: was QMMP_DEFAULT_OUTPUT here, so -DQMMP_DEFAULT_UI=xui compiled in
+    #the name of an output plugin and the interface it named was never found
+    set(libqmmpui_DEFINES ${libqmmpui_DEFINES} QMMP_DEFAULT_UI="${QMMP_DEFAULT_UI}")
     message(STATUS "Default user interface: ${QMMP_DEFAULT_UI}")
 endif(QMMP_DEFAULT_UI)
 
