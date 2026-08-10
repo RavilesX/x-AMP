@@ -107,10 +107,17 @@ install(TARGETS libqmmp LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
                         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
                         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
+#x-AMP: iconv is part of glibc and a library of its own everywhere else.
+#Upstream links it for FreeBSD alone, which left libqmmp unable to link at all
+#on Windows -- MinGW's iconv is GNU libiconv, whose symbols carry a libiconv_
+#prefix and live in -liconv, so qmmptextcodec.cpp came up undefined. FindIconv
+#answers for all three cases, and defines the target even where it is built in.
+find_package(Iconv REQUIRED)
+target_link_libraries(libqmmp PRIVATE Iconv::Iconv)
+
 #freebsd support
 if(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
     target_link_directories(libqmmp PRIVATE /usr/local/lib)
-    target_link_libraries(libqmmp PRIVATE iconv)
 endif()
 
 if(APP_NAME_SUFFIX)

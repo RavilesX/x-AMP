@@ -176,7 +176,7 @@ jobs:
           # codec that gets renamed upstream should cost its own plugin and
           # nothing else. The decoder check below is the real gate.
           required="$p-gcc $p-cmake $p-ninja $p-pkgconf $p-ntldd"
-          required="$required $p-qt6-base $p-qt6-tools $p-taglib"
+          required="$required $p-qt6-base $p-qt6-tools $p-taglib $p-libiconv"
           msys "pacman -S --noconfirm --needed --disable-download-timeout $required"
 
           optional="$p-qt6-multimedia"
