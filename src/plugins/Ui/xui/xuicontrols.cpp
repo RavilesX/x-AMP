@@ -559,10 +559,20 @@ void XUiToggle::paintEvent(QPaintEvent *)
     p.drawEllipse(QPointF(cx, height() / 2.0), r, r);
 }
 
+void XUiToggle::mousePressEvent(QMouseEvent *e)
+{
+    if(e->button() != Qt::LeftButton)
+        return;
+    m_pressed = true;
+}
+
 void XUiToggle::mouseReleaseEvent(QMouseEvent *e)
 {
-    if(e->button() != Qt::LeftButton || !rect().contains(e->pos()))
+    if(e->button() != Qt::LeftButton || !m_pressed)
         return;
+    m_pressed = false;
+    if(!rect().contains(e->pos()))
+        return; //dragged off the switch before letting go
     m_checked = !m_checked;
     update();
     emit toggled(m_checked);
@@ -630,9 +640,19 @@ void XUiMenuButton::paintEvent(QPaintEvent *)
                     XUi::AccentMuted);
 }
 
+void XUiMenuButton::mousePressEvent(QMouseEvent *e)
+{
+    if(e->button() != Qt::LeftButton)
+        return;
+    m_pressed = true;
+}
+
 void XUiMenuButton::mouseReleaseEvent(QMouseEvent *e)
 {
-    if(e->button() == Qt::LeftButton && rect().contains(e->pos()))
+    if(e->button() != Qt::LeftButton || !m_pressed)
+        return;
+    m_pressed = false;
+    if(rect().contains(e->pos()))
         emit clicked();
 }
 

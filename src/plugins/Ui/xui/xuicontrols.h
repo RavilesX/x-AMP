@@ -195,10 +195,15 @@ signals:
 
 protected:
     void paintEvent(QPaintEvent *) override;
+    //Qt hands the release to whoever accepted the press. Without a press
+    //handler the window underneath takes the grab -- it has one, for dragging
+    //-- and the release never arrives here, so the toggle cannot be clicked.
+    void mousePressEvent(QMouseEvent *) override;
     void mouseReleaseEvent(QMouseEvent *) override;
 
 private:
     bool m_checked = false;
+    bool m_pressed = false;
 };
 
 /*!
@@ -220,6 +225,8 @@ signals:
 
 protected:
     void paintEvent(QPaintEvent *) override;
+    //see XUiToggle: without this the release goes to the window's drag handler
+    void mousePressEvent(QMouseEvent *) override;
     void mouseReleaseEvent(QMouseEvent *) override;
     void enterEvent(QEnterEvent *) override;
     void leaveEvent(QEvent *) override;
@@ -230,6 +237,7 @@ private:
     XUiIcons::Icon m_icon = XUiIcons::Menu;
     bool m_useIcon = false;
     bool m_hovered = false;
+    bool m_pressed = false;
 };
 
 /*!
