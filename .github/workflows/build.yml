@@ -168,14 +168,26 @@ jobs:
           # quotes a trailing backslash is a literal backslash, not a line
           # continuation, and pacman would be handed it as a package name.
           p=mingw-w64-x86_64
-          packages="$p-gcc $p-cmake $p-ninja $p-pkgconf $p-ntldd"
-          packages="$packages $p-qt6-base $p-qt6-tools $p-qt6-multimedia"
-          packages="$packages $p-taglib"
-          packages="$packages $p-mpg123 $p-libmad $p-libvorbis $p-libogg"
-          packages="$packages $p-flac $p-opusfile $p-wavpack $p-libsndfile"
-          packages="$packages $p-ffmpeg $p-libxmp $p-libsidplayfp $p-libcdio"
-          packages="$packages $p-libbs2b $p-soxr $p-curl $p-libarchive"
-          msys "pacman -S --noconfirm --needed --disable-download-timeout $packages"
+
+          # Split in two because pacman treats one unknown name as a reason to
+          # abort the whole transaction -- which is how a single wrong package
+          # ("soxr", packaged as libsoxr) took the entire job down. Without the
+          # toolchain there is nothing to build, so that half must succeed; a
+          # codec that gets renamed upstream should cost its own plugin and
+          # nothing else. The decoder check below is the real gate.
+          required="$p-gcc $p-cmake $p-ninja $p-pkgconf $p-ntldd"
+          required="$required $p-qt6-base $p-qt6-tools $p-taglib"
+          msys "pacman -S --noconfirm --needed --disable-download-timeout $required"
+
+          optional="$p-qt6-multimedia"
+          optional="$optional $p-mpg123 $p-libmad $p-libvorbis $p-libogg"
+          optional="$optional $p-flac $p-opusfile $p-wavpack $p-libsndfile"
+          optional="$optional $p-ffmpeg $p-libxmp $p-libsidplayfp $p-libcdio"
+          optional="$optional $p-libbs2b $p-libsoxr $p-curl $p-libarchive"
+          for one in $optional; do
+            msys "pacman -S --noconfirm --needed --disable-download-timeout $one" \
+              || echo "::warning::$one could not be installed; its plugin will be missing"
+          done
 
           echo "/c/msys64/mingw64/bin" >> "$GITHUB_PATH"
           echo "QT_ROOT=/c/msys64/mingw64" >> "$GITHUB_ENV"
