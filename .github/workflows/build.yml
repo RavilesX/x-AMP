@@ -256,9 +256,14 @@ jobs:
 
       - name: Build
         run: |
+          # "undefined reference to ..." carries no word matching /error/, so a
+          # filter on that alone reports the collect2 summary line and hides
+          # every symbol that actually failed to resolve. ninja's own "FAILED:"
+          # marks the command that died.
           annotate() {
             printf '::error title=%s::%s\n' "$1" \
-              "$(grep -iE 'error|Error' "$2" | tail -30 | sed 's/%/%25/g; s/\r//g' \
+              "$(grep -E 'FAILED:|undefined reference|cannot find|No such file|error:|Error [0-9]' "$2" \
+                 | cut -c1-300 | tail -30 | sed 's/%/%25/g; s/\r//g' \
                  | awk '{printf "%s%%0A", $0}')"
           }
 
