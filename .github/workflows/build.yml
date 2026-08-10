@@ -137,44 +137,67 @@ jobs:
       # MinGW, not MSVC. The equalizer core carries __attribute__((aligned)) on
       # every coefficient table (src/qmmp/equ/iir_cfs.c), which is GCC syntax
       # MSVC does not accept at all -- upstream builds Windows with MinGW and
-      # the code says so. Qt's own MinGW build has to be matched by the same
-      # compiler that produced it, hence 6.8.3 against the 13.1.0 toolchain.
+      # the code says so.
       #
-      # aqtinstall rather than a Qt action from the marketplace: it is one pip
-      # package and no third-party workflow gets a look at the job. qttools,
-      # which carries lrelease and the Qt6LinguistTools CMake package the
-      # configure step insists on, ships inside the base archive -- no extra
-      # module needed.
-      - name: Install Qt and the MinGW toolchain
+      # Everything comes from MSYS2's mingw64 repository, which the runner
+      # image already carries at C:\msys64, rather than from aqtinstall and
+      # vcpkg. The decoders decide this: they are all found through
+      # pkg_check_modules, so they need .pc files and a pkg-config that reads
+      # them, and taglib is C++, so it has to have been built by the same
+      # compiler. vcpkg's default triplet is MSVC, and its MinGW triplets build
+      # from source -- half an hour a run for libraries MSYS2 ships prebuilt.
+      #
+      # Nothing here needs the MSYS2 shell: pacman drops native Windows
+      # binaries into C:\msys64\mingw64, and the steps stay on Git bash with
+      # that directory ahead of everything else on PATH.
+      - name: Install the toolchain and the codec libraries
         run: |
-          python -m pip install --quiet aqtinstall
-          python -m aqt install-qt windows desktop 6.8.3 win64_mingw \
-            --outputdir "$RUNNER_TEMP/Qt"
-          python -m aqt install-tool windows desktop tools_mingw1310 \
-            qt.tools.win64_mingw1310 --outputdir "$RUNNER_TEMP/Qt"
-          echo "QT_ROOT=$RUNNER_TEMP/Qt/6.8.3/mingw_64" >> "$GITHUB_ENV"
-          echo "$RUNNER_TEMP/Qt/Tools/mingw1310_64/bin" >> "$GITHUB_PATH"
+          export PATH="/c/msys64/usr/bin:$PATH"
+          pacman -Sy --noconfirm
+          pacman -S --noconfirm --needed \
+            mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja \
+            mingw-w64-x86_64-pkgconf mingw-w64-x86_64-ntldd \
+            mingw-w64-x86_64-qt6-base mingw-w64-x86_64-qt6-tools \
+            mingw-w64-x86_64-qt6-multimedia \
+            mingw-w64-x86_64-taglib \
+            mingw-w64-x86_64-mpg123 mingw-w64-x86_64-libmad \
+            mingw-w64-x86_64-libvorbis mingw-w64-x86_64-libogg \
+            mingw-w64-x86_64-flac mingw-w64-x86_64-opusfile \
+            mingw-w64-x86_64-wavpack mingw-w64-x86_64-libsndfile \
+            mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-libxmp \
+            mingw-w64-x86_64-libsidplayfp mingw-w64-x86_64-libcdio \
+            mingw-w64-x86_64-libbs2b mingw-w64-x86_64-soxr \
+            mingw-w64-x86_64-curl mingw-w64-x86_64-libarchive
+          echo "/c/msys64/mingw64/bin" >> "$GITHUB_PATH"
+          echo "QT_ROOT=/c/msys64/mingw64" >> "$GITHUB_ENV"
 
-      # Ninja rather than "MinGW Makefiles": this job runs its steps through
-      # Git bash, so sh.exe is on PATH, and that generator refuses to run when
-      # it is. pkg-config finds nothing here and is meant to -- but
-      # src/plugins/CMakeLists.txt calls pkg_search_module unconditionally, and
-      # FindPkgConfig answers a missing tool with SEND_ERROR, which stops CMake
-      # from generating at all.
-      - name: Install pkg-config and Ninja
-        run: |
-          choco install pkgconfiglite -y --no-progress --allow-empty-checksums
-          choco install ninja -y --no-progress
-
-      # The compilers are named explicitly: Visual Studio is present on the
-      # runner, so CMake would otherwise pick cl.exe and undo the point of
-      # installing MinGW at all.
+      # Ninja rather than "MinGW Makefiles": these steps run through Git bash,
+      # so sh.exe is on PATH, and that generator refuses to run when it is.
+      # The compilers are named explicitly because Visual Studio is on the
+      # runner and CMake would otherwise find cl.exe.
       - name: Configure
         run: |
           cmake -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ \
-            -DCMAKE_PREFIX_PATH="$QT_ROOT" 2>&1 | tee configure-windows.log
+            -DCMAKE_PREFIX_PATH=/c/msys64/mingw64 2>&1 | tee configure-windows.log
+
+      # The point of pulling the codec libraries in is the Input plugins, and
+      # a silently empty set is the failure worth catching: pkg_check_modules
+      # reports a missing library by disabling its plugin, not by failing, so
+      # a broken PKG_CONFIG_PATH would otherwise sail through as a green build
+      # that plays nothing -- which is exactly where this job started.
+      - name: Check the decoders were found
+        run: |
+          missing=""
+          for dec in MAD mpg123 Vorbis FLAC Opus FFmpeg WavPack; do
+            grep -qi "$dec" configure-windows.log || missing="$missing $dec"
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Decoders absent from the configure summary:$missing"
+            exit 1
+          fi
+          echo "Every expected decoder appears in the configure summary."
 
       # Only Qt is present, so the interfaces and the Windows-only plugins are
       # what actually gets compiled. That is the code this job exists for.
@@ -228,15 +251,39 @@ jobs:
       # on Windows, and both libraries install their DLLs to bin -- so this
       # stages the install and lets windeployqt fill in Qt.
       #
-      # What comes out runs, but it does not play: this job builds against Qt
-      # alone, with no taglib and no codec libraries, so every Input plugin is
-      # absent. It is the interface, not a working player.
+      # windeployqt only knows about Qt. Every decoder plugin also links a
+      # library of its own -- libmpg123, libFLAC, libvorbis, avcodec and the
+      # rest -- and a plugin whose DLL is missing simply fails to load, so the
+      # player would come up looking healthy and refuse every file.
+      #
+      # ntldd rather than ldd: ldd understands MSYS binaries, these are native
+      # Windows ones. It answers in Windows paths, hence the backslash fold.
       - name: Stage a runnable tree
         run: |
           cmake --install build --prefix "$PWD/stage" > /dev/null
           plugins=$(find stage/lib -name '*.dll' 2>/dev/null || true)
           "$QT_ROOT/bin/windeployqt.exe" --release --compiler-runtime \
             --dir "$PWD/stage/bin" "$PWD/stage/bin/xamp.exe" $plugins
+
+          deps() { ntldd -R "$1" 2>/dev/null | tr '\\' '/' \
+                   | grep -io '[a-z]:/msys64/mingw64/bin/[^ ]*\.dll' | sort -u; }
+
+          # Repeated because a copied DLL brings dependencies of its own, and
+          # those are only visible once it is in place. It settles quickly;
+          # the loop stops as soon as a pass copies nothing.
+          for pass in 1 2 3 4 5; do
+            copied=0
+            for binary in $(find stage -name '*.dll' -o -name '*.exe'); do
+              for dep in $(deps "$binary"); do
+                name=$(basename "$dep")
+                if [ ! -f "stage/bin/$name" ]; then
+                  cp "$dep" stage/bin/ && copied=$((copied + 1))
+                fi
+              done
+            done
+            echo "pass $pass: $copied DLLs copied"
+            [ "$copied" -eq 0 ] && break
+          done
 
           # Without the platform plugin the executable dies before it draws
           # anything, and it is deployed to a subdirectory rather than beside
@@ -245,8 +292,24 @@ jobs:
             echo "::error::The qwindows platform plugin was not deployed; the build would not start."
             exit 1
           fi
+          # A decoder that cannot resolve one of its own DLLs is invisible at
+          # runtime: the player starts, the plugin never loads, and every file
+          # is simply "unsupported". Checking here is the difference between
+          # shipping that and knowing about it.
+          unresolved=""
+          for binary in $(find stage -name '*.dll' -o -name '*.exe'); do
+            if ntldd -R "$binary" 2>/dev/null | grep -qi 'not found'; then
+              unresolved="$unresolved $(basename "$binary")"
+            fi
+          done
+          if [ -n "$unresolved" ]; then
+            echo "::error::Binaries with unresolved dependencies:$unresolved"
+            exit 1
+          fi
+
           echo "Staged $(find stage -type f | wc -l) files, $(du -sm stage | cut -f1) MB"
           echo "x-AMP plugins: $(printf '%s\n' "$plugins" | grep -c . || true)"
+          echo "Input plugins: $(find stage/lib -path '*Input*' -name '*.dll' | wc -l)"
 
       - name: Upload the Windows build
         uses: actions/upload-artifact@v4
