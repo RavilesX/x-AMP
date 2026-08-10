@@ -319,8 +319,15 @@ jobs:
           "$QT_ROOT/bin/windeployqt.exe" --release --compiler-runtime \
             --dir "$PWD/stage/bin" "$PWD/stage/bin/xamp.exe" $plugins
 
-          deps() { ntldd -R "$1" 2>/dev/null | tr '\\' '/' \
-                   | grep -io '[a-z]:/msys64/mingw64/bin/[^ ]*\.dll' | sort -u; }
+          # Dependencies are compared by name against what MSYS2 provides,
+          # rather than by whether ntldd could resolve them. ntldd reports the
+          # Windows API sets -- api-ms-win-crt-*, ext-ms-* -- as "not found",
+          # because they are loader constructs and not files at all, and every
+          # binary using the C runtime depends on a dozen of them. Asking
+          # instead "does mingw64 ship this, and is it here yet" answers the
+          # only question that matters and ignores the system entirely.
+          MINGW=C:/msys64/mingw64/bin
+          deps() { ntldd -R "$1" 2>/dev/null | awk '{print $1}' | grep -i '\.dll$' | sort -u; }
 
           # Repeated because a copied DLL brings dependencies of its own, and
           # those are only visible once it is in place. It settles quickly;
@@ -329,9 +336,8 @@ jobs:
             copied=0
             for binary in $(find stage -name '*.dll' -o -name '*.exe'); do
               for dep in $(deps "$binary"); do
-                name=$(basename "$dep")
-                if [ ! -f "stage/bin/$name" ]; then
-                  cp "$dep" stage/bin/ && copied=$((copied + 1))
+                if [ -f "$MINGW/$dep" ] && [ ! -f "stage/bin/$dep" ]; then
+                  cp "$MINGW/$dep" stage/bin/ && copied=$((copied + 1))
                 fi
               done
             done
@@ -350,14 +356,16 @@ jobs:
           # runtime: the player starts, the plugin never loads, and every file
           # is simply "unsupported". Checking here is the difference between
           # shipping that and knowing about it.
-          unresolved=""
+          missing=""
           for binary in $(find stage -name '*.dll' -o -name '*.exe'); do
-            if ntldd -R "$binary" 2>/dev/null | grep -qi 'not found'; then
-              unresolved="$unresolved $(basename "$binary")"
-            fi
+            for dep in $(deps "$binary"); do
+              if [ -f "$MINGW/$dep" ] && [ ! -f "stage/bin/$dep" ]; then
+                missing="$missing $dep"
+              fi
+            done
           done
-          if [ -n "$unresolved" ]; then
-            echo "::error::Binaries with unresolved dependencies:$unresolved"
+          if [ -n "$missing" ]; then
+            echo "::error::Libraries mingw64 provides that were not bundled:$(echo $missing | tr ' ' '\n' | sort -u | tr '\n' ' ')"
             exit 1
           fi
 
