@@ -196,7 +196,14 @@ QMMPStarter::QMMPStarter() : QObject()
 
 #ifdef Q_OS_WIN
     //Windows IPC implementation (named mutex and named pipe)
-    m_named_mutex = CreateMutexA(nullptr, TRUE, "QMMP-403cd318-cc7b-4622-8dfd-df18d1e70057");
+    //
+    //x-AMP: its own GUID. This mutex is how a second launch recognises that
+    //the player is already running, and upstream's name is what x-AMP used to
+    //carry -- so with Qmmp open, x-AMP would decide it was its own second
+    //instance, hand its command line to a player that is not it, and quit. The
+    //named pipe beside it was given a fork-specific name (see UDS_PATH); this
+    //was missed.
+    m_named_mutex = CreateMutexA(nullptr, TRUE, "XAMP-8f2bd391-6f52-4d82-8b35-b123e8ffacad");
     if(GetLastError() == NO_ERROR && !noStart)
     {
         m_server->listen (UDS_PATH);

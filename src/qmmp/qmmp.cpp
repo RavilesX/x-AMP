@@ -52,10 +52,18 @@ QString Qmmp::configDir()
 #ifdef Q_OS_WIN
     if(::configDir()->isEmpty())
     {
-        if(isPortable())
-            return *::appDir() + u"/.qmmp"_s;
+        //x-AMP: named after the application, the way the branch below already
+        //was. Upstream writes ".qmmp" here, and the fork left it alone while
+        //renaming everything else, so on Windows x-AMP settled into Qmmp's own
+        //directory -- the one collision the whole naming scheme exists to
+        //avoid, and a silent one: both players read the file and the last to
+        //quit wins.
+        const QString dir = u"/."_s + QCoreApplication::organizationName();
 
-        return QDir::homePath() + u"/.qmmp"_s;
+        if(isPortable())
+            return *::appDir() + dir;
+
+        return QDir::homePath() + dir;
     }
 #else
     if(::configDir()->isEmpty())
@@ -191,6 +199,10 @@ bool Qmmp::isPortable()
 {
     if(appDir()->isEmpty())
         appDir()->operator = (QCoreApplication::applicationDirPath());
-    return QFile::exists(*appDir() + QStringLiteral("/../qmmp_portable.txt"));
+    //x-AMP: the marker is named after this player, not upstream's. Dropping a
+    //qmmp_portable.txt beside Qmmp must not put x-AMP into portable mode as
+    //well, and the two can sit in the same directory.
+    return QFile::exists(*appDir() + u"/../"_s + QCoreApplication::applicationName()
+                         + u"_portable.txt"_s);
 }
 #endif
