@@ -62,8 +62,13 @@ XUiDock *XUiDock::instance()
 bool XUiDock::canSnap()
 {
     //Wayland forbids a client from placing its own windows, so there are no
-    //coordinates to snap with; the drag goes to the compositor instead
-    return QGuiApplication::platformName() == QLatin1String("xcb");
+    //coordinates to snap with; the drag goes to the compositor instead.
+    //
+    //x-AMP: asked the other way round until now -- the test named xcb, so
+    //every platform that is not X11 lost snapping, Windows included, though
+    //it places windows as freely as X11 does. What is being excluded is
+    //Wayland, so that is what the test says.
+    return QGuiApplication::platformName() != QLatin1String("wayland");
 }
 
 void XUiDock::setMainWindow(QWidget *window)

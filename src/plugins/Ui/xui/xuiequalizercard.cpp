@@ -256,7 +256,14 @@ void XUiEqualizerCard::applySettings()
 
 void XUiEqualizerCard::loadPresets()
 {
-    readPresets(presetPath(), &m_presets, &m_presetNames);
+    //A profile that has never saved a preset gets the bundled Winamp set --
+    //an empty Presets menu is what a fresh install used to show. The moment
+    //one is saved, presetPath() exists and takes over; writePresets() stores
+    //the whole list, so the bundled entries are kept rather than replaced.
+    //The per-track presets have no such default: an empty file means the user
+    //has not asked for any, which is not the same as having none to offer.
+    readPresets(QFile::exists(presetPath()) ? presetPath() : u":/xui/eq.preset"_s,
+                &m_presets, &m_presetNames);
     readPresets(autoPresetPath(), &m_autoPresets, &m_autoPresetNames);
     m_auto->setChecked(QSettings().value(QStringLiteral("XUi/eq_auto"), false).toBool());
 }

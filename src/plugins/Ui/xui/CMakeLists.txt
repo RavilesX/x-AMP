@@ -17,6 +17,7 @@ set(libxui_SRCS
     xuiwindow.cpp
     translations/translations.qrc
     images/images.qrc
+    resources/resources.qrc
 )
 
 add_library(xui MODULE ${libxui_SRCS})
