@@ -82,6 +82,12 @@ private:
     QPoint fitToScreen(const QRect &rect, QWidget *moving) const;
 
     QWidget *m_main = nullptr;
+    //Where the main window was last asked to go, against which the position it
+    //actually took is compared: a window manager keeps an ordinary window
+    //clear of a panel, and neither the refusal nor the area it defends can be
+    //read from Qt -- availableGeometry() reports the whole screen here.
+    QPoint m_asked;
+    bool m_asking = false;
     QList<QWidget *> m_windows;
     //offset of each docked companion from the main window, held while it moves
     QList<QPoint> m_offsets;

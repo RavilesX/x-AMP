@@ -144,6 +144,13 @@ void XUiWindow::mouseMoveEvent(QMouseEvent *e)
 
 void XUiWindow::mouseReleaseEvent(QMouseEvent *)
 {
+    //Settle the stack against where this window actually is before letting go.
+    //Whatever happened while it was moving -- a request the window manager
+    //trimmed, an event that arrived after the one that caused it -- what
+    //matters is that the cards are back in contact now, because that is what
+    //decides whether they are still docked on the next drag.
+    if(m_dragging)
+        XUiDock::instance()->carryDocked(this, pos());
     m_dragging = false;
 }
 

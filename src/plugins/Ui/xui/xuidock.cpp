@@ -90,6 +90,10 @@ void XUiDock::rememberDocked()
 {
     if(!m_main)
         return;
+
+    //a fresh drag starts with no refusal on record; a panel cleared or a
+    //window moved since must not go on limiting this one
+    m_asking = false;
     const QRect anchor = m_main->frameGeometry();
 
     //A window docked to another docked window belongs to the stack too: with
@@ -253,14 +257,38 @@ void XUiDock::moveWindow(QWidget *window, const QPoint &target)
     const QRect stack = stackGeometry(window, pos);
     pos += fitToScreen(stack, window) - stack.topLeft();
 
-    //The companions are not placed here. Sending the main window somewhere is
-    //not the same as it arriving: the window manager holds an ordinary window
-    //clear of a panel while leaving Qt::Tool windows alone, so placing them
-    //against the position asked for pinned the player at the panel while they
-    //carried on past it, and a stack released out of contact is no longer
-    //docked. carryDocked() runs from the window's move event instead, where
-    //the position is the one it really has.
+    //Sending the main window somewhere is not the same as it arriving. A
+    //window manager holds an ordinary window clear of a panel and leaves
+    //Qt::Tool windows alone, so the player stops at the panel and the cards do
+    //not; released out of contact, the stack is no longer docked. The area
+    //being defended cannot be read from Qt -- availableGeometry() reports the
+    //whole screen, panel included -- and Qt reports a move optimistically, so
+    //asking where it went right after sending it answers with the position it
+    //was sent to.
+    //
+    //So compare across events instead. If the last request did not take, stop
+    //pushing in the direction that was refused, and the stack halts with the
+    //player. Nothing here needs to know what the rule was, and a limit that
+    //moves -- a panel hidden, a screen changed -- is picked up on the next
+    //drag. Crossing to another monitor is unaffected: nothing refuses it, so
+    //what was asked and what happened agree and this does nothing.
+    if(window == m_main && m_asking)
+    {
+        const QPoint actual = window->pos();
+        const QPoint refused = m_asked - actual;
+        if(refused.x() != 0 && (pos.x() - actual.x()) * refused.x() > 0)
+            pos.setX(actual.x());
+        if(refused.y() != 0 && (pos.y() - actual.y()) * refused.y() > 0)
+            pos.setY(actual.y());
+    }
+
     window->move(pos);
+
+    if(window == m_main)
+    {
+        m_asked = pos;
+        m_asking = true;
+    }
 }
 
 void XUiDock::carryDocked(QWidget *window, const QPoint &landed)
