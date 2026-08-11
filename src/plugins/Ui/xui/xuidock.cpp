@@ -181,26 +181,41 @@ QPoint XUiDock::fitToScreen(const QRect &rect, QWidget *moving) const
         return rect.topLeft();
 
     const QRect available = screen->availableGeometry();
+
+    //x-AMP: the desktop is every screen together, not the one the window
+    //happens to be on. Both halves below used to work against the screen
+    //alone, and on a second monitor that made the shared edge impassable --
+    //the clamp stopped the window dead there, so it could never be moved
+    //across. QRect's union is its bounding rectangle, which over screens of
+    //unequal height admits a little dead space at the sides; being able to
+    //put the player on the other monitor is worth that.
+    QRect desktop;
+    for(const QScreen *other : QGuiApplication::screens())
+        desktop |= other->availableGeometry();
+
     QPoint result = rect.topLeft();
 
-    if(qAbs(rect.left() - available.left()) <= SNAP)
+    //Snapping applies to a screen edge only where it is also an edge of the
+    //desktop. At a boundary between two monitors it would be one more thing
+    //to fight past, which is the opposite of what snapping is for.
+    if(available.left() == desktop.left() && qAbs(rect.left() - available.left()) <= SNAP)
         result.setX(available.left());
-    else if(qAbs(rect.right() - available.right()) <= SNAP)
+    else if(available.right() == desktop.right() && qAbs(rect.right() - available.right()) <= SNAP)
         result.setX(available.right() + 1 - rect.width());
 
-    if(qAbs(rect.top() - available.top()) <= SNAP)
+    if(available.top() == desktop.top() && qAbs(rect.top() - available.top()) <= SNAP)
         result.setY(available.top());
-    else if(qAbs(rect.bottom() - available.bottom()) <= SNAP)
+    else if(available.bottom() == desktop.bottom() && qAbs(rect.bottom() - available.bottom()) <= SNAP)
         result.setY(available.bottom() + 1 - rect.height());
 
-    //Then hold it inside the screen. Without this the window manager stopped
+    //Then hold it on the desktop. Without this the window manager stopped
     //whichever window reached the edge first while the rest of the stack kept
-    //going, and the stack came apart. A body larger than the screen keeps its
+    //going, and the stack came apart. A body larger than the desktop keeps its
     //top left corner on instead.
-    const int maxX = qMax(available.left(), available.right() + 1 - rect.width());
-    const int maxY = qMax(available.top(), available.bottom() + 1 - rect.height());
-    result.setX(qBound(available.left(), result.x(), maxX));
-    result.setY(qBound(available.top(), result.y(), maxY));
+    const int maxX = qMax(desktop.left(), desktop.right() + 1 - rect.width());
+    const int maxY = qMax(desktop.top(), desktop.bottom() + 1 - rect.height());
+    result.setX(qBound(desktop.left(), result.x(), maxX));
+    result.setY(qBound(desktop.top(), result.y(), maxY));
     return result;
 }
 
