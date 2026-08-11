@@ -118,9 +118,34 @@
         <translation>&amp;Reproducir</translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="397"/>
-        <source>Add to &amp;Queue</source>
-        <translation>Añadir a la &amp;cola</translation>
+        <location filename="../xuilistview.cpp" line="409"/>
+        <source>&amp;Queue</source>
+        <translation>&amp;Cola</translation>
+    </message>
+    <message>
+        <location filename="../xuilistview.cpp" line="420"/>
+        <source>&amp;Remove from Queue</source>
+        <translation>&amp;Quitar de la cola</translation>
+    </message>
+    <message>
+        <location filename="../xuilistview.cpp" line="421"/>
+        <source>&amp;Add to Queue</source>
+        <translation>&amp;Agregar a la cola</translation>
+    </message>
+    <message>
+        <location filename="../xuilistview.cpp" line="427"/>
+        <source>Add to &amp;Top of Queue</source>
+        <translation>Añadir al &amp;principio de la cola</translation>
+    </message>
+    <message>
+        <location filename="../xuilistview.cpp" line="431"/>
+        <source>&amp;Clear Queue</source>
+        <translation>&amp;Limpiar cola</translation>
+    </message>
+    <message>
+        <location filename="../xuilistview.cpp" line="436"/>
+        <source>&amp;Manage...</source>
+        <translation>Ad&amp;ministración...</translation>
     </message>
     <message>
         <location filename="../xuilistview.cpp" line="400"/>

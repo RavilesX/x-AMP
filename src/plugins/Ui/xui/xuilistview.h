@@ -22,9 +22,11 @@
 
 #include <QWidget>
 
+class QMenu;
 class QScrollBar;
 class PlayListModel;
 class PlayListManager;
+class PlayListTrack;
 
 /*!
  * Track list, drawn with QPainter over PlayListModel.
@@ -85,6 +87,12 @@ private:
     };
 
     void rebuildRows();
+    /*! Adds the play queue commands to \b menu as a submenu of their own. */
+    void addQueueMenu(QMenu *menu);
+    /*! Moves the selection ahead of the tracks already waiting in the queue. */
+    void queueSelectedFirst();
+    /*! Flips the queued state of \b tracks, refreshing the views only once. */
+    void toggleQueued(const QList<PlayListTrack *> &tracks);
     /*! Display row showing \b trackIndex, or -1. */
     int rowForTrack(int trackIndex) const;
     /*! First track row at or after \b row, for drops and keyboard moves. */

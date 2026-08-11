@@ -394,8 +394,7 @@ void XUiListView::contextMenuEvent(QContextMenuEvent *e)
             emit activated();
         }
     });
-    connect(menu.addAction(tr("Add to &Queue")), &QAction::triggered,
-            m_model, &PlayListModel::addToQueue);
+    addQueueMenu(&menu);
     menu.addSeparator();
     connect(menu.addAction(tr("&Remove Selected")), &QAction::triggered,
             m_model, &PlayListModel::removeSelected);
@@ -403,6 +402,76 @@ void XUiListView::contextMenuEvent(QContextMenuEvent *e)
             m_model, &PlayListModel::clear);
     menu.exec(e->globalPos());
     update();
+}
+
+void XUiListView::addQueueMenu(QMenu *menu)
+{
+    QMenu *queueMenu = menu->addMenu(tr("&Queue"));
+    const QList<PlayListTrack *> selected = m_model->selectedTracks();
+    QList<PlayListTrack *> unqueued;
+    for(PlayListTrack *track : selected)
+    {
+        if(!track->isQueued())
+            unqueued << track;
+    }
+
+    //one entry rather than two: a selection is either waiting or it is not,
+    //and a mixed selection is finished off by queueing what is still missing
+    QAction *toggle = queueMenu->addAction(unqueued.isEmpty() ? tr("&Remove from Queue")
+                                                              : tr("&Add to Queue"));
+    toggle->setEnabled(!selected.isEmpty());
+    connect(toggle, &QAction::triggered, this, [this, selected, unqueued] {
+        toggleQueued(unqueued.isEmpty() ? selected : unqueued);
+    });
+
+    QAction *first = queueMenu->addAction(tr("Add to &Top of Queue"));
+    first->setEnabled(!selected.isEmpty());
+    connect(first, &QAction::triggered, this, &XUiListView::queueSelectedFirst);
+
+    QAction *clear = queueMenu->addAction(tr("&Clear Queue"));
+    clear->setEnabled(!m_model->isEmptyQueue());
+    connect(clear, &QAction::triggered, m_model, &PlayListModel::clearQueue);
+
+    queueMenu->addSeparator();
+    QAction *manage = queueMenu->addAction(tr("&Manage..."));
+    manage->setEnabled(false); //the queue manager itself is still to be written
+}
+
+void XUiListView::queueSelectedFirst()
+{
+    const QList<PlayListTrack *> selected = m_model->selectedTracks();
+    if(selected.isEmpty())
+        return;
+
+    //PlayListModel only ever appends, so the queue is rebuilt with the
+    //selection in front of whatever was already waiting. Note that emptying
+    //it also drops a pending 'stop after track'.
+    QList<PlayListTrack *> order = selected;
+    const QList<PlayListTrack *> queued = m_model->queuedTracks();
+    for(PlayListTrack *track : queued)
+    {
+        if(!order.contains(track))
+            order << track;
+    }
+
+    m_model->blockSignals(true);
+    m_model->clearQueue();
+    m_model->blockSignals(false);
+    toggleQueued(order); //nothing is queued any more, so this enqueues in order
+}
+
+void XUiListView::toggleQueued(const QList<PlayListTrack *> &tracks)
+{
+    if(tracks.isEmpty())
+        return;
+
+    //PlayListModel reports every single track, and each report rebuilds the
+    //rows of every view; only the last step of the batch is left to speak
+    m_model->blockSignals(true);
+    for(int i = 0; i < tracks.count() - 1; ++i)
+        m_model->setQueued(tracks.at(i));
+    m_model->blockSignals(false);
+    m_model->setQueued(tracks.constLast());
 }
 
 void XUiListView::dragEnterEvent(QDragEnterEvent *e)
