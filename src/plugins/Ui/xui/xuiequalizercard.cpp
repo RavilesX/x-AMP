@@ -262,8 +262,17 @@ void XUiEqualizerCard::loadPresets()
     //the whole list, so the bundled entries are kept rather than replaced.
     //The per-track presets have no such default: an empty file means the user
     //has not asked for any, which is not the same as having none to offer.
-    readPresets(QFile::exists(presetPath()) ? presetPath() : u":/xui/eq.preset"_s,
-                &m_presets, &m_presetNames);
+    const QString source = QFile::exists(presetPath()) ? presetPath()
+                                                       : u":/xui/eq.preset"_s;
+    readPresets(source, &m_presets, &m_presetNames);
+    //TEMPORARY, to be removed once the Windows package is understood: the
+    //bundled fallback cannot be reached on a machine that already has a preset
+    //file, so it has never run here.
+    qCWarning(plugin, "x-AMP diagnostic: configDir=%s userFile=%s exists=%d",
+              qPrintable(Qmmp::configDir()), qPrintable(presetPath()),
+              int(QFile::exists(presetPath())));
+    qCWarning(plugin, "x-AMP diagnostic: presets from %s, readable=%d, count=%d",
+              qPrintable(source), int(QFile::exists(source)), int(m_presets.size()));
     readPresets(autoPresetPath(), &m_autoPresets, &m_autoPresetNames);
     m_auto->setChecked(QSettings().value(QStringLiteral("XUi/eq_auto"), false).toBool());
 }

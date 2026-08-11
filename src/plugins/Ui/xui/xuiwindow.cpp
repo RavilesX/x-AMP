@@ -24,6 +24,7 @@
 #include <QScreen>
 #include <QSettings>
 #include <QWindow>
+#include <qmmp/qmmp.h>
 #include "xuitheme.h"
 #include "xuidock.h"
 #include "xuiwindow.h"
@@ -102,6 +103,10 @@ void XUiWindow::mousePressEvent(QMouseEvent *e)
     }
     if(!onHandle(e->pos()))
         return;
+
+    //TEMPORARY, to be removed once the Windows package is understood
+    qCWarning(plugin, "x-AMP diagnostic: press on handle, platform=%s, canSnap=%d",
+              qPrintable(QGuiApplication::platformName()), int(XUiDock::canSnap()));
 
     if(XUiDock::canSnap())
     {
