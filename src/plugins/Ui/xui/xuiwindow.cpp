@@ -54,7 +54,23 @@ bool XUiWindow::onHandle(const QPoint &pos) const
 {
     //the handle need not be a direct child -- a card's own header bar sits a
     //couple of levels down -- so map rather than compare geometries
-    return m_handle && m_handle->rect().contains(m_handle->mapFrom(this, pos));
+    if(!m_handle)
+        return false;
+
+    const QPoint local = m_handle->mapFrom(this, pos);
+    if(!m_handle->rect().contains(local))
+        return false;
+
+    //A press on a control inside the bar belongs to the control, not to the
+    //drag. Under X11 the omission went unnoticed, because the drag is tracked
+    //here and Qt still delivers the release to the widget; everywhere else the
+    //fallback is startSystemMove(), which hands the gesture to the window
+    //manager, and the release never arrives. That left every switch and button
+    //living in a header dead on Windows -- the equalizer's controls, the
+    //playlist's search field, and the main window's own menu and close.
+    //Decorative labels are marked transparent for mouse events, so the bar can
+    //still be dragged by its title.
+    return m_handle->childAt(local) == nullptr;
 }
 
 Qt::Edges XUiWindow::edgesAt(const QPoint &pos) const

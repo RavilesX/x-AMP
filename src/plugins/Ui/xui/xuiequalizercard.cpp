@@ -49,6 +49,9 @@ namespace
     QLabel *makeLabel(const QString &text, const QColor &color, qreal scale)
     {
         QLabel *label = new QLabel(text);
+        //decorative: the header is a drag handle, and a label that takes
+        //mouse events would be a dead patch in the middle of it
+        label->setAttribute(Qt::WA_TransparentForMouseEvents);
         QFont f = label->font();
         f.setPointSizeF(f.pointSizeF() * scale);
         label->setFont(f);

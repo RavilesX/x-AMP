@@ -73,6 +73,8 @@ QWidget *XUiPlaylistCard::buildHeader()
     layout->setSpacing(4);
 
     QLabel *title = new QLabel(tr("PLAYLIST"), header);
+    //decorative: this bar is the window's drag handle
+    title->setAttribute(Qt::WA_TransparentForMouseEvents);
     QFont f = title->font();
     f.setBold(true);
     f.setPointSizeF(f.pointSizeF() * 1.05);

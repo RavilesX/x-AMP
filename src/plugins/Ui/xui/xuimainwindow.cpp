@@ -167,6 +167,8 @@ QWidget *XUiMainWindow::buildTitleBar()
     //member because the colour is baked into its markup, so it has to be
     //rewritten when the accent changes.
     m_wordmark = new QLabel(bar);
+    //decorative: this bar is the window's drag handle
+    m_wordmark->setAttribute(Qt::WA_TransparentForMouseEvents);
     QFont f = m_wordmark->font();
     f.setPointSizeF(f.pointSizeF() * 1.25);
     f.setBold(true);
