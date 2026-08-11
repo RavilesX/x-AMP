@@ -55,6 +55,16 @@ public:
      */
     void moveWindow(QWidget *window, const QPoint &target);
 
+    /*!
+     * Places the docked companions against where the main window actually
+     * landed, which is not always where it was sent: a window manager holds
+     * ordinary windows clear of panels and struts and leaves Qt::Tool ones
+     * alone, and Qt's availableGeometry() does not always report those areas,
+     * so the rule cannot be predicted here. Called from the window's own move
+     * event, which is the moment the real position is known.
+     */
+    void carryDocked(QWidget *window, const QPoint &landed);
+
     /*! Records which windows are currently touching the main one. */
     void rememberDocked();
 

@@ -253,16 +253,27 @@ void XUiDock::moveWindow(QWidget *window, const QPoint &target)
     const QRect stack = stackGeometry(window, pos);
     pos += fitToScreen(stack, window) - stack.topLeft();
 
-    if(window == m_main)
-    {
-        //carry the docked companions, keeping the offset they had when the
-        //drag started so the stack holds its shape
-        for(int i = 0; i < m_windows.size(); ++i)
-        {
-            if(!m_docked.at(i) || m_windows.at(i) == m_main)
-                continue;
-            m_windows.at(i)->move(pos + m_offsets.at(i));
-        }
-    }
+    //The companions are not placed here. Sending the main window somewhere is
+    //not the same as it arriving: the window manager holds an ordinary window
+    //clear of a panel while leaving Qt::Tool windows alone, so placing them
+    //against the position asked for pinned the player at the panel while they
+    //carried on past it, and a stack released out of contact is no longer
+    //docked. carryDocked() runs from the window's move event instead, where
+    //the position is the one it really has.
     window->move(pos);
+}
+
+void XUiDock::carryDocked(QWidget *window, const QPoint &landed)
+{
+    if(window != m_main)
+        return;
+
+    //keeping the offset each had when the drag started, so the stack holds
+    //its shape
+    for(int i = 0; i < m_windows.size(); ++i)
+    {
+        if(!m_docked.at(i) || m_windows.at(i) == m_main)
+            continue;
+        m_windows.at(i)->move(landed + m_offsets.at(i));
+    }
 }

@@ -63,6 +63,9 @@ protected:
     void mouseMoveEvent(QMouseEvent *) override;
     void mouseReleaseEvent(QMouseEvent *) override;
     void leaveEvent(QEvent *) override;
+    //carries the docked companions to wherever this window really
+    //ended up, which the window manager has the last word on
+    void moveEvent(QMoveEvent *) override;
     void closeEvent(QCloseEvent *) override;
 
 private:

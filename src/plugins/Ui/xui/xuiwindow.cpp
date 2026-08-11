@@ -20,6 +20,7 @@
 #include <QCloseEvent>
 #include <QGuiApplication>
 #include <QMouseEvent>
+#include <QMoveEvent>
 #include <QPainter>
 #include <QScreen>
 #include <QSettings>
@@ -144,6 +145,16 @@ void XUiWindow::mouseMoveEvent(QMouseEvent *e)
 void XUiWindow::mouseReleaseEvent(QMouseEvent *)
 {
     m_dragging = false;
+}
+
+void XUiWindow::moveEvent(QMoveEvent *e)
+{
+    QWidget::moveEvent(e);
+    //Only while this window is being dragged: it also moves when its geometry
+    //is restored at startup and when the user drags it by other means, and the
+    //stack must not be dragged along by either.
+    if(m_dragging)
+        XUiDock::instance()->carryDocked(this, e->pos());
 }
 
 void XUiWindow::leaveEvent(QEvent *)
