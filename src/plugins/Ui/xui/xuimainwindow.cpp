@@ -256,6 +256,22 @@ void XUiMainWindow::showPreferences()
             m_playlistCard, &XUiPlaylistCard::reloadBackground);
     //the other pages carry icons, so ours would sit oddly without one
     dialog.addPage(tr("Interface"), page, QIcon(QStringLiteral(":/xui/interface.png")));
+
+    //ConfigDialog restores its size and never its position, so Qt centres it
+    //on this window. It is nearly twice the height of the player, which put
+    //its title bar above the top of the screen whenever the player sat near
+    //it -- and a dialog whose title bar is off screen cannot be moved back.
+    //Anchoring it to this window's own corner keeps it where the eye already
+    //is; the clamp is for the opposite case, a player near the bottom right.
+    const QScreen *display = screen() ? screen() : QGuiApplication::primaryScreen();
+    if(display)
+    {
+        const QRect area = display->availableGeometry();
+        const int x = qMin(pos().x(), qMax(area.left(), area.right() + 1 - dialog.width()));
+        const int y = qMin(pos().y(), qMax(area.top(), area.bottom() + 1 - dialog.height()));
+        dialog.move(qMax(area.left(), x), qMax(area.top(), y));
+    }
+
     if(dialog.exec() == QDialog::Accepted)
     {
         page->writeSettings();
