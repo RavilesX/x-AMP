@@ -369,6 +369,15 @@ jobs:
             exit 1
           fi
 
+          # The same guard the Linux job applies, which never sees the targets
+          # that only exist here -- and that is exactly how the console build
+          # shipped as qmmp-cli.exe rather than xamp-cli.exe.
+          strays=$(find stage -type f | grep -E '/qmmp[^/]*$' | grep -v -- '-xamp' || true)
+          if [ -n "$strays" ]; then
+            echo "::error::Unsuffixed files that would collide with upstream qmmp:%0A$(echo "$strays" | awk '{printf "%s%%0A", $0}')"
+            exit 1
+          fi
+
           echo "Staged $(find stage -type f | wc -l) files, $(du -sm stage | cut -f1) MB"
           echo "x-AMP plugins: $(printf '%s\n' "$plugins" | grep -c . || true)"
           echo "Input plugins: $(find stage/lib -path '*Input*' -name '*.dll' | wc -l)"

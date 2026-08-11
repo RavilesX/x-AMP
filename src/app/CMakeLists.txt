@@ -21,8 +21,13 @@ if(WIN32)
     target_compile_definitions(qmmp PRIVATE QMMP_NO_CLI)
     set_target_properties(qmmp PROPERTIES WIN32_EXECUTABLE TRUE)    
     #cli version
+    #x-AMP: named after the fork like everything else the user sees. Upstream
+    #leaves this one as qmmp-cli, and it shipped that way here for a while:
+    #the check that catches unsuffixed names ran only on the Linux job, which
+    #never builds this target.
     add_executable(qmmp-cli ${app_SRCS})
     target_link_libraries(qmmp-cli PRIVATE Qt6::Widgets Qt6::Network libqmmp libqmmpui)
+    set_target_properties(qmmp-cli PROPERTIES OUTPUT_NAME ${APP_BINARY_NAME}-cli)
     install(TARGETS qmmp-cli DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif(WIN32)
 
