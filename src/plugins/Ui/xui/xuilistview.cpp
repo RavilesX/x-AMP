@@ -67,6 +67,10 @@ XUiListView::XUiListView(PlayListManager *manager, QWidget *parent)
 
     connect(m_manager, &PlayListManager::selectedPlayListChanged,
             this, &XUiListView::setModel);
+    //the playing mark moves from one playlist to another without either of
+    //them changing, so the view has to hear about the switch itself
+    connect(m_manager, &PlayListManager::currentPlayListChanged,
+            this, qOverload<>(&QWidget::update));
     setModel(m_manager->selectedPlayList());
 }
 
@@ -573,7 +577,11 @@ void XUiListView::paintEvent(QPaintEvent *)
 
     const int first = m_scrollBar->value();
     const int last = qMin(m_rows.size(), first + visibleRows() + 1);
-    const int current = m_model ? m_model->currentIndex() : -1;
+    //Every playlist keeps a current track of its own, the first one until
+    //something else is played, so marking it here put an accented row in each
+    //of them. Only the playlist the player is actually on gets the mark.
+    const int current = m_model && m_manager->currentPlayList() == m_model
+                        ? m_model->currentIndex() : -1;
     const int textWidth = width() - 2 * PADDING - SCROLLBAR_WIDTH - 8;
 
     QFontMetrics metrics(font());
