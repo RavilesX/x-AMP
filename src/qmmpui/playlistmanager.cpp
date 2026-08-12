@@ -27,6 +27,7 @@
 #include <QSaveFile>
 #include <QMap>
 #include "qcoreapplication.h"
+#include "playlistqueue_p.h"
 #include "qmmpuisettings.h"
 #include "playlistmanager.h"
 
@@ -255,7 +256,38 @@ PlayListManager::PlayListManager(QObject *parent) :
 {
     Q_D(PlayListManager);
     connect(d->timer, &QTimer::timeout, this, [d] { d->writePlayLists(); });
+    //the queue reaching a track of another playlist is what makes it current
+    connect(PlayListQueue::instance(), &PlayListQueue::activationRequested,
+            this, [this](PlayListModel *model) {
+        selectPlayList(model);
+        activatePlayList(model);
+    });
     d->readPlayLists(); //read playlists
+}
+
+QList<PlayListTrack *> PlayListManager::queuedTracks() const
+{
+    return PlayListQueue::instance()->tracks();
+}
+
+PlayListModel *PlayListManager::queuedPlayList(const PlayListTrack *track) const
+{
+    return PlayListQueue::instance()->owner(track);
+}
+
+bool PlayListManager::isEmptyQueue() const
+{
+    return PlayListQueue::instance()->isEmpty();
+}
+
+int PlayListManager::queueSize() const
+{
+    return PlayListQueue::instance()->count();
+}
+
+void PlayListManager::reorderQueue(const QList<PlayListTrack *> &tracks)
+{
+    PlayListQueue::instance()->reorder(tracks);
 }
 
 PlayListManager::~PlayListManager()
@@ -403,6 +435,9 @@ void PlayListManager::removePlayList(PlayListModel *model)
         emit selectedPlayListChanged(d->selectedPlayList, model);
     }
     d->models.removeAt(i);
+    //the model outlives this call, so its share of the queue is dropped here
+    //rather than waiting for the container to be destroyed with it
+    PlayListQueue::instance()->removeAll(model);
     model->deleteLater();
     emit playListRemoved(i);
     emit playListsChanged();

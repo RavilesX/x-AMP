@@ -123,7 +123,13 @@ void GroupedContainer::replaceTracks(const QList<PlayListTrack *> &tracks)
         g->d_ptr->m_title0.clear();
         g->d_ptr->m_title1.clear();
     }
-    clear();
+    //clear() would empty this playlist's part of the queue as well. That
+    //queue is shared by every playlist now, so its entries hold places in a
+    //global order, and the caller puts the surviving tracks back into them.
+    while(!m_groups.isEmpty())
+        delete m_groups.takeFirst();
+    m_tracks.clear();
+    m_lines.clear();
     addTracks(tracks);
 }
 

@@ -488,6 +488,76 @@
     </message>
 </context>
 <context>
+    <name>XUiQueueDialog</name>
+    <message>
+        <location filename="../xuiqueuedialog.cpp" line="87"/>
+        <location filename="../xuiqueuedialog.cpp" line="98"/>
+        <source>Queue</source>
+        <translation>Cola</translation>
+    </message>
+    <message>
+        <location filename="../xuiqueuedialog.cpp" line="117"/>
+        <source>#</source>
+        <translation>Nº</translation>
+    </message>
+    <message>
+        <location filename="../xuiqueuedialog.cpp" line="117"/>
+        <source>File</source>
+        <translation>Archivo</translation>
+    </message>
+    <message>
+        <location filename="../xuiqueuedialog.cpp" line="117"/>
+        <source>Playlist</source>
+        <translation>Lista de reproducción</translation>
+    </message>
+    <message>
+        <location filename="../xuiqueuedialog.cpp" line="117"/>
+        <source>Duration</source>
+        <translation>Duración</translation>
+    </message>
+    <message>
+        <location filename="../xuiqueuedialog.cpp" line="146"/>
+        <source>Total time</source>
+        <translation>Tiempo total</translation>
+    </message>
+    <message>
+        <location filename="../xuiqueuedialog.cpp" line="153"/>
+        <source>Clear Queue</source>
+        <translation>Limpiar cola</translation>
+    </message>
+    <message>
+        <location filename="../xuiqueuedialog.cpp" line="154"/>
+        <source>Save as Playlist...</source>
+        <translation>Guardar como lista...</translation>
+    </message>
+    <message>
+        <location filename="../xuiqueuedialog.cpp" line="155"/>
+        <source>Add to Playlist</source>
+        <translation>Agregar a lista</translation>
+    </message>
+    <message>
+        <location filename="../xuiqueuedialog.cpp" line="161"/>
+        <source>Close</source>
+        <translation>Cerrar</translation>
+    </message>
+    <message>
+        <location filename="../xuiqueuedialog.cpp" line="400"/>
+        <source>New Playlist</source>
+        <translation>Nueva lista</translation>
+    </message>
+    <message>
+        <location filename="../xuiqueuedialog.cpp" line="401"/>
+        <source>Playlist name:</source>
+        <translation>Nombre de la lista:</translation>
+    </message>
+    <message>
+        <location filename="../xuiqueuedialog.cpp" line="405"/>
+        <location filename="../xuiqueuedialog.cpp" line="411"/>
+        <source>new playlist</source>
+        <translation>nueva lista</translation>
+    </message>
+</context>
+<context>
     <name>XUiSettings</name>
     <message>
         <location filename="../xuisettings.cpp" line="46"/>

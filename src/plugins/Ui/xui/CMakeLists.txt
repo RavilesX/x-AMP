@@ -11,6 +11,7 @@ set(libxui_SRCS
     xuimainwindow.cpp
     xuiplayercard.cpp
     xuiplaylistcard.cpp
+    xuiqueuedialog.cpp
     xuisettings.cpp
     xuistyle.cpp
     xuivisualization.cpp

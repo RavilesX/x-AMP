@@ -30,6 +30,7 @@ private:
     friend class PlayListContainer;
     friend class NormalContainer;
     friend class GroupedContainer;
+    friend class PlayListQueue;
 };
 
 #endif // PLAYLISTTRACK_P_H

@@ -266,6 +266,34 @@ public slots:
      * Rebuilds groups for all playlists.
      */
     void rebuildGroups();
+    /*!
+     * Returns the play queue, in playing order.
+     *
+     * The queue is shared by every playlist: a track queued in one of them
+     * is played in its turn whatever playlist is running at the time, and
+     * the number shown beside a queued track is its place in this list.
+     */
+    QList<PlayListTrack *> queuedTracks() const;
+    /*!
+     * Returns the playlist \b track is queued from, or \b nullptr if it is
+     * not in the queue.
+     */
+    PlayListModel *queuedPlayList(const PlayListTrack *track) const;
+    /*!
+     * Returns \b true if nothing is queued, in any playlist.
+     */
+    bool isEmptyQueue() const;
+    /*!
+     * Returns the number of queued tracks, across all playlists.
+     */
+    int queueSize() const;
+    /*!
+     * Puts the queue into the order of \b tracks.
+     *
+     * \b tracks must hold exactly what is queued already, in the wanted
+     * order; anything else leaves the queue as it was.
+     */
+    void reorderQueue(const QList<PlayListTrack *> &tracks);
 
 private:
     PlayListManagerPrivate *d_ptr;

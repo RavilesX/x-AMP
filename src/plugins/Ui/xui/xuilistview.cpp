@@ -37,6 +37,7 @@
 #include <qmmpui/playlisttrack.h>
 #include "xuitheme.h"
 #include "xuiicons.h"
+#include "xuiqueuedialog.h"
 #include "xuilistview.h"
 
 namespace
@@ -429,12 +430,14 @@ void XUiListView::addQueueMenu(QMenu *menu)
     connect(first, &QAction::triggered, this, &XUiListView::queueSelectedFirst);
 
     QAction *clear = queueMenu->addAction(tr("&Clear Queue"));
-    clear->setEnabled(!m_model->isEmptyQueue());
+    clear->setEnabled(!m_manager->isEmptyQueue()); //one queue for every playlist
     connect(clear, &QAction::triggered, m_model, &PlayListModel::clearQueue);
 
     queueMenu->addSeparator();
-    QAction *manage = queueMenu->addAction(tr("&Manage..."));
-    manage->setEnabled(false); //the queue manager itself is still to be written
+    connect(queueMenu->addAction(tr("&Manage...")), &QAction::triggered, this, [this] {
+        XUiQueueDialog dialog(m_manager, window());
+        dialog.exec();
+    });
 }
 
 void XUiListView::queueSelectedFirst()
@@ -443,21 +446,24 @@ void XUiListView::queueSelectedFirst()
     if(selected.isEmpty())
         return;
 
-    //PlayListModel only ever appends, so the queue is rebuilt with the
-    //selection in front of whatever was already waiting. Note that emptying
-    //it also drops a pending 'stop after track'.
+    //queueing appends, so whatever is missing is queued first and the whole
+    //queue -- which spans every playlist -- is then put into the wanted order
+    QList<PlayListTrack *> missing;
+    for(PlayListTrack *track : selected)
+    {
+        if(!track->isQueued())
+            missing << track;
+    }
+    toggleQueued(missing);
+
     QList<PlayListTrack *> order = selected;
-    const QList<PlayListTrack *> queued = m_model->queuedTracks();
+    const QList<PlayListTrack *> queued = m_manager->queuedTracks();
     for(PlayListTrack *track : queued)
     {
         if(!order.contains(track))
             order << track;
     }
-
-    m_model->blockSignals(true);
-    m_model->clearQueue();
-    m_model->blockSignals(false);
-    toggleQueued(order); //nothing is queued any more, so this enqueues in order
+    m_manager->reorderQueue(order);
 }
 
 void XUiListView::toggleQueued(const QList<PlayListTrack *> &tracks)

@@ -19,51 +19,42 @@
  ***************************************************************************/
 
 #include "playlisttrack_p.h"
+#include "playlistqueue_p.h"
 #include "playlistcontainer_p.h"
 
-PlayListTrack *PlayListContainer::dequeue()
+//The queue is not the container's own any more: one queue is shared by
+//every playlist (see PlayListQueue). These stay as they were from the
+//container's point of view -- they only ever touch its own tracks -- so
+//the callers scattered through the containers need no changes.
+
+PlayListContainer::~PlayListContainer()
 {
-    PlayListTrack *t = m_queue.dequeue();
-    t->d_ptr->queuedIndex = -1;
-    updateQueueIndexes();
-    return t;
+    PlayListQueue::instance()->setOwner(this, nullptr);
 }
 
 void PlayListContainer::enqueue(PlayListTrack *track)
 {
-    m_queue.enqueue(track);
-    updateQueueIndexes();
+    PlayListQueue::instance()->enqueue(this, track);
 }
 
 void PlayListContainer::removeFromQueue(PlayListTrack *track)
 {
-    if(track->isQueued())
-    {
-        m_queue.removeAll(track);
-        track->d_ptr->queuedIndex = -1;
-        updateQueueIndexes();
-    }
+    PlayListQueue::instance()->remove(track);
 }
 
 void PlayListContainer::clearQueue()
 {
-    for(int i = 0; i < m_queue.size(); ++i)
-        m_queue[i]->d_ptr->queuedIndex = -1;
-
-    m_queue.clear();
+    PlayListQueue::instance()->removeAll(this);
 }
 
 void PlayListContainer::restoreQueue(const QList<PlayListTrack *> &tracks)
 {
-    m_queue.clear();
-    for(PlayListTrack *t : std::as_const(tracks))
-        m_queue.enqueue(t);
-    updateQueueIndexes();
+    PlayListQueue::instance()->restore(this, tracks);
 }
 
 QList<PlayListTrack *> PlayListContainer::queuedTracks() const
 {
-    return m_queue;
+    return PlayListQueue::instance()->tracks(this);
 }
 
 int PlayListContainer::linesPerGroup() const
@@ -83,10 +74,4 @@ void PlayListContainer::swapTrackNumbers(QList<PlayListTrack *> *container, int 
     int number = track1->trackIndex();
     track1->d_ptr->trackIndex = track2->d_ptr->trackIndex;
     track2->d_ptr->trackIndex = number;
-}
-
-void PlayListContainer::updateQueueIndexes()
-{
-    for(int i = 0; i < m_queue.size(); ++i)
-        m_queue[i]->d_ptr->queuedIndex = i;
 }

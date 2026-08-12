@@ -37,7 +37,7 @@ class PlayListContainer
 {
 public:
     PlayListContainer(){}
-    virtual ~PlayListContainer(){}
+    virtual ~PlayListContainer();
 
     virtual void addTrack(PlayListTrack *track) = 0;
     virtual void addTracks(const QList<PlayListTrack *> &tracks) = 0;
@@ -63,7 +63,6 @@ public:
     virtual void reverseList() = 0;
     virtual void randomizeList() = 0;
 
-    PlayListTrack *dequeue();
     void enqueue(PlayListTrack *track);
     void removeFromQueue(PlayListTrack *track);
     void clearQueue();
@@ -83,8 +82,6 @@ protected:
     void swapTrackNumbers(QList<PlayListTrack *> *container, int index1, int index2);
 
 private:
-    void updateQueueIndexes();
-    QQueue<PlayListTrack *> m_queue; /*!< Songs in play queue. */
     int m_linesPerGroup = 1;
 };
 

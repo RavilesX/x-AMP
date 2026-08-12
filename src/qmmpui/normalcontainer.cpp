@@ -65,7 +65,9 @@ int NormalContainer::insertTrack(int index, PlayListTrack *track)
 
 void NormalContainer::replaceTracks(const QList<PlayListTrack *> &tracks)
 {
-    clearQueue();
+    //The queue is not emptied here any more. It is shared by every playlist
+    //now, so these entries hold places in a global order, and the caller
+    //puts the tracks that survived back into them straight after.
     m_tracks.clear();
     addTracks(tracks);
 }

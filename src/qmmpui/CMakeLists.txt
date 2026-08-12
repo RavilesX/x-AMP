@@ -26,6 +26,7 @@ set(libqmmpui_SRCS
     playlistgroup.cpp
     playlisttrack.cpp
     playlistcontainer.cpp
+    playlistqueue.cpp
     normalcontainer.cpp
     groupedcontainer.cpp
     mediaplayer.cpp

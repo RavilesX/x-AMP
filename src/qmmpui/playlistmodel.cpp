@@ -25,6 +25,7 @@
 #include "playlistparser.h"
 #include "playlistformat.h"
 #include "playlistcontainer_p.h"
+#include "playlistqueue_p.h"
 #include "groupedcontainer_p.h"
 #include "normalcontainer_p.h"
 #include "coverloader_p.h"
@@ -204,6 +205,7 @@ public:
         newContainer->addTracks(container->takeAllTracks());
         delete container;
         container = newContainer;
+        PlayListQueue::instance()->setOwner(container, q_ptr);
         if(!container->isEmpty())
             currentTrackIndex = container->indexOf(currentTrack);
         emit q_ptr->listChanged(PlayListModel::STRUCTURE);
@@ -483,6 +485,12 @@ PlayListModel::PlayListModel(const QString &name, QObject *parent) :
     connect(d->coverLoder, &CoverLoader::ready, this, [d](const QString &path, const QImage &img) { d->setCover(path, img); });
     connect(d->task, &PlayListTask::finished, this, [d]{ d->onTaskFinished(); });
     connect(d->task, &PlayListTask::finished, this, [d]{ d->startCoverLoader(); });
+    //the queue is shared by every playlist, so a change anywhere in it moves
+    //the numbers shown by this one as well
+    PlayListQueue::instance()->setOwner(d->container, this);
+    connect(PlayListQueue::instance(), &PlayListQueue::changed, this, [this] {
+        emit listChanged(QUEUE);
+    });
 }
 
 PlayListModel::~PlayListModel()
@@ -714,8 +722,9 @@ PlayListTrack *PlayListModel::nextTrack() const
         return nullptr;
     if(d->stopTrack && d->stopTrack == currentTrack())
         return nullptr;
-    if(!isEmptyQueue())
-        return d->container->queuedTracks().constFirst();
+    //the head of the queue comes first whatever playlist it belongs to
+    if(PlayListTrack *queued = PlayListQueue::instance()->head())
+        return queued;
     int index = d->playState->nextIndex();
     if(index < 0 || (index + 1 > d->container->trackCount()))
         return nullptr;
@@ -784,10 +793,22 @@ bool PlayListModel::next()
         emit listChanged(STOP_AFTER);
         return false;
     }
-    if(!isEmptyQueue())
+    PlayListQueue *queue = PlayListQueue::instance();
+    if(!queue->isEmpty())
     {
-        d->currentTrack = d->container->dequeue();
-        d->currentTrackIndex = d->container->indexOf(d->currentTrack);
+        //the queue spans every playlist, so the track waiting at its head may
+        //well belong to another one: that playlist is made the current one
+        //and takes over from here
+        PlayListModel *owner = queue->headOwner();
+        PlayListTrack *track = queue->takeHead();
+        if(owner && owner != this)
+        {
+            owner->setCurrent(track);
+            emit queue->activationRequested(owner);
+            return true;
+        }
+        d->currentTrack = track;
+        d->currentTrackIndex = d->container->indexOf(track);
         emit listChanged(CURRENT | QUEUE);
         return true;
     }
@@ -1357,7 +1378,9 @@ void PlayListModel::refresh()
 void PlayListModel::clearQueue()
 {
     Q_D(PlayListModel);
-    d->container->clearQueue();
+    //one queue for all the playlists, so clearing it clears the whole thing
+    //rather than this playlist's share of it
+    PlayListQueue::instance()->clear();
     d->stopTrack = nullptr;
     emit listChanged(QUEUE);
 }
