@@ -101,6 +101,13 @@ class XUiSlider : public QWidget
 public:
     explicit XUiSlider(QWidget *parent = nullptr);
 
+    /*!
+     * Distance from either edge of the widget to the end of the rail: the
+     * track is inset so the grip stays inside at 0% and 100%. Anything meant
+     * to line up with the rail's ends has to allow for it.
+     */
+    static constexpr int RailInset = 6;
+
     void setMaximum(qint64 maximum);
     void setValue(qint64 value);
     qint64 value() const { return m_value; }
@@ -236,6 +243,91 @@ private:
     QString m_text;
     XUiIcons::Icon m_icon = XUiIcons::Menu;
     bool m_useIcon = false;
+    bool m_hovered = false;
+    bool m_pressed = false;
+};
+
+/*!
+ * Pill-shaped tab carrying one playlist's name, for the row in the playlist
+ * card's header. Checked when its playlist is the selected one.
+ */
+class XUiTabButton : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit XUiTabButton(const QString &text, QWidget *parent = nullptr);
+
+    void setChecked(bool checked);
+    bool isChecked() const { return m_checked; }
+    /*! Draws the accent dot marking the playlist being played from. */
+    void setPlaying(bool playing);
+
+    QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
+
+signals:
+    void clicked();
+    /*! Right button, for the caller's own context menu. */
+    void menuRequested();
+
+protected:
+    void paintEvent(QPaintEvent *) override;
+    //see XUiToggle: without these the release goes to the window's drag handler
+    void mousePressEvent(QMouseEvent *) override;
+    void mouseReleaseEvent(QMouseEvent *) override;
+    void enterEvent(QEnterEvent *) override;
+    void leaveEvent(QEvent *) override;
+    void changeEvent(QEvent *) override;
+
+private:
+    QString m_text;
+    bool m_checked = false;
+    bool m_playing = false;
+    bool m_hovered = false;
+    bool m_pressed = false;
+};
+
+/*!
+ * A word that answers the pointer: no frame, no fill, drawn like the small
+ * capitals it sits among, lit with the accent while it is on. Used for the
+ * volume shortcuts above the slider.
+ */
+class XUiTextToggle : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit XUiTextToggle(const QString &text, QWidget *parent = nullptr);
+
+    /*! Sets the state without emitting toggled(). */
+    void setChecked(bool checked);
+    bool isChecked() const { return m_checked; }
+    /*!
+     * Which side of its own box the word is drawn against. The box carries a
+     * pixel or two of slack past the text, so the word only lands exactly on
+     * an edge it is aligned to. Left by default.
+     */
+    void setAlignment(Qt::Alignment alignment);
+
+    QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
+
+signals:
+    /*! Emitted on a click, with the state the press has just produced. */
+    void toggled(bool checked);
+
+protected:
+    void paintEvent(QPaintEvent *) override;
+    //see XUiToggle: without these the release goes to the window's drag handler
+    void mousePressEvent(QMouseEvent *) override;
+    void mouseReleaseEvent(QMouseEvent *) override;
+    void enterEvent(QEnterEvent *) override;
+    void leaveEvent(QEvent *) override;
+    void changeEvent(QEvent *) override;
+
+private:
+    QString m_text;
+    Qt::Alignment m_alignment = Qt::AlignLeft;
+    bool m_checked = false;
     bool m_hovered = false;
     bool m_pressed = false;
 };

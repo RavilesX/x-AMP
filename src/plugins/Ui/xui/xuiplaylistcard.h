@@ -24,7 +24,9 @@
 #include <QPixmap>
 #include <QWidget>
 
+class QHBoxLayout;
 class QLineEdit;
+class QScrollArea;
 class UiHelper;
 class MediaPlayer;
 class PlayListManager;
@@ -63,6 +65,8 @@ signals:
 protected:
     void paintEvent(QPaintEvent *) override;
     void resizeEvent(QResizeEvent *) override;
+    /*! Turns a wheel over the header into horizontal travel of the tab row. */
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
 private slots:
     void showAddMenu();
@@ -74,6 +78,21 @@ private:
     QWidget *buildHeader();
     QWidget *m_header = nullptr;
     QWidget *buildFooter();
+    QWidget *buildTabs();
+
+    /*! Drops every tab and builds the row again from the manager's list. */
+    void rebuildTabs();
+    /*! Moves the checked mark and the playing dot without rebuilding. */
+    void syncTabs();
+    /*! Rename/remove/new for the playlist behind the tab at \b index. */
+    void showTabMenu(int index);
+    /*! Places the fades over the cut edges, hiding each when nothing is cut. */
+    void updateTabFade();
+
+    QScrollArea *m_tabArea = nullptr;
+    QWidget *m_tabFadeLeft = nullptr;
+    QWidget *m_tabFadeRight = nullptr;
+    QHBoxLayout *m_tabLayout = nullptr;
 
     /*!
      * Renders m_backdrop at the current size as the engraving drawn behind

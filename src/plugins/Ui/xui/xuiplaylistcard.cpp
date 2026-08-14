@@ -24,8 +24,11 @@
 #include <QMenu>
 #include <QPainter>
 #include <QPainterPath>
+#include <QScrollArea>
+#include <QScrollBar>
 #include <QSettings>
 #include <QVBoxLayout>
+#include <QWheelEvent>
 #include <qmmpui/mediaplayer.h>
 #include <qmmpui/playlistmanager.h>
 #include <qmmpui/playlistmodel.h>
@@ -35,6 +38,42 @@
 #include "xuilistview.h"
 #include "xuisettings.h"
 #include "xuiplaylistcard.h"
+
+namespace
+{
+    /*!
+     * The strip of tabs is cut wherever the header runs out of room. This
+     * sits over that cut and fades it into the card, so a clipped name reads
+     * as "there is more this way" instead of as a drawing fault.
+     */
+    class TabFade : public QWidget //no signals of its own, so no Q_OBJECT
+    {
+    public:
+        TabFade(Qt::Edge side, QWidget *parent) : QWidget(parent), m_side(side)
+        {
+            setAttribute(Qt::WA_TransparentForMouseEvents);
+        }
+
+        static constexpr int Width = 26;
+
+    protected:
+        void paintEvent(QPaintEvent *) override
+        {
+            //The card's gradient has barely moved this near its top, so the
+            //header's own colour is CardTop for all the eye can tell.
+            QColor clear = XUi::CardTop;
+            clear.setAlpha(0);
+            QLinearGradient g(0, 0, width(), 0);
+            const bool right = m_side == Qt::RightEdge;
+            g.setColorAt(0.0, right ? clear : XUi::CardTop);
+            g.setColorAt(1.0, right ? XUi::CardTop : clear);
+            QPainter(this).fillRect(rect(), g);
+        }
+
+    private:
+        Qt::Edge m_side;
+    };
+}
 
 XUiPlaylistCard::XUiPlaylistCard(QWidget *parent) : QWidget(parent)
 {
@@ -83,7 +122,13 @@ QWidget *XUiPlaylistCard::buildHeader()
     QPalette pal = title->palette();
     pal.setColor(QPalette::WindowText, XUi::Text);
     title->setPalette(pal);
+    //Fixed, so that a long row of tabs is the thing that gives way when the
+    //card is narrow. Left to itself the label shrinks to nothing and the
+    //header loses the one word saying what the card is.
+    title->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
     layout->addWidget(title);
+
+    header->installEventFilter(this);
 
     m_search = new QLineEdit(header);
     m_search->setPlaceholderText(tr("Search tracks..."));
@@ -94,6 +139,11 @@ QWidget *XUiPlaylistCard::buildHeader()
     });
     layout->addWidget(m_search, 1);
     layout->addStretch(1);
+
+    //One tab per playlist, gathered at the far end of the bar beside the two
+    //glyphs: the footer's Playlists menu still lists them all, but switching
+    //should not cost a menu.
+    layout->addWidget(buildTabs());
 
     //adding and playlists live in the footer; only search is here, since it
     //acts on this header's own field
@@ -108,6 +158,206 @@ QWidget *XUiPlaylistCard::buildHeader()
     layout->addWidget(search);
     layout->addWidget(close);
     return header;
+}
+
+QWidget *XUiPlaylistCard::buildTabs()
+{
+    QWidget *strip = new QWidget(this);
+    m_tabLayout = new QHBoxLayout(strip);
+    m_tabLayout->setContentsMargins(0, 0, 0, 0);
+    m_tabLayout->setSpacing(5);
+
+    //Nothing here is marked transparent for mouse events, tempting as that is
+    //to keep the whole header draggable: the attribute takes the widget's
+    //children down with it, and the tabs would stop answering the pointer.
+    //The row is only as wide as its tabs, so the rest of the bar still drags.
+    m_tabArea = new QScrollArea(this);
+    m_tabArea->setWidget(strip);
+    m_tabArea->setWidgetResizable(true);
+    m_tabArea->setFrameShape(QFrame::NoFrame);
+    m_tabArea->setFixedHeight(28);
+    m_tabArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_tabArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_tabArea->viewport()->setAutoFillBackground(false);
+    //A resizable scroll area passes its widget's minimum width on as its own,
+    //which here is the whole row of tabs -- enough to push the title out of a
+    //narrow header. The row is what should give way, so it is allowed to.
+    m_tabArea->setMinimumWidth(0);
+    //Preferred rather than the scroll area's usual Expanding: an expanding row
+    //eats the header's stretch and ends up hard against the title, when what
+    //is wanted is the tabs gathered at the far end beside the glyphs.
+    m_tabArea->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    m_tabArea->setStyleSheet(u"QScrollArea, QScrollArea > QWidget > QWidget"
+                              " { background: transparent; }"_s);
+
+    //Parented to the viewport, not to the scroll area: the area restacks its
+    //viewport above its own children whenever it lays itself out, which left
+    //the fade drawn and then covered over.
+    m_tabFadeLeft = new TabFade(Qt::LeftEdge, m_tabArea->viewport());
+    m_tabFadeRight = new TabFade(Qt::RightEdge, m_tabArea->viewport());
+    m_tabFadeLeft->hide(); //each is wanted only once that edge cuts a tab
+    m_tabFadeRight->hide();
+    m_tabArea->installEventFilter(this);
+    m_tabArea->viewport()->installEventFilter(this);
+    connect(m_tabArea->horizontalScrollBar(), &QScrollBar::valueChanged,
+            this, [this] { updateTabFade(); });
+    connect(m_tabArea->horizontalScrollBar(), &QScrollBar::rangeChanged,
+            this, [this] { updateTabFade(); });
+
+    connect(m_manager, &PlayListManager::playListsChanged,
+            this, &XUiPlaylistCard::rebuildTabs);
+    connect(m_manager, &PlayListManager::selectedPlayListChanged,
+            this, &XUiPlaylistCard::syncTabs);
+    connect(m_manager, &PlayListManager::currentPlayListChanged,
+            this, &XUiPlaylistCard::syncTabs);
+    rebuildTabs();
+    return m_tabArea;
+}
+
+void XUiPlaylistCard::rebuildTabs()
+{
+    while(QLayoutItem *item = m_tabLayout->takeAt(0))
+    {
+        //deleteLater rather than delete: a rebuild can be set off from inside
+        //a tab's own event handler -- renaming one from its context menu does
+        //exactly that -- and freeing the widget under its handler is a crash.
+        //The item is null for the trailing stretch, which is fine.
+        if(QWidget *old = item->widget())
+        {
+            old->hide();
+            old->deleteLater();
+        }
+        delete item;
+    }
+
+    const QStringList names = m_manager->playListNames();
+    int wanted = 0;
+    for(int i = 0; i < names.size(); ++i)
+    {
+        XUiTabButton *tab = new XUiTabButton(names.at(i), m_tabArea->widget());
+        wanted += tab->sizeHint().width() + (i ? m_tabLayout->spacing() : 0);
+        connect(tab, &XUiTabButton::clicked, this, [this, i] {
+            m_manager->selectPlayListIndex(i);
+        });
+        connect(tab, &XUiTabButton::menuRequested, this, [this, i] {
+            showTabMenu(i);
+        });
+        m_tabLayout->addWidget(tab);
+        //shown here rather than left to the event loop: a hidden widget is
+        //nothing to the layout, so the row would measure as empty and the new
+        //tab would have no geometry to be scrolled to
+        tab->show();
+    }
+    //Right-aligned: the strip is stretched to the viewport whenever the tabs
+    //do not fill it, and the leading stretch keeps them against its far end
+    //instead of spread across the width.
+    m_tabLayout->insertStretch(0, 1);
+
+    //As wide as the tabs need and no wider, so the rest of the header is left
+    //for the title and for dragging the window. The width is added up from
+    //the tabs themselves rather than asked of the layout: a tab built here is
+    //not shown until the event loop gets round to it, and until then the
+    //layout counts it as empty -- which capped the row at nothing at all on
+    //every rebuild after the first.
+    m_tabArea->setMaximumWidth(wanted);
+    //the cap above changes how much of the header the row gets, and what is
+    //visible of it is what decides where scrolling has to land
+    if(m_header && m_header->layout())
+        m_header->layout()->activate();
+    updateTabFade();
+    syncTabs();
+    //Scrolling to the selected tab needs it to have a geometry, and a tab
+    //built here has none until the layout has run: a playlist created while
+    //others are already there was left off the end of the row, out of sight.
+    QMetaObject::invokeMethod(this, &XUiPlaylistCard::syncTabs, Qt::QueuedConnection);
+}
+
+void XUiPlaylistCard::syncTabs()
+{
+    const int selected = m_manager->selectedPlayListIndex();
+    const int playing = m_manager->currentPlayListIndex();
+    //the row is laid out on demand: without this the tabs of a rebuild still
+    //sit at nothing wide, and scrolling to one of them goes nowhere
+    if(QLayout *strip = m_tabArea->widget()->layout())
+        strip->activate();
+    //the layout carries a stretch of its own, so count the tabs rather than
+    //reading the playlist's index off the item's place in it
+    int index = 0;
+    for(int i = 0; i < m_tabLayout->count(); ++i)
+    {
+        XUiTabButton *tab = qobject_cast<XUiTabButton *>(m_tabLayout->itemAt(i)->widget());
+        if(!tab)
+            continue;
+        tab->setChecked(index == selected);
+        //only worth marking when it is not the list on screen anyway
+        tab->setPlaying(playing == index && playing != selected);
+        if(index == selected)
+            m_tabArea->ensureWidgetVisible(tab);
+        ++index;
+    }
+}
+
+void XUiPlaylistCard::showTabMenu(int index)
+{
+    PlayListModel *model = m_manager->playListAt(index);
+    if(!model)
+        return;
+
+    QMenu menu(this);
+    connect(menu.addAction(tr("&Rename...")), &QAction::triggered, this, [this, model] {
+        bool accepted = false;
+        const QString name = QInputDialog::getText(this, tr("Rename Playlist"), tr("Name:"),
+                                                   QLineEdit::Normal, model->name(),
+                                                   &accepted);
+        if(accepted && !name.isEmpty())
+            model->setName(name);
+    });
+    connect(menu.addAction(tr("&Remove Playlist")), &QAction::triggered, this, [this, model] {
+        m_manager->removePlayList(model);
+    });
+    menu.exec(QCursor::pos());
+}
+
+void XUiPlaylistCard::updateTabFade()
+{
+    const QScrollBar *bar = m_tabArea->horizontalScrollBar();
+    QWidget *viewport = m_tabArea->viewport();
+    m_tabFadeLeft->setGeometry(0, 0, TabFade::Width, viewport->height());
+    m_tabFadeRight->setGeometry(viewport->width() - TabFade::Width, 0,
+                                TabFade::Width, viewport->height());
+    m_tabFadeLeft->setVisible(bar->value() > bar->minimum());
+    m_tabFadeRight->setVisible(bar->value() < bar->maximum());
+    m_tabFadeLeft->raise();
+    m_tabFadeRight->raise();
+}
+
+bool XUiPlaylistCard::eventFilter(QObject *watched, QEvent *event)
+{
+    //The header is filtered from the moment it is built, which is before the
+    //row of tabs inside it exists; its first events arrive with nothing to act
+    //on yet.
+    if(!m_tabArea)
+        return QWidget::eventFilter(watched, event);
+
+    if(watched == m_tabArea && event->type() == QEvent::Resize)
+        updateTabFade();
+
+    //A wheel anywhere along the bar walks the tabs sideways. Qt would send a
+    //vertical scroll to the row, which has nowhere to go and would swallow it.
+    if((watched == m_header || watched == m_tabArea->viewport())
+       && event->type() == QEvent::Wheel && m_tabArea->isVisible())
+    {
+        QWheelEvent *wheel = static_cast<QWheelEvent *>(event);
+        const int delta = wheel->angleDelta().y() ? wheel->angleDelta().y()
+                                                  : wheel->angleDelta().x();
+        QScrollBar *bar = m_tabArea->horizontalScrollBar();
+        if(delta && bar->maximum() > 0)
+        {
+            bar->setValue(bar->value() - delta / 3);
+            return true;
+        }
+    }
+    return QWidget::eventFilter(watched, event);
 }
 
 QWidget *XUiPlaylistCard::buildFooter()
@@ -142,6 +392,8 @@ QWidget *XUiPlaylistCard::buildFooter()
 void XUiPlaylistCard::toggleSearch()
 {
     m_search->setVisible(!m_search->isVisible());
+    //the field wants the whole header; the tabs come back with it gone
+    m_tabArea->setVisible(!m_search->isVisible());
     if(m_search->isVisible())
         m_search->setFocus();
     else
@@ -294,6 +546,7 @@ void XUiPlaylistCard::buildEngraving()
 
 void XUiPlaylistCard::resizeEvent(QResizeEvent *e)
 {
+
     buildEngraving();
     QWidget::resizeEvent(e);
 }

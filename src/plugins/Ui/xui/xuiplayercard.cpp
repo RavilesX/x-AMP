@@ -92,6 +92,11 @@ XUiPlayerCard::XUiPlayerCard(QWidget *parent) : QWidget(parent)
     connect(m_core, &SoundCore::stateChanged, this, &XUiPlayerCard::updateState);
     connect(m_core, &SoundCore::elapsedChanged, this, &XUiPlayerCard::updateElapsed);
     connect(m_core, &SoundCore::volumeChanged, this, &XUiPlayerCard::updateVolume);
+    //muting leaves the volume untouched, so the glyph would otherwise keep
+    //showing sound coming out of a silent player
+    connect(m_core, &SoundCore::mutedChanged, this, [this] {
+        updateVolume(m_core->volume());
+    });
     connect(m_core, &SoundCore::bitrateChanged, this, &XUiPlayerCard::updateBitrate);
     connect(m_seek, &XUiSlider::released, this, &XUiPlayerCard::seek);
 
@@ -238,11 +243,6 @@ QWidget *XUiPlayerCard::buildTransport()
         m_core->setMuted(!m_core->isMuted());
     });
 
-    m_volume = new XUiSlider(panel);
-    m_volume->setMaximum(100);
-    m_volume->setWheelStep(4); //percent per notch, hovering is enough
-    m_volume->setFixedWidth(120);
-    connect(m_volume, &XUiSlider::moved, m_core, &SoundCore::setVolume);
 
     layout->addStretch(1);
     layout->addWidget(m_shuffle);
@@ -258,8 +258,77 @@ QWidget *XUiPlayerCard::buildTransport()
     layout->addWidget(m_repeat);
     layout->addStretch(1);
     layout->addWidget(m_volumeIcon);
-    layout->addWidget(m_volume);
+    layout->addWidget(buildVolume(panel));
     return panel;
+}
+
+QWidget *XUiPlayerCard::buildVolume(QWidget *panel)
+{
+    QWidget *column = new QWidget(panel);
+    QVBoxLayout *layout = new QVBoxLayout(column);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(3);
+
+    //Two shortcuts over the slider, in the manner of MONO/STEREO over the
+    //meters: one word at each end of the travel they stand for. Each one is a
+    //toggle -- switching it off puts the volume back where it was found.
+    m_mute = new XUiTextToggle(tr("MUTE"), column);
+    m_mute->setToolTip(tr("Silence, and back to the previous level"));
+    m_full = new XUiTextToggle(tr("100%"), column);
+    m_full->setAlignment(Qt::AlignRight); //its own end of the rail is the right one
+    m_full->setToolTip(tr("Full volume, and back to the previous level"));
+
+    QHBoxLayout *shortcuts = new QHBoxLayout;
+    //inset to the ends of the rail rather than to the edges of the widget:
+    //the slider keeps a grip's radius clear at both ends, and a word set
+    //flush with the widget sits that much wide of the level it names
+    shortcuts->setContentsMargins(XUiSlider::RailInset, 0, XUiSlider::RailInset, 0);
+    shortcuts->addWidget(m_mute);
+    shortcuts->addStretch(1);
+    shortcuts->addWidget(m_full);
+    layout->addLayout(shortcuts);
+
+    m_volume = new XUiSlider(column);
+    m_volume->setMaximum(100);
+    m_volume->setWheelStep(4); //percent per notch, hovering is enough
+    m_volume->setFixedWidth(120);
+    connect(m_volume, &XUiSlider::moved, m_core, &SoundCore::setVolume);
+    //A hand on the slider is the newer instruction: whatever a shortcut had
+    //put aside is dropped, so switching the shortcut off later leaves the
+    //level the user has just chosen alone. The words themselves are cleared by
+    //updateVolume(), which sees every change wherever it comes from.
+    connect(m_volume, &XUiSlider::moved, this, [this] { m_savedVolume = -1; });
+    layout->addWidget(m_volume);
+
+    //Both shortcuts work on the volume itself rather than on the engine's
+    //mute flag: the point of the pair is that the slider goes where the word
+    //says, and comes back when the word is switched off. The flag is only
+    //cleared, never set, so that neither shortcut can end in silence the
+    //slider does not account for.
+    auto shortcut = [this](XUiTextToggle *other, int level) {
+        return [this, other, level](bool on) {
+            if(!on)
+            {
+                restoreVolume();
+                return;
+            }
+            m_savedVolume = m_core->volume();
+            other->setChecked(false);
+            m_core->setMuted(false);
+            m_core->setVolume(level);
+        };
+    };
+    connect(m_mute, &XUiTextToggle::toggled, this, shortcut(m_full, 0));
+    connect(m_full, &XUiTextToggle::toggled, this, shortcut(m_mute, 100));
+    return column;
+}
+
+void XUiPlayerCard::restoreVolume()
+{
+    if(m_savedVolume < 0)
+        return;
+    m_core->setVolume(m_savedVolume);
+    m_savedVolume = -1;
 }
 
 void XUiPlayerCard::updateTrackInfo()
@@ -341,6 +410,16 @@ void XUiPlayerCard::updateTimeLabel(qint64 elapsed)
 void XUiPlayerCard::updateVolume(int volume)
 {
     m_volume->setValue(volume);
+    //A shortcut only holds while the level it set is the level in force -- a
+    //global hotkey or an MPRIS client can move it too -- so the word above the
+    //slider stops claiming otherwise. Nothing is put back: whatever moved the
+    //volume is the newer instruction.
+    if((m_full->isChecked() && volume != 100) || (m_mute->isChecked() && volume != 0))
+    {
+        m_full->setChecked(false);
+        m_mute->setChecked(false);
+        m_savedVolume = -1;
+    }
     m_volumeIcon->setIcon(m_core->isMuted() || volume == 0 ? XUiIcons::VolumeMuted
                                                            : XUiIcons::Volume);
 }

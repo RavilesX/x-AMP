@@ -232,7 +232,8 @@ namespace
 {
     constexpr qreal GRIP_RADIUS = 5.0;
     //radius plus the pen width, so the outline is not clipped either
-    constexpr qreal GRIP_MARGIN = GRIP_RADIUS + 1.0;
+    constexpr qreal GRIP_MARGIN = XUiSlider::RailInset;
+    static_assert(GRIP_MARGIN == GRIP_RADIUS + 1.0);
 }
 
 XUiSlider::XUiSlider(QWidget *parent) : QWidget(parent)
@@ -666,6 +667,226 @@ void XUiMenuButton::leaveEvent(QEvent *)
 {
     m_hovered = false;
     update();
+}
+
+// ---------------------------------------------------------------- tab button
+
+namespace
+{
+    constexpr int TAB_HEIGHT = 26;
+    constexpr int TAB_PADDING = 11;
+    //A playlist name is whatever the user typed; past this the label is
+    //elided, so one long name cannot push every other tab out of the header.
+    constexpr int TAB_MAX_WIDTH = 150;
+    //A few pixels of air past the label's advance width. Without them a name
+    //that measures exactly its own box still comes back elided from
+    //QFontMetrics, which lays the text out rather than adding advances up.
+    constexpr int TAB_SLACK = 3;
+    constexpr int TAB_DOT = 5;
+}
+
+XUiTabButton::XUiTabButton(const QString &text, QWidget *parent)
+    : QWidget(parent), m_text(text)
+{
+    setCursor(Qt::PointingHandCursor);
+    //Fixed, not merely preferred: in a row too narrow for every tab the
+    //layout would otherwise shrink them all to nothing readable. Held at
+    //their own width, the row overflows and the strip scrolls instead. The
+    //width is left to sizeHint() rather than nailed down here, since a tab is
+    //built before the window is shown and the font can still change under it.
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    setFixedHeight(TAB_HEIGHT);
+    setToolTip(text); //the only way to read a name the pill had to elide
+}
+
+void XUiTabButton::setChecked(bool checked)
+{
+    if(m_checked == checked)
+        return;
+    m_checked = checked;
+    update();
+}
+
+void XUiTabButton::setPlaying(bool playing)
+{
+    if(m_playing == playing)
+        return;
+    m_playing = playing;
+    updateGeometry(); //the dot takes room the label would otherwise have
+    update();
+}
+
+QSize XUiTabButton::minimumSizeHint() const
+{
+    return sizeHint(); //never squeezed narrower than its own label
+}
+
+QSize XUiTabButton::sizeHint() const
+{
+    const int label = QFontMetrics(font()).horizontalAdvance(m_text);
+    const int dot = m_playing ? TAB_DOT + 6 : 0;
+    return QSize(qMin(label + dot + TAB_SLACK + 2 * TAB_PADDING, TAB_MAX_WIDTH),
+                 TAB_HEIGHT);
+}
+
+void XUiTabButton::paintEvent(QPaintEvent *)
+{
+    QPainter p(this);
+    p.setRenderHint(QPainter::Antialiasing, true);
+
+    //An accent fill was tried first and lost: white on a pale accent is
+    //unreadable, and the same objection as the menu highlight applies. The
+    //selected tab is marked by its border instead, which any accent survives.
+    p.setPen(QPen(m_checked ? XUi::Accent : XUi::Border, 1));
+    p.setBrush(m_checked || m_hovered ? XUi::Hover : XUi::Elevated);
+    p.drawRoundedRect(QRectF(rect()).adjusted(0.5, 0.5, -0.5, -0.5),
+                      TAB_HEIGHT / 2.0, TAB_HEIGHT / 2.0);
+
+    QRect text = rect().adjusted(TAB_PADDING, 0, -TAB_PADDING, 0);
+    if(m_playing)
+    {
+        p.setPen(Qt::NoPen);
+        p.setBrush(XUi::AccentBright);
+        p.drawEllipse(QRectF(TAB_PADDING, (height() - TAB_DOT) / 2.0, TAB_DOT, TAB_DOT));
+        text.adjust(TAB_DOT + 6, 0, 0, 0);
+    }
+
+    p.setPen(m_checked || m_hovered ? XUi::Text : XUi::TextDim);
+    p.drawText(text, Qt::AlignVCenter | Qt::AlignLeft,
+               QFontMetrics(font()).elidedText(m_text, Qt::ElideRight, text.width()));
+}
+
+void XUiTabButton::mousePressEvent(QMouseEvent *e)
+{
+    if(e->button() == Qt::RightButton)
+    {
+        emit menuRequested();
+        return;
+    }
+    if(e->button() != Qt::LeftButton)
+        return;
+    m_pressed = true;
+}
+
+void XUiTabButton::mouseReleaseEvent(QMouseEvent *e)
+{
+    if(e->button() != Qt::LeftButton || !m_pressed)
+        return;
+    m_pressed = false;
+    if(rect().contains(e->pos()))
+        emit clicked();
+}
+
+void XUiTabButton::changeEvent(QEvent *e)
+{
+    if(e->type() == QEvent::FontChange)
+        updateGeometry();
+    QWidget::changeEvent(e);
+}
+
+void XUiTabButton::enterEvent(QEnterEvent *)
+{
+    m_hovered = true;
+    update();
+}
+
+void XUiTabButton::leaveEvent(QEvent *)
+{
+    m_hovered = false;
+    update();
+}
+
+// ---------------------------------------------------------------- text toggle
+
+namespace
+{
+    //matches the MONO/STEREO pair it shares a card with
+    constexpr qreal TEXT_TOGGLE_SCALE = 0.85;
+    constexpr qreal TEXT_TOGGLE_SPACING = 0.8;
+}
+
+XUiTextToggle::XUiTextToggle(const QString &text, QWidget *parent)
+    : QWidget(parent), m_text(text)
+{
+    setCursor(Qt::PointingHandCursor);
+    QFont f = font();
+    f.setPointSizeF(f.pointSizeF() * TEXT_TOGGLE_SCALE);
+    f.setBold(true);
+    f.setLetterSpacing(QFont::AbsoluteSpacing, TEXT_TOGGLE_SPACING);
+    setFont(f);
+}
+
+void XUiTextToggle::setChecked(bool checked)
+{
+    if(m_checked == checked)
+        return;
+    m_checked = checked;
+    update();
+}
+
+void XUiTextToggle::setAlignment(Qt::Alignment alignment)
+{
+    if(m_alignment == alignment)
+        return;
+    m_alignment = alignment;
+    update();
+}
+
+QSize XUiTextToggle::sizeHint() const
+{
+    const QFontMetrics fm(font());
+    //a couple of pixels of air, or the last letter comes back clipped
+    return QSize(fm.horizontalAdvance(m_text) + 3, fm.height());
+}
+
+QSize XUiTextToggle::minimumSizeHint() const
+{
+    return sizeHint();
+}
+
+void XUiTextToggle::paintEvent(QPaintEvent *)
+{
+    QPainter p(this);
+    p.setPen(m_checked ? XUi::Accent : (m_hovered ? XUi::Text : XUi::TextFaint));
+    p.drawText(rect(), Qt::AlignVCenter | m_alignment, m_text);
+}
+
+void XUiTextToggle::mousePressEvent(QMouseEvent *e)
+{
+    if(e->button() != Qt::LeftButton)
+        return;
+    m_pressed = true;
+}
+
+void XUiTextToggle::mouseReleaseEvent(QMouseEvent *e)
+{
+    if(e->button() != Qt::LeftButton || !m_pressed)
+        return;
+    m_pressed = false;
+    if(!rect().contains(e->pos()))
+        return;
+    m_checked = !m_checked;
+    update();
+    emit toggled(m_checked);
+}
+
+void XUiTextToggle::enterEvent(QEnterEvent *)
+{
+    m_hovered = true;
+    update();
+}
+
+void XUiTextToggle::leaveEvent(QEvent *)
+{
+    m_hovered = false;
+    update();
+}
+
+void XUiTextToggle::changeEvent(QEvent *e)
+{
+    if(e->type() == QEvent::FontChange)
+        updateGeometry();
+    QWidget::changeEvent(e);
 }
 
 // ----------------------------------------------------------------- cover art

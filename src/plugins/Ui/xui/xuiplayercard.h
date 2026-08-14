@@ -34,6 +34,7 @@ class XUiChip;
 class XUiSpectrum;
 class XUiVuMeter;
 class XUiCoverArt;
+class XUiTextToggle;
 
 /*!
  * The top card: artwork, track details, format badges, spectrum, level
@@ -77,7 +78,15 @@ private slots:
 private:
     QWidget *buildDetails();
     QWidget *buildTransport();
+    /*! The volume slider with its two shortcuts sitting over it. */
+    QWidget *buildVolume(QWidget *panel);
     void updateTimeLabel(qint64 elapsed);
+
+    /*!
+     * Puts the volume back where it stood before a shortcut moved it, and
+     * forgets the mark. Nothing happens if no shortcut is holding one.
+     */
+    void restoreVolume();
 
     SoundCore *m_core;
     MediaPlayer *m_player;
@@ -100,6 +109,13 @@ private:
     XUiIconButton *m_shuffle;
     XUiIconButton *m_repeat;
     XUiIconButton *m_volumeIcon;
+    XUiTextToggle *m_mute;
+    XUiTextToggle *m_full;
+    /*!
+     * The volume as it stood when MUTE or 100% was switched on, so that
+     * switching it off again gives it back. -1 while neither holds it.
+     */
+    int m_savedVolume = -1;
 };
 
 #endif
