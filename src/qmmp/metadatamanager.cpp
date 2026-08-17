@@ -20,6 +20,7 @@
 
 #include <QFile>
 #include <QFileInfo>
+#include <QMimeDatabase>
 #include <QBuffer>
 #include <QMutexLocker>
 #include <QCoreApplication>
@@ -133,13 +134,30 @@ MetaDataManager::~MetaDataManager()
     delete d_ptr;
 }
 
+//x-AMP: content matching hands the file to every decoder in turn, and the
+//ones that go looking for a frame header will take almost any binary: a
+//Thumbs.db, which carries thumbnails and so whole JPEGs inside it, was
+//landing in playlists as a track. What the file actually is settles it
+//first, and only what could hold media is offered to the decoders at all.
+//Anything nothing recognises counts as media, since that is what an obscure
+//format looks like from here.
+static bool couldHoldMedia(const QString &path)
+{
+    const QString type = QMimeDatabase()
+                         .mimeTypeForFile(path, QMimeDatabase::MatchContent).name();
+    return type.startsWith(u"audio/"_s) || type.startsWith(u"video/"_s)
+           || type == "application/octet-stream"_L1;
+}
+
 //x-AMP: a file with no extension at all cannot be matched by extension, so
 //reading its content is the only chance of identifying it. Doing that only
 //for such files keeps the cost off ordinary libraries, which is why the
 //"determine file type by content" setting is off by default.
 static bool shouldUseContent(const QString &path, bool settingEnabled)
 {
-    return settingEnabled || QFileInfo(path).suffix().isEmpty();
+    if(!settingEnabled && !QFileInfo(path).suffix().isEmpty())
+        return false;
+    return couldHoldMedia(path);
 }
 
 QList<TrackInfo> MetaDataManager::createPlayList(const QString &path, TrackInfo::Parts parts, QStringList *ignoredPaths) const

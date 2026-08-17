@@ -17,6 +17,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
+#include <QCoreApplication>
+#include <QKeyEvent>
 #include <QHBoxLayout>
 #include <QInputDialog>
 #include <QLabel>
@@ -95,7 +97,10 @@ XUiPlaylistCard::XUiPlaylistCard(QWidget *parent) : QWidget(parent)
         //paused carried on with the old track behind the new row's label.
         m_player->stop();
         m_player->play();
+        //the search found what it was for, so it has no more to say
+        hideSearch();
     });
+    m_list->installEventFilter(this); //Escape, while the search is open
     root->addWidget(m_list, 1);
 
     root->addWidget(buildFooter());
@@ -134,16 +139,25 @@ QWidget *XUiPlaylistCard::buildHeader()
     m_search->setPlaceholderText(tr("Search tracks..."));
     m_search->setFixedHeight(30);
     m_search->hide(); //revealed by the search button
+    m_search->installEventFilter(this); //Escape gives up on it
     connect(m_search, &QLineEdit::textChanged, this, [this](const QString &text) {
         m_list->setFilter(text);
     });
     layout->addWidget(m_search, 1);
-    layout->addStretch(1);
+    //A gap as wide as the title itself is all that a full row of tabs has to
+    //leave free: they may run the length of the bar and stop just short of
+    //the word. It stretches, so a short row still sits at the far end.
+    layout->addSpacerItem(new QSpacerItem(title->sizeHint().width(), 0,
+                                          QSizePolicy::Expanding,
+                                          QSizePolicy::Minimum));
 
     //One tab per playlist, gathered at the far end of the bar beside the two
     //glyphs: the footer's Playlists menu still lists them all, but switching
     //should not cost a menu.
-    layout->addWidget(buildTabs());
+    //Stretched, so that the room the header has over is offered to the tabs
+    //first and to the gap before them only once they have all they need. With
+    //no factor here the two shared it and the row was cut off mid-header.
+    layout->addWidget(buildTabs(), 1);
 
     //adding and playlists live in the footer; only search is here, since it
     //acts on this header's own field
@@ -183,10 +197,11 @@ QWidget *XUiPlaylistCard::buildTabs()
     //which here is the whole row of tabs -- enough to push the title out of a
     //narrow header. The row is what should give way, so it is allowed to.
     m_tabArea->setMinimumWidth(0);
-    //Preferred rather than the scroll area's usual Expanding: an expanding row
-    //eats the header's stretch and ends up hard against the title, when what
-    //is wanted is the tabs gathered at the far end beside the glyphs.
-    m_tabArea->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    //Expanding, so the row takes whatever the header has free rather than the
+    //narrow width a scroll area asks for on its own. It never crosses into
+    //the title: it is capped at the width its own tabs need (see
+    //rebuildTabs()), and the spacer before it holds a gap open regardless.
+    m_tabArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     m_tabArea->setStyleSheet(u"QScrollArea, QScrollArea > QWidget > QWidget"
                               " { background: transparent; }"_s);
 
@@ -259,8 +274,19 @@ void XUiPlaylistCard::rebuildTabs()
     //not shown until the event loop gets round to it, and until then the
     //layout counts it as empty -- which capped the row at nothing at all on
     //every rebuild after the first.
-    m_tabArea->setMaximumWidth(wanted);
-    //the cap above changes how much of the header the row gets, and what is
+    //the layout's own figure rather than the sum above, which cannot know
+    //what the spacing and the margins add
+    m_tabLayout->activate();
+    m_tabArea->setMaximumWidth(qMax(wanted, m_tabLayout->sizeHint().width()));
+    //A scroll area measures its widget once and keeps the answer, so after a
+    //rebuild it still asked the header for room for the tabs there used to
+    //be: a playlist added to a row that already fitted was left with nowhere
+    //to go. A layout request is what drops that cached size.
+    QEvent request(QEvent::LayoutRequest);
+    QCoreApplication::sendEvent(m_tabArea, &request);
+    m_tabArea->updateGeometry();
+
+    //the width above changes how much of the header the row gets, and what is
     //visible of it is what decides where scrolling has to land
     if(m_header && m_header->layout())
         m_header->layout()->activate();
@@ -342,6 +368,16 @@ bool XUiPlaylistCard::eventFilter(QObject *watched, QEvent *event)
     if(watched == m_tabArea && event->type() == QEvent::Resize)
         updateTabFade();
 
+    //Escape gives up on the search from the field or from the list, rather
+    //than leaving it open until the glyph is pressed a second time
+    if((watched == m_search || watched == m_list)
+       && event->type() == QEvent::KeyPress && m_search->isVisible()
+       && static_cast<QKeyEvent *>(event)->key() == Qt::Key_Escape)
+    {
+        hideSearch();
+        return true;
+    }
+
     //A wheel anywhere along the bar walks the tabs sideways. Qt would send a
     //vertical scroll to the row, which has nowhere to go and would swallow it.
     if((watched == m_header || watched == m_tabArea->viewport())
@@ -391,13 +427,24 @@ QWidget *XUiPlaylistCard::buildFooter()
 
 void XUiPlaylistCard::toggleSearch()
 {
-    m_search->setVisible(!m_search->isVisible());
-    //the field wants the whole header; the tabs come back with it gone
-    m_tabArea->setVisible(!m_search->isVisible());
     if(m_search->isVisible())
-        m_search->setFocus();
-    else
-        m_search->clear(); //hiding it must not leave the list filtered
+    {
+        hideSearch();
+        return;
+    }
+    m_search->show();
+    m_tabArea->hide(); //the field wants the whole header
+    m_search->setFocus();
+}
+
+void XUiPlaylistCard::hideSearch()
+{
+    if(!m_search->isVisible())
+        return;
+    m_search->hide();
+    m_tabArea->show(); //the tabs come back with it gone
+    m_search->clear(); //hiding it must not leave the list filtered
+    m_list->setFocus(); //or the keyboard is left on a hidden field
 }
 
 void XUiPlaylistCard::showAddMenu()

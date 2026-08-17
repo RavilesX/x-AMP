@@ -24,6 +24,7 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeData>
+#include <QInputDialog>
 #include <QKeyEvent>
 #include <QMenu>
 #include <QMouseEvent>
@@ -519,11 +520,83 @@ void XUiListView::dropEvent(QDropEvent *e)
         e->acceptProposedAction();
         const int row = trackRowFrom(dropRowAt(e->position().y()), 1);
         const int index = row >= 0 ? m_rows.at(row).track : m_model->trackCount();
-        m_model->insertUrls(index, e->mimeData()->urls());
+        const QList<QUrl> urls = e->mimeData()->urls();
+        const QPoint pos = mapToGlobal(e->position().toPoint());
+        //queued: a menu opened from inside the drop would keep the application
+        //the files came from waiting on it
+        QMetaObject::invokeMethod(this, [this, urls, index, pos] {
+            dropUrls(urls, index, pos);
+        }, Qt::QueuedConnection);
     }
     m_dropRow = -1;
     m_dragging = false;
     update();
+}
+
+void XUiListView::dropUrls(const QList<QUrl> &urls, int index, const QPoint &pos)
+{
+    if(!m_model || urls.isEmpty())
+        return;
+
+    //a single file is not worth a question: it goes where it was dropped. A
+    //folder, or a group of them, is a playlist's worth of music and may well
+    //be meant to become one.
+    if(urls.count() == 1 && !QFileInfo(urls.constFirst().toLocalFile()).isDir())
+    {
+        m_model->insertUrls(index, urls);
+        return;
+    }
+
+    QMenu menu(this);
+    QAction *here = menu.addAction(tr("Add to This Playlist"));
+    QAction *fresh = menu.addAction(tr("Add to a New Playlist..."));
+    QAction *chosen = menu.exec(pos);
+    if(chosen == here)
+        m_model->insertUrls(index, urls);
+    else if(chosen == fresh)
+        addToNewPlayList(urls);
+}
+
+void XUiListView::addToNewPlayList(const QList<QUrl> &urls)
+{
+    QInputDialog prompt(this);
+    prompt.setInputMode(QInputDialog::TextInput);
+    prompt.setWindowTitle(tr("New Playlist"));
+    prompt.setLabelText(tr("Playlist name:"));
+    //the folder that was dragged in, which is the name that was wanted nine
+    //times in ten; selected, so typing over it takes no deleting first
+    prompt.setTextValue(folderName(urls));
+    if(prompt.exec() != QDialog::Accepted)
+        return;
+
+    //createPlayList() selects the new playlist, and this view follows the
+    //selection, so the tracks land in what is on screen a moment later
+    m_manager->createPlayList(prompt.textValue().trimmed())->insertUrls(0, urls);
+}
+
+QString XUiListView::folderName(const QList<QUrl> &urls)
+{
+    QStringList folders;
+    for(const QUrl &url : urls)
+    {
+        const QString path = url.toLocalFile();
+        if(path.isEmpty())
+            continue; //a stream carries no folder to name a playlist after
+        const QFileInfo info(path);
+        folders << (info.isDir() ? info.absoluteFilePath() : info.absolutePath());
+    }
+    if(folders.isEmpty())
+        return QString();
+
+    //one name for the lot: the folder they were dragged from, unless a single
+    //folder was dragged, which names itself
+    const QString first = folders.constFirst();
+    for(const QString &folder : std::as_const(folders))
+    {
+        if(folder != first)
+            return QDir(QFileInfo(first).absolutePath()).dirName();
+    }
+    return QDir(first).dirName();
 }
 
 void XUiListView::paintEvent(QPaintEvent *)

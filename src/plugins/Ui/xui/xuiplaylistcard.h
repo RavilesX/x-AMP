@@ -45,6 +45,8 @@ public:
 
     /*! Shows or hides the search field. Driven by Ctrl+F on the window. */
     void toggleSearch();
+    /*! Closes the search field and drops the filter with it. */
+    void hideSearch();
 
     /*! The header bar, which doubles as the drag handle of its window. */
     QWidget *header() const { return m_header; }

@@ -87,6 +87,15 @@ private:
     };
 
     void rebuildRows();
+    /*!
+     * Takes in dropped files: asks, for a folder or a group of them, whether
+     * they belong in this playlist or in one of their own.
+     */
+    void dropUrls(const QList<QUrl> &urls, int index, const QPoint &pos);
+    /*! Asks for a name and puts \b urls in a playlist of that name. */
+    void addToNewPlayList(const QList<QUrl> &urls);
+    /*! The folder \b urls were dragged from, to name a playlist after. */
+    static QString folderName(const QList<QUrl> &urls);
     /*! Adds the play queue commands to \b menu as a submenu of their own. */
     void addQueueMenu(QMenu *menu);
     /*! Moves the selection ahead of the tracks already waiting in the queue. */
