@@ -249,6 +249,12 @@ public:
      */
     int queueSize() const;
     /*!
+     * Returns \b true if the playlist has nothing left to play after the current track,
+     * otherwise returns \b false. The "Repeat All" option is ignored, so the end of the
+     * playlist is reported even in the loop mode. Queued tracks are taken into account.
+     */
+    bool isFinished() const;
+    /*!
      * Returns \b true if playback stops after \b track, otherwise returns \b false.
      */
     bool isStopAfter(const PlayListItem *track) const;

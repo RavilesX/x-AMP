@@ -59,6 +59,13 @@ public:
      */
     void applyAccent();
 
+signals:
+    /*!
+     * The scheduler glyph has been clicked. The card has no way in to the
+     * preferences of its own, so the window that owns it opens them.
+     */
+    void schedulerRequested();
+
 protected:
     void paintEvent(QPaintEvent *) override;
 
@@ -74,6 +81,8 @@ private slots:
     /*! Next, wrapping to the first track at the end of the playlist. */
     void nextTrack();
     void updateRepeat();
+    /*! Lights the scheduler glyph while the scheduler is armed, dims it after. */
+    void updateScheduler();
 
 private:
     QWidget *buildDetails();
@@ -109,6 +118,8 @@ private:
     XUiIconButton *m_shuffle;
     XUiIconButton *m_repeat;
     XUiIconButton *m_volumeIcon;
+    /*! Always on screen; lit only while the scheduler is armed. */
+    XUiIconButton *m_scheduler;
     XUiTextToggle *m_mute;
     XUiTextToggle *m_full;
     /*!

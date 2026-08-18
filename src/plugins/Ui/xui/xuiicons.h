@@ -68,6 +68,7 @@ namespace XUiIcons
         List,
         Settings,
         MusicNote,
+        Clock,      //scheduler armed
         ChevronDown,
         ChevronRight,
     };

@@ -24,6 +24,7 @@
 #include <QTimer>
 #include <QTranslator>
 #include "qmmpuisettings.h"
+#include "scheduler.h"
 #include "mediaplayer.h"
 
 class MediaPlayerPrivate
@@ -39,6 +40,7 @@ public:
         soundCore = new SoundCore(q);
         settings = new QmmpUiSettings(q);
         plManager = new PlayListManager(q);
+        scheduler = new Scheduler(q);
         finishTimer = new QTimer(q);
         finishTimer->setSingleShot(q);
         finishTimer->setInterval(500);
@@ -58,6 +60,12 @@ private:
         if(settings->isRepeatableTrack())
         {
             q->play();
+            return;
+        }
+        if(isScheduledPlayListEnd())
+        {
+            q->stop();
+            scheduler->execute();
             return;
         }
         if(settings->isNoPlayListAdvance())
@@ -91,10 +99,25 @@ private:
         q->play();
     }
 
+    //the scheduler waits for the end of the playlist and "Repeat All" must not
+    //keep it waiting forever, so the loop is cut short here
+    bool isScheduledPlayListEnd() const
+    {
+        return scheduler->isArmedForPlayListEnd() && plManager->currentPlayList()->isFinished();
+    }
+
     void updateNextUrl()
     {
         nextUrl.clear();
         PlayListTrack *track = nullptr;
+
+        if(!settings->isRepeatableTrack() && isScheduledPlayListEnd())
+        {
+            //no gapless prefetch, otherwise playback would roll over the trigger
+            qCDebug(core) << "next track state: held back by the scheduler";
+            return;
+        }
+
         if(settings->isRepeatableTrack())
             track = plManager->currentPlayList()->currentTrack();
         else if(!settings->isNoPlayListAdvance())
@@ -241,6 +264,7 @@ private:
     QmmpUiSettings *settings;
     PlayListManager *plManager;
     SoundCore *soundCore;
+    Scheduler *scheduler;
     static MediaPlayer *instance;
     int m_skips = 0;
     QString nextUrl;

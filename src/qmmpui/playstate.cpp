@@ -86,6 +86,13 @@ bool ShufflePlayState::previous()
     return m_model->setCurrent(m_shuffled_indexes.at(m_shuffled_current));
 }
 
+bool ShufflePlayState::isFinished() const
+{
+    //the scheduler asks whether the play order is exhausted, so "Repeat All"
+    //is deliberately not taken into account here
+    return m_model->isEmpty() || m_shuffled_current >= m_shuffled_indexes.count() - 1;
+}
+
 void ShufflePlayState::prepare()
 {
     QRandomGenerator *rg = QRandomGenerator::global();
@@ -141,6 +148,12 @@ bool NormalPlayState::previous()
         return false;
 
     return m_model->setCurrent(m_model->currentIndex() - 1);
+}
+
+bool NormalPlayState::isFinished() const
+{
+    //"Repeat All" is ignored on purpose, see ShufflePlayState::isFinished()
+    return m_model->isEmpty() || m_model->currentIndex() + 1 >= m_model->trackCount();
 }
 
 int NormalPlayState::nextIndex()

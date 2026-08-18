@@ -45,6 +45,11 @@ public:
      */
     virtual int nextIndex() = 0;
     /*!
+     * Returns \b true if the current track is the last one of the play order,
+     * ignoring the "Repeat All" option; otherwise returns \b false.
+     */
+    virtual bool isFinished() const = 0;
+    /*!
      * Service method, resets state to it's defaults.
      */
     virtual void resetState()
@@ -80,6 +85,7 @@ public:
     virtual bool next() override;
     virtual bool previous() override;
     virtual int nextIndex() override;
+    virtual bool isFinished() const override;
     explicit NormalPlayState(PlayListModel* model);
 };
 
@@ -93,6 +99,7 @@ public:
     virtual bool next() override;
     virtual bool previous() override;
     virtual int nextIndex() override;
+    virtual bool isFinished() const override;
     virtual void prepare() override;
     explicit ShufflePlayState(PlayListModel* model);
     virtual void resetState() override;

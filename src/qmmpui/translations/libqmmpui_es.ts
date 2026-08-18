@@ -908,6 +908,94 @@
         <source>Serbian (Ekavian)</source>
         <translation>Serbio (Ekavian)</translation>
     </message>
+    <message>
+        <source>Scheduler</source>
+        <translation>Planificador</translation>
+    </message>
+    <message>
+        <source>Runs a single action once and then switches itself off.</source>
+        <translation>Ejecuta una sola acción una vez y después se desactiva.</translation>
+    </message>
+    <message>
+        <source>Enable the scheduler</source>
+        <translation>Activar el planificador</translation>
+    </message>
+    <message>
+        <source>At:</source>
+        <translation>A las:</translation>
+    </message>
+    <message>
+        <source>After:</source>
+        <translation>Pasados:</translation>
+    </message>
+    <message>
+        <source> min</source>
+        <translation> min</translation>
+    </message>
+    <message>
+        <source>When the playlist ends</source>
+        <translation>Al terminar la lista de reproducción</translation>
+    </message>
+    <message>
+        <source>The &quot;Repeat All&quot; option is ignored, so playback stops at the end of the playlist.</source>
+        <translation>Se ignora la opción «Repetir todo»: la reproducción se detiene al final de la lista.</translation>
+    </message>
+    <message>
+        <source>Action:</source>
+        <translation>Acción:</translation>
+    </message>
+    <message>
+        <source>File:</source>
+        <translation>Archivo:</translation>
+    </message>
+    <message>
+        <source>Playlist:</source>
+        <translation>Lista de reproducción:</translation>
+    </message>
+    <message>
+        <source>Play a file</source>
+        <translation>Reproducir un archivo</translation>
+    </message>
+    <message>
+        <source>Play a playlist</source>
+        <translation>Reproducir una lista</translation>
+    </message>
+    <message>
+        <source>Close the player</source>
+        <translation>Cerrar el reproductor</translation>
+    </message>
+    <message>
+        <source>Suspend the computer</source>
+        <translation>Suspender el equipo</translation>
+    </message>
+    <message>
+        <source>Shut the computer down</source>
+        <translation>Apagar el equipo</translation>
+    </message>
+    <message>
+        <source>Select a file to play</source>
+        <translation>Seleccionar un archivo para reproducir</translation>
+    </message>
+    <message>
+        <source>All Supported Bitstreams</source>
+        <translation>Todos los flujos de bits soportados</translation>
+    </message>
+    <message>
+        <source>The scheduler is switched off.</source>
+        <translation>El planificador está desactivado.</translation>
+    </message>
+    <message>
+        <source>The action runs at %1, in %2 h %3 min.</source>
+        <translation>La acción se ejecuta el %1, dentro de %2 h y %3 min.</translation>
+    </message>
+    <message>
+        <source>The countdown starts over every time these settings are applied or the player is restarted.</source>
+        <translation>La cuenta atrás vuelve a empezar cada vez que se aplican estos ajustes o se reinicia el reproductor.</translation>
+    </message>
+    <message>
+        <source>The action runs once the playing playlist reaches its last track.</source>
+        <translation>La acción se ejecuta cuando la lista en reproducción llega a su última pista.</translation>
+    </message>
 </context>
 <context>
     <name>CoverEditor</name>

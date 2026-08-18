@@ -354,6 +354,17 @@ void XUiIcons::paint(QPainter *p, Icon icon, const QRectF &rect, const QColor &c
         strokePath(p, beam, color, 2.6);
         break;
     }
+    case Clock:
+    {
+        QPainterPath path;
+        path.addEllipse(QPointF(12, 12), 8.5, 8.5);
+        strokePath(p, path, color, W);
+        QPainterPath hands;
+        hands.addPath(line(12, 12, 12, 6.8));   //minute hand, straight up
+        hands.addPath(line(12, 12, 15.8, 13.8)); //hour hand
+        strokePath(p, hands, color, W);
+        break;
+    }
     case ChevronDown:
     case ChevronRight:
     {

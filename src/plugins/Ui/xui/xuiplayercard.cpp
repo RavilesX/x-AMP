@@ -19,6 +19,7 @@
 
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLocale>
 #include <QPainter>
 #include <QVBoxLayout>
 #include <qmmp/soundcore.h>
@@ -27,6 +28,7 @@
 #include <qmmpui/qmmpuisettings.h>
 #include <qmmpui/playlistmanager.h>
 #include <qmmpui/playlistmodel.h>
+#include <qmmpui/scheduler.h>
 #include "xuitheme.h"
 #include "xuicontrols.h"
 #include "xuivisualization.h"
@@ -100,9 +102,14 @@ XUiPlayerCard::XUiPlayerCard(QWidget *parent) : QWidget(parent)
     connect(m_core, &SoundCore::bitrateChanged, this, &XUiPlayerCard::updateBitrate);
     connect(m_seek, &XUiSlider::released, this, &XUiPlayerCard::seek);
 
+    if(Scheduler *scheduler = Scheduler::instance())
+        connect(scheduler, &Scheduler::settingsChanged,
+                this, &XUiPlayerCard::updateScheduler);
+
     updateTrackInfo();
     updateState(m_core->state());
     updateVolume(m_core->volume());
+    updateScheduler();
 }
 
 void XUiPlayerCard::applyAccent()
@@ -129,6 +136,21 @@ QWidget *XUiPlayerCard::buildDetails()
     titleRow->setSpacing(2);
     m_title = makeLabel(XUi::Text, 1.3, true);
     titleRow->addWidget(m_title, 1);
+
+    //Sits ahead of the details button and always on screen: it is the way
+    //into the scheduler either way, and lit or unlit it answers at a glance
+    //whether something is going to close the player, or the machine, on its
+    //own. Lit through setChecked() on a button that is not setCheckable(),
+    //as the repeat button does -- the state is the scheduler's, not a
+    //toggle the click owns.
+    m_scheduler = new XUiIconButton(XUiIcons::Clock, panel);
+    m_scheduler->setIconSize(16);
+    //unlit it stands for a switched-off scheduler, so it takes the grey the
+    //MUTE and 100% words use for the same meaning
+    m_scheduler->setRestColor(XUi::TextFaint);
+    connect(m_scheduler, &XUiIconButton::clicked,
+            this, &XUiPlayerCard::schedulerRequested);
+    titleRow->addWidget(m_scheduler, 0, Qt::AlignTop);
 
     XUiIconButton *details = new XUiIconButton(XUiIcons::Kebab, panel);
     details->setToolTip(tr("Track details"));
@@ -479,6 +501,49 @@ void XUiPlayerCard::updateRepeat()
     m_repeat->setChecked(track || list);
     m_repeat->setToolTip(track ? tr("Repeat track")
                                : (list ? tr("Repeat playlist") : tr("No repeat")));
+}
+
+void XUiPlayerCard::updateScheduler()
+{
+    Scheduler *scheduler = Scheduler::instance();
+    const QString openIt = QLatin1Char('\n') + tr("Click to open the scheduler");
+    if(!scheduler || !scheduler->isEnabled())
+    {
+        m_scheduler->setChecked(false);
+        m_scheduler->setToolTip(tr("Scheduler off") + openIt);
+        return;
+    }
+
+    QString action;
+    switch(scheduler->action())
+    {
+    case Scheduler::PLAY_FILE:
+        action = tr("play a file");
+        break;
+    case Scheduler::PLAY_PLAYLIST:
+        action = tr("play a playlist");
+        break;
+    case Scheduler::QUIT:
+        action = tr("close the player");
+        break;
+    case Scheduler::SUSPEND:
+        action = tr("suspend the computer");
+        break;
+    case Scheduler::SHUTDOWN:
+        action = tr("shut the computer down");
+        break;
+    }
+
+    QString when;
+    if(scheduler->isArmedForPlayListEnd())
+        when = tr("at the end of the playlist");
+    else if(scheduler->deadline().isValid())
+        when = tr("at %1").arg(QLocale().toString(scheduler->deadline(),
+                                                  QStringLiteral("dddd HH:mm")));
+
+    //two lines: what is going to happen, then how to get at it
+    m_scheduler->setChecked(true);
+    m_scheduler->setToolTip(tr("Scheduled: %1 %2").arg(action, when).trimmed() + openIt);
 }
 
 void XUiPlayerCard::paintEvent(QPaintEvent *)

@@ -18,10 +18,17 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 #include <QDir>
+#include <QApplication>
+#include <QGroupBox>
+#include <QFileInfo>
+#include <QLocale>
+#include <QDateTime>
 #include <QSettings>
 #include <QFontDialog>
 #include <QTreeWidgetItem>
 #include <QIntValidator>
+#include <QScrollArea>
+#include <QTimer>
 #include <qmmp/decoder.h>
 #include <qmmp/output.h>
 #include <qmmp/decoderfactory.h>
@@ -36,6 +43,7 @@
 #include <qmmp/qmmpsettings.h>
 #include <qmmp/inputsource.h>
 #include <qmmp/inputsourcefactory.h>
+#include <qmmp/metadatamanager.h>
 #include "ui_configdialog.h"
 #include "pluginitem_p.h"
 #include "radioitemdelegate_p.h"
@@ -47,6 +55,7 @@
 #include "mediaplayer.h"
 #include "qmmpuisettings.h"
 #include "metadataformattermenu.h"
+#include "scheduler.h"
 #include "configdialog.h"
 
 class ConfigDialogPrivate : public Ui::ConfigDialog
@@ -122,6 +131,81 @@ private:
         }
     }
 
+    void onSchedulerFileButtonClicked()
+    {
+        QStringList filters;
+        filters << tr("All Supported Bitstreams") +
+                   QStringLiteral(" (%1)").arg(MetaDataManager::instance()->nameFilters().join(QChar::Space));
+        filters << MetaDataManager::instance()->filters();
+        const QString dir = schedulerFileLineEdit->text().isEmpty()
+                                ? QDir::homePath()
+                                : QFileInfo(schedulerFileLineEdit->text()).absolutePath();
+        const QString path = FileDialog::getOpenFileName(q_ptr, tr("Select a file to play"), dir,
+                                                         filters.join(u";;"_s));
+        if(!path.isEmpty())
+            schedulerFileLineEdit->setText(path);
+    }
+
+    Scheduler::Trigger selectedSchedulerTrigger() const
+    {
+        if(afterRadioButton->isChecked())
+            return Scheduler::AFTER_INTERVAL;
+        if(playListEndRadioButton->isChecked())
+            return Scheduler::PLAYLIST_END;
+        return Scheduler::AT_TIME;
+    }
+
+    void updateSchedulerSettings()
+    {
+        const Scheduler::Trigger trigger = selectedSchedulerTrigger();
+        const Scheduler::Action action =
+            static_cast<Scheduler::Action>(schedulerActionComboBox->currentData().toInt());
+
+        schedulerTimeEdit->setEnabled(trigger == Scheduler::AT_TIME);
+        schedulerIntervalSpinBox->setEnabled(trigger == Scheduler::AFTER_INTERVAL);
+
+        const bool playFile = action == Scheduler::PLAY_FILE;
+        schedulerFileLabel->setVisible(playFile);
+        schedulerFileLineEdit->setVisible(playFile);
+        schedulerFileButton->setVisible(playFile);
+
+        const bool playList = action == Scheduler::PLAY_PLAYLIST;
+        schedulerPlayListLabel->setVisible(playList);
+        schedulerPlayListComboBox->setVisible(playList);
+
+        if(!schedulerCheckBox->isChecked())
+        {
+            schedulerStatusLabel->setText(tr("The scheduler is switched off."));
+            return;
+        }
+
+        QString status;
+        switch(trigger)
+        {
+        case Scheduler::AT_TIME:
+        {
+            const QDateTime now = QDateTime::currentDateTime();
+            QDateTime dt(now.date(), schedulerTimeEdit->time());
+            if(dt <= now)
+                dt = dt.addDays(1);
+            const qint64 minutes = now.secsTo(dt) / 60;
+            status = tr("The action runs at %1, in %2 h %3 min.")
+                         .arg(QLocale().toString(dt, u"dddd HH:mm"_s))
+                         .arg(minutes / 60)
+                         .arg(minutes % 60);
+            break;
+        }
+        case Scheduler::AFTER_INTERVAL:
+            status = tr("The countdown starts over every time these settings are applied "
+                        "or the player is restarted.");
+            break;
+        case Scheduler::PLAYLIST_END:
+            status = tr("The action runs once the playing playlist reaches its last track.");
+            break;
+        }
+        schedulerStatusLabel->setText(status);
+    }
+
     void saveSettings()
     {
         if(QmmpUiSettings *guis = QmmpUiSettings::instance())
@@ -146,6 +230,17 @@ private:
                                      defaultPlayListCheckBox->isChecked());
             guis->setAutoSavePlayList(autoSavePlayListCheckBox->isChecked());
             guis->setUseClipboard(clipboardCheckBox->isChecked());
+        }
+
+        if(Scheduler *scheduler = Scheduler::instance())
+        {
+            scheduler->setSettings(schedulerCheckBox->isChecked(),
+                                   selectedSchedulerTrigger(),
+                                   schedulerTimeEdit->time(),
+                                   schedulerIntervalSpinBox->value(),
+                                   static_cast<Scheduler::Action>(schedulerActionComboBox->currentData().toInt()),
+                                   schedulerFileLineEdit->text().trimmed(),
+                                   schedulerPlayListComboBox->currentText().trimmed());
         }
 
         QmmpSettings *gs = QmmpSettings::instance();
@@ -249,6 +344,25 @@ private:
             autoSavePlayListCheckBox->setChecked(guis->autoSavePlayList());
             //url dialog
             clipboardCheckBox->setChecked(guis->useClipboard());
+            //scheduler
+            schedulerPlayListComboBox->addItems(MediaPlayer::instance()->playListManager()->playListNames());
+        }
+
+        if(Scheduler *scheduler = Scheduler::instance())
+        {
+            schedulerCheckBox->setChecked(scheduler->isEnabled());
+            atTimeRadioButton->setChecked(scheduler->trigger() == Scheduler::AT_TIME);
+            afterRadioButton->setChecked(scheduler->trigger() == Scheduler::AFTER_INTERVAL);
+            playListEndRadioButton->setChecked(scheduler->trigger() == Scheduler::PLAYLIST_END);
+            schedulerTimeEdit->setTime(scheduler->time());
+            schedulerIntervalSpinBox->setValue(scheduler->interval());
+            schedulerActionComboBox->setCurrentIndex(schedulerActionComboBox->findData(scheduler->action()));
+            schedulerFileLineEdit->setText(scheduler->filePath());
+            schedulerPlayListComboBox->setCurrentText(scheduler->playListName());
+        }
+        else
+        {
+            schedulerGroupBox->setEnabled(false);
         }
         //proxy settings
         QmmpSettings *gs = QmmpSettings::instance();
@@ -399,6 +513,42 @@ private:
         treeWidget->resizeColumnToContents(1);
     }
 
+    //x-AMP: every page is a stack of group boxes whose titles read at the same
+    //weight as the options inside them, which makes the sections hard to tell
+    //apart. The title gets a larger bold font, and the children are pinned back
+    //to the application font because Qt propagates a widget font to its children.
+    void enlargeGroupTitles(QWidget *root)
+    {
+        QFont baseFont = qApp->font();
+        //setBold()/setPointSizeF() mark the attribute as explicitly resolved. Without
+        //that the children keep inheriting the title font, since a font only overrides
+        //its parent's on the attributes that were set on it by hand.
+        baseFont.setBold(baseFont.bold());
+        if(baseFont.pointSizeF() > 0)
+            baseFont.setPointSizeF(baseFont.pointSizeF());
+        else
+            baseFont.setPixelSize(baseFont.pixelSize());
+
+        QFont titleFont = baseFont;
+        titleFont.setBold(true);
+        if(baseFont.pointSizeF() > 0)
+            titleFont.setPointSizeF(baseFont.pointSizeF() * 1.25);
+        else
+            titleFont.setPixelSize(qRound(baseFont.pixelSize() * 1.25));
+
+        const QList<QGroupBox *> boxes = root->findChildren<QGroupBox *>();
+        for(QGroupBox *box : boxes)
+        {
+            box->setFont(titleFont);
+            const QList<QWidget *> children = box->findChildren<QWidget *>();
+            for(QWidget *child : children)
+            {
+                if(!qobject_cast<QGroupBox *>(child)) //nested group boxes keep the title font
+                    child->setFont(baseFont);
+            }
+        }
+    }
+
     void createMenus()
     {
         Q_Q(::ConfigDialog);
@@ -521,11 +671,18 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     d->proxyTypeComboBox->addItem(tr("HTTP"), QmmpSettings::HTTP_PROXY);
     d->proxyTypeComboBox->addItem(tr("SOCKS5"), QmmpSettings::SOCKS5_PROXY);
     d->portLineEdit->setValidator(new QIntValidator(0, 65535, this));
+    d->schedulerActionComboBox->addItem(tr("Play a file"), Scheduler::PLAY_FILE);
+    d->schedulerActionComboBox->addItem(tr("Play a playlist"), Scheduler::PLAY_PLAYLIST);
+    d->schedulerActionComboBox->addItem(tr("Close the player"), Scheduler::QUIT);
+    d->schedulerActionComboBox->addItem(tr("Suspend the computer"), Scheduler::SUSPEND);
+    d->schedulerActionComboBox->addItem(tr("Shut the computer down"), Scheduler::SHUTDOWN);
     d->readSettings();
     d->loadPluginsInfo();
     d->loadLanguages();
     d->createMenus();
     d->updateGroupSettings();
+    d->updateSchedulerSettings();
+    d->enlargeGroupTitles(this);
     //connections
     connect(d->contentsWidget, &QListWidget::currentItemChanged, [d] (QListWidgetItem *current, QListWidgetItem *previous) {
         d->onContentsWidgetCurrentItemChanged(current, previous);
@@ -543,6 +700,14 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     connect(this, &QDialog::rejected, this, [d] { d->revertSettings(); });
     connect(d->linesPerGroupComboBox, &QComboBox::currentIndexChanged, this, [d] { d->updateGroupSettings(); });
     connect(d->showExtraRowCheckBox, &QCheckBox::clicked, this, [d] { d->updateGroupSettings(); });
+    //scheduler
+    connect(d->schedulerFileButton, &QToolButton::clicked, this, [d] { d->onSchedulerFileButtonClicked(); });
+    connect(d->schedulerCheckBox, &QCheckBox::toggled, this, [d] { d->updateSchedulerSettings(); });
+    connect(d->schedulerActionComboBox, &QComboBox::currentIndexChanged, this, [d] { d->updateSchedulerSettings(); });
+    connect(d->atTimeRadioButton, &QRadioButton::toggled, this, [d] { d->updateSchedulerSettings(); });
+    connect(d->afterRadioButton, &QRadioButton::toggled, this, [d] { d->updateSchedulerSettings(); });
+    connect(d->playListEndRadioButton, &QRadioButton::toggled, this, [d] { d->updateSchedulerSettings(); });
+    connect(d->schedulerTimeEdit, &QTimeEdit::timeChanged, this, [d] { d->updateSchedulerSettings(); });
 }
 
 ConfigDialog::~ConfigDialog()
@@ -550,9 +715,29 @@ ConfigDialog::~ConfigDialog()
     delete d_ptr;
 }
 
+void ConfigDialog::showSchedulerSettings()
+{
+    Q_D(ConfigDialog);
+    //the row and the stacked page share an index -- addPage() inserts into
+    //both -- so the page cannot be addressed by a constant: custom pages from
+    //the interface plugins go in ahead of it and push it down
+    const int row = d->stackedWidget->indexOf(d->page_2);
+    if(row < 0)
+        return;
+    d->contentsWidget->setCurrentRow(row);
+    //The page is taller than its scroll area and the scheduler sits at the
+    //bottom of it, so it has to be scrolled to. Deferred because the caller
+    //reaches this before exec(): the scroll area has no final size yet, and
+    //scrolling one that has not been laid out does nothing.
+    QScrollArea *area = d->advancedScrollArea;
+    QGroupBox *box = d->schedulerGroupBox;
+    QTimer::singleShot(0, this, [area, box] { area->ensureWidgetVisible(box); });
+}
+
 void ConfigDialog::addPage(const QString &name, QWidget *widget, const QIcon &icon)
 {
     Q_D(ConfigDialog);
+    d->enlargeGroupTitles(widget); //pages coming from plugins get the same treatment
     d->stackedWidget->insertWidget(d->insertRow, widget);
     d->contentsWidget->insertItem (d->insertRow, name);
     d->contentsWidget->item(d->insertRow)->setIcon(icon);

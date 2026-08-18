@@ -50,6 +50,12 @@ public:
      * \param icon Custom page icon
      */
     void addPage(const QString &name, QWidget *widget, const QIcon &icon = QIcon());
+    /*!
+     * Opens the page holding the scheduler and scrolls it into view, so a
+     * user interface can offer a direct way in instead of leaving the section
+     * to be hunted for.
+     */
+    void showSchedulerSettings();
 
 private:
     ConfigDialogPrivate *d_ptr;

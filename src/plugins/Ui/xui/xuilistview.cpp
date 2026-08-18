@@ -548,11 +548,18 @@ void XUiListView::dropUrls(const QList<QUrl> &urls, int index, const QPoint &pos
     }
 
     QMenu menu(this);
-    QAction *here = menu.addAction(tr("Add to This Playlist"));
+    QAction *here = menu.addAction(tr("Add Here")); //where it was let go of
+    QAction *end = menu.addAction(tr("Add to the End"));
+    QAction *start = menu.addAction(tr("Add to the Beginning"));
+    menu.addSeparator();
     QAction *fresh = menu.addAction(tr("Add to a New Playlist..."));
     QAction *chosen = menu.exec(pos);
     if(chosen == here)
         m_model->insertUrls(index, urls);
+    else if(chosen == end)
+        m_model->insertUrls(m_model->trackCount(), urls);
+    else if(chosen == start)
+        m_model->insertUrls(0, urls);
     else if(chosen == fresh)
         addToNewPlayList(urls);
 }

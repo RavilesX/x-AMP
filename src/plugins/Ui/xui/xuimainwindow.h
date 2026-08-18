@@ -58,9 +58,13 @@ private slots:
     void toggleMaximised();
     void updateWindowTitle();
     void showPreferences();
+    /*! The preferences, opened straight at the scheduler. */
+    void showSchedulerSettings();
 
 private:
     QWidget *buildTitleBar();
+    /*! Runs the preferences dialog, optionally landing on the scheduler. */
+    void openPreferences(bool scheduler);
     void createShortcuts();
     /*! Shows or hides the companion windows to match the settings. */
     void applyCardVisibility();

@@ -58,6 +58,7 @@ set(libqmmpui_SRCS
     lyricseditor.cpp
     visualmenu.cpp
     colorwidget.cpp
+    scheduler.cpp
     shortcutdialog.cpp
     editorbase.cpp
     forms/detailsdialog.ui
@@ -100,6 +101,7 @@ SET(libqmmpui_DEVEL_HDRS
     playlisttrack.h
     qmmpui_export.h
     qmmpuisettings.h
+    scheduler.h
     shortcutdialog.h
     templateeditor.h
     uifactory.h
@@ -112,6 +114,12 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_AUTOUIC_SEARCH_PATHS} ${CMAKE_CURRENT_SOU
 
 add_library(libqmmpui SHARED ${libqmmpui_SRCS})
 target_link_libraries(libqmmpui PRIVATE Qt6::Widgets Qt6::Network libqmmp)
+#x-AMP: the scheduler asks logind to suspend or power off the machine; without
+#D-Bus it falls back to systemctl
+if(Qt6DBus_FOUND)
+    target_link_libraries(libqmmpui PRIVATE Qt6::DBus)
+    set(libqmmpui_DEFINES ${libqmmpui_DEFINES} QMMPUI_HAS_DBUS)
+endif(Qt6DBus_FOUND)
 set_target_properties(libqmmpui PROPERTIES VERSION ${QMMP_VERSION} SOVERSION ${QMMP_SOVERSION} OUTPUT_NAME qmmpui${APP_NAME_SUFFIX})
 target_compile_definitions(libqmmpui PRIVATE ${libqmmpui_DEFINES})
 install(TARGETS libqmmpui LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

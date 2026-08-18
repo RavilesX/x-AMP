@@ -731,6 +731,17 @@ PlayListTrack *PlayListModel::nextTrack() const
     return d->container->track(index);
 }
 
+bool PlayListModel::isFinished() const
+{
+    Q_D(const PlayListModel);
+    if(d->container->isEmpty() || !d->playState)
+        return true;
+    //the queue spans every playlist, so anything waiting in it still has to be played
+    if(!PlayListQueue::instance()->isEmpty())
+        return false;
+    return d->playState->isFinished();
+}
+
 int PlayListModel::indexOf(PlayListItem *item) const
 {
     return d_ptr->container->indexOf(item);

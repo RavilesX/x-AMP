@@ -93,6 +93,8 @@ XUiMainWindow::XUiMainWindow(QWidget *parent) : XUiWindow(QStringLiteral("player
     setDragHandle(m_titleBar);
 
     m_playerCard = new XUiPlayerCard(this);
+    connect(m_playerCard, &XUiPlayerCard::schedulerRequested,
+            this, &XUiMainWindow::showSchedulerSettings);
     root->addWidget(m_playerCard, 1);
 
     XUiDock::instance()->setMainWindow(this);
@@ -249,6 +251,16 @@ void XUiMainWindow::showMainMenu()
 
 void XUiMainWindow::showPreferences()
 {
+    openPreferences(false);
+}
+
+void XUiMainWindow::showSchedulerSettings()
+{
+    openPreferences(true);
+}
+
+void XUiMainWindow::openPreferences(bool scheduler)
+{
     ConfigDialog dialog(this);
     XUiSettings *page = new XUiSettings(&dialog);
     connect(page, &XUiSettings::accentApplied, this, &XUiMainWindow::applyAccent);
@@ -271,6 +283,9 @@ void XUiMainWindow::showPreferences()
         const int y = qMin(pos().y(), qMax(area.top(), area.bottom() + 1 - dialog.height()));
         dialog.move(qMax(area.left(), x), qMax(area.top(), y));
     }
+
+    if(scheduler)
+        dialog.showSchedulerSettings();
 
     if(dialog.exec() == QDialog::Accepted)
     {
@@ -466,5 +481,12 @@ void XUiMainWindow::closeEvent(QCloseEvent *e)
         return;
     }
     QWidget::closeEvent(e);
+    //Put away here rather than left to the closeAllWindows() the exit runs:
+    //that reaches them only after the player has begun unwinding -- the audio
+    //engine thread, the playlists being written -- and until it does the two
+    //cards stand on screen belonging to a player that is already gone. The
+    //branch above hides them by hand for the same reason.
+    m_equalizerWindow->hide();
+    m_playlistWindow->hide();
     m_uiHelper->exit();
 }

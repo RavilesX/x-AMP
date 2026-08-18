@@ -49,6 +49,12 @@ void XUiIconButton::setIconSize(int size)
     update();
 }
 
+void XUiIconButton::setRestColor(const QColor &color)
+{
+    m_restColor = color;
+    update();
+}
+
 void XUiIconButton::setCheckable(bool checkable)
 {
     m_checkable = checkable;
@@ -76,8 +82,9 @@ void XUiIconButton::paintEvent(QPaintEvent *)
 
     //the glyphs carry the user's accent: held back at rest, full on when the
     //button is a toggle that is on, brightest under the pointer
+    const QColor rest = m_restColor.isValid() ? m_restColor : XUi::AccentMuted;
     const QColor color = m_hovered ? XUi::AccentBright
-                                   : (m_checked ? XUi::Accent : XUi::AccentMuted);
+                                   : (m_checked ? XUi::Accent : rest);
     const QRectF box((width() - m_iconSize) / 2.0, (height() - m_iconSize) / 2.0,
                      m_iconSize, m_iconSize);
     XUiIcons::paint(&p, m_icon, box, color);

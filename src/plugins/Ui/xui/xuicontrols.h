@@ -40,6 +40,12 @@ public:
     bool isChecked() const { return m_checked; }
     /*! Icon side length in pixels; the widget sizes itself around it. */
     void setIconSize(int size);
+    /*!
+     * Colour of the glyph at rest, for a button whose unchecked state means
+     * something is switched off rather than merely idle -- the same grey the
+     * text toggles use for it. Left unset, the accent's muted tone is used.
+     */
+    void setRestColor(const QColor &color);
 
 signals:
     void clicked();
@@ -55,6 +61,7 @@ protected:
 private:
     XUiIcons::Icon m_icon;
     int m_iconSize = 18;
+    QColor m_restColor; //invalid until a caller sets one
     bool m_checkable = false;
     bool m_checked = false;
     bool m_hovered = false;

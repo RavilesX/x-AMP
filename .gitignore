@@ -63,3 +63,5 @@ ui_*.h
 .claude/settings.local.json
 .idea/
 .vscode/
+PLAN.md
+

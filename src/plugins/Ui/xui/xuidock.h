@@ -47,6 +47,8 @@ public:
 
     /*! The window others snap to and that carries them along. */
     void setMainWindow(QWidget *window);
+    /*! The window set above, or nullptr before the interface has built it. */
+    QWidget *mainWindow() const { return m_main; }
     void addWindow(QWidget *window);
 
     /*!

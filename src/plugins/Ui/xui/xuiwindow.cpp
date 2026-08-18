@@ -188,6 +188,20 @@ void XUiWindow::closeEvent(QCloseEvent *e)
     //its windows on the way out too, and that must not untick anything.
     saveGeometry();
     e->accept();
+
+    //Alt+F4 goes to whichever window holds the focus, and the equalizer and
+    //the playlist are windows in their own right -- so the gesture that is
+    //meant to quit the player would take one card off screen and leave the
+    //rest running. Take the player down with it.
+    //
+    //The close above is accepted either way rather than handed over whole:
+    //the exit closes every window in turn, and a companion that refused its
+    //own close then stayed on screen while the player went. Qt marks a widget
+    //as closing before delivering the event and skips one that already is, so
+    //neither direction of this can come back around.
+    QWidget *main = XUiDock::instance()->mainWindow();
+    if(main && main != this)
+        main->close();
 }
 
 void XUiWindow::saveGeometry()
