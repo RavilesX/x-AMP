@@ -42,7 +42,22 @@ Output* OutputALSAFactory::create()
 
 Volume *OutputALSAFactory::createVolume()
 {
-    return new VolumeALSA();
+    //x-AMP: a mixer that could not be opened must not be handed back as if it
+    //had. The card and element are settings that default to hw:0 and PCM, and
+    //hw:0 is whichever card the kernel enumerated first -- plugging in a
+    //monitor with HDMI audio is enough to make that the wrong one. When the
+    //element is missing, setVolume() returns without doing anything and
+    //volume() reports zero, yet VolumeHandler still reads the object as a
+    //working hardware control and stops applying volume to the audio itself.
+    //The result is a volume control that moves and does nothing at all.
+    //Returning nothing instead lets it fall back to software volume.
+    VolumeALSA *volume = new VolumeALSA();
+    if(volume->isValid())
+        return volume;
+
+    qCWarning(plugin, "no usable mixer element, falling back to software volume");
+    delete volume;
+    return nullptr;
 }
 
 QDialog *OutputALSAFactory::createSettings(QWidget *parent)

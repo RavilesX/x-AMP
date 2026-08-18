@@ -59,6 +59,13 @@ public:
      */
     void applyAccent();
 
+    /*!
+     * Re-reads the crossfade effect's state. The preferences can switch the
+     * plugin from its own page, and nothing signals that, so the window calls
+     * this when the dialog is accepted.
+     */
+    void updateCrossfade();
+
 signals:
     /*!
      * The scheduler glyph has been clicked. The card has no way in to the
@@ -117,6 +124,8 @@ private:
     XUiPlayButton *m_play;
     XUiIconButton *m_shuffle;
     XUiIconButton *m_repeat;
+    /*! Hidden when the crossfade plugin is missing from the installation. */
+    XUiIconButton *m_crossfade;
     XUiIconButton *m_volumeIcon;
     /*! Always on screen; lit only while the scheduler is armed. */
     XUiIconButton *m_scheduler;

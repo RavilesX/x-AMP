@@ -151,6 +151,13 @@ bool QmmpAudioEngine::enqueue(InputSource *source)
     m_decoders.enqueue(decoder);
     m_inputs.insert(decoder, source);
     mutex()->unlock();
+    {
+        //x-AMP: published for the crossfade effect, which has to know whether
+        //the track coming up shares this one's format before it starts
+        //holding audio back -- see queuedAudioParameters()
+        QMutexLocker locker(&m_queuedApMutex);
+        m_queuedAp = decoder->audioParameters();
+    }
     if(!decoder->totalTime())
         source->setOffset(-1);
     source->setParent(this);
@@ -437,6 +444,11 @@ void QmmpAudioEngine::run()
                 m_inputs.take(m_decoder)->deleteLater ();
                 delete m_decoder;
                 m_decoder = m_decoders.dequeue();
+                {
+                    //x-AMP: it is the current track now, so nothing is queued
+                    QMutexLocker locker(&m_queuedApMutex);
+                    m_queuedAp = AudioParameters();
+                }
                 //m_seekTime = m_inputs.value(m_decoder)->offset();
                 flush(true);
                 //use current output if possible
@@ -711,6 +723,12 @@ void QmmpAudioEngine::prepareEffects(Decoder *d)
 
 //static members
 QmmpAudioEngine *QmmpAudioEngine::m_instance = nullptr;
+
+AudioParameters QmmpAudioEngine::queuedAudioParameters() const
+{
+    QMutexLocker locker(&m_queuedApMutex);
+    return m_queuedAp;
+}
 
 QmmpAudioEngine *QmmpAudioEngine::instance()
 {

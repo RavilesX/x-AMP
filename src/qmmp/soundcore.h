@@ -121,6 +121,16 @@ public:
      */
     bool nextTrackAccepted() const;
     /*!
+     * x-AMP: Returns the audio parameters of the track queued behind the one
+     * playing. The sample rate is zero when nothing is queued.
+     *
+     * Companion to nextTrackAccepted(): the engine rebuilds the effect chain
+     * whenever the format changes between tracks, destroying any effect
+     * configured for the old one. An effect that carries audio across the
+     * boundary has to know that is coming before it starts holding any back.
+     */
+    AudioParameters nextAudioParameters() const;
+    /*!
      *  This function returns file path or stream url.
      */
     const QString path() const;

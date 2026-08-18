@@ -69,6 +69,7 @@ namespace XUiIcons
         Settings,
         MusicNote,
         Clock,      //scheduler armed
+        Crossfade,
         ChevronDown,
         ChevronRight,
     };

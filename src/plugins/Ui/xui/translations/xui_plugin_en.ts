@@ -354,132 +354,137 @@
 <context>
     <name>XUiPlayerCard</name>
     <message>
-        <location filename="../xuiplayercard.cpp" line="153"/>
+        <location filename="../xuiplayercard.cpp" line="158"/>
         <source>Track details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="187"/>
+        <location filename="../xuiplayercard.cpp" line="192"/>
         <source>MONO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="189"/>
+        <location filename="../xuiplayercard.cpp" line="194"/>
         <source>STEREO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="241"/>
+        <location filename="../xuiplayercard.cpp" line="246"/>
         <source>Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="246"/>
+        <location filename="../xuiplayercard.cpp" line="251"/>
         <source>Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="294"/>
+        <location filename="../xuiplayercard.cpp" line="312"/>
         <source>MUTE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="295"/>
+        <location filename="../xuiplayercard.cpp" line="313"/>
         <source>Silence, and back to the previous level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="296"/>
+        <location filename="../xuiplayercard.cpp" line="314"/>
         <source>100%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="298"/>
+        <location filename="../xuiplayercard.cpp" line="316"/>
         <source>Full volume, and back to the previous level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="358"/>
+        <location filename="../xuiplayercard.cpp" line="376"/>
         <source>x-AMP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="360"/>
+        <location filename="../xuiplayercard.cpp" line="378"/>
         <source>Not playing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="366"/>
+        <location filename="../xuiplayercard.cpp" line="384"/>
         <source>%1 kHz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="394"/>
+        <location filename="../xuiplayercard.cpp" line="412"/>
         <source>%1 kbps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="499"/>
+        <location filename="../xuiplayercard.cpp" line="517"/>
         <source>Repeat track</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="500"/>
+        <location filename="../xuiplayercard.cpp" line="518"/>
         <source>Repeat playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="500"/>
+        <location filename="../xuiplayercard.cpp" line="518"/>
         <source>No repeat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="510"/>
+        <location filename="../xuiplayercard.cpp" line="531"/>
+        <source>Crossfade between tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuiplayercard.cpp" line="541"/>
         <source>Scheduler off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="518"/>
+        <location filename="../xuiplayercard.cpp" line="549"/>
         <source>play a file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="521"/>
+        <location filename="../xuiplayercard.cpp" line="552"/>
         <source>play a playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="524"/>
+        <location filename="../xuiplayercard.cpp" line="555"/>
         <source>close the player</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="527"/>
+        <location filename="../xuiplayercard.cpp" line="558"/>
         <source>suspend the computer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="530"/>
+        <location filename="../xuiplayercard.cpp" line="561"/>
         <source>shut the computer down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="536"/>
+        <location filename="../xuiplayercard.cpp" line="567"/>
         <source>at the end of the playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="538"/>
+        <location filename="../xuiplayercard.cpp" line="569"/>
         <source>at %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="543"/>
+        <location filename="../xuiplayercard.cpp" line="574"/>
         <source>Scheduled: %1 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="506"/>
+        <location filename="../xuiplayercard.cpp" line="537"/>
         <source>Click to open the scheduler</source>
         <translation type="unfinished"></translation>
     </message>

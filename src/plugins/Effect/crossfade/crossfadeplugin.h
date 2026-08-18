@@ -48,6 +48,9 @@ private:
         CHECKING,
         PREPARING,
         PROCESSING,
+        //x-AMP: the track coming up has a format this instance cannot carry
+        //audio into, so it stands aside and lets the tail play out
+        SKIPPING,
     };
 
     void mix(float *cur_buf, float *prev_buf, uint samples, double volume);

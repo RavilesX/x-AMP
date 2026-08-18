@@ -292,6 +292,8 @@ void XUiMainWindow::openPreferences(bool scheduler)
         page->writeSettings();
         applyAccent();
         applyCardVisibility();
+        //the plugins page can switch crossfade off behind the glyph's back
+        m_playerCard->updateCrossfade();
         m_playlistCard->reloadBackground();
     }
 }

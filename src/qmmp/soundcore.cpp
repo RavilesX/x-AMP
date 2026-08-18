@@ -256,6 +256,13 @@ bool SoundCore::nextTrackAccepted() const
     return d_ptr->nextState == SoundCorePrivate::SAME_ENGINE;
 }
 
+AudioParameters SoundCore::nextAudioParameters() const
+{
+    if(QmmpAudioEngine *engine = QmmpAudioEngine::instance())
+        return engine->queuedAudioParameters();
+    return AudioParameters();
+}
+
 const QString SoundCore::path() const
 {
     return d_ptr->path;

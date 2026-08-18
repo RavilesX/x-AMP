@@ -365,6 +365,20 @@ void XUiIcons::paint(QPainter *p, Icon icon, const QRectF &rect, const QColor &c
         strokePath(p, hands, color, W);
         break;
     }
+    case Crossfade:
+    {
+        //two ramps crossing: one track fading up while the other fades down.
+        //Curved rather than a plain X, which would read as the close glyph.
+        QPainterPath rising;
+        rising.moveTo(3, 18);
+        rising.cubicTo(9, 18, 11, 6, 21, 6);
+        QPainterPath falling;
+        falling.moveTo(3, 6);
+        falling.cubicTo(9, 6, 11, 18, 21, 18);
+        rising.addPath(falling);
+        strokePath(p, rising, color, W);
+        break;
+    }
     case ChevronDown:
     case ChevronRight:
     {

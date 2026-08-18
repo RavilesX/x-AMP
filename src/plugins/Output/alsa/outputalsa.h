@@ -77,6 +77,12 @@ public:
     void setVolume(const VolumeSettings &vol) override;
     VolumeSettings volume() const override;
     VolumeFlags flags() const override;
+    /*!
+     * x-AMP: \b true when the mixer element was found. Every other method is
+     * a no-op without it, so the factory checks this before handing the
+     * object over.
+     */
+    bool isValid() const { return pcm_element != nullptr; }
 
 private:
     //alsa mixer

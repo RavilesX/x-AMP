@@ -24,6 +24,8 @@
 #include <QVBoxLayout>
 #include <qmmp/soundcore.h>
 #include <qmmp/metadatamanager.h>
+#include <qmmp/effect.h>
+#include <qmmp/effectfactory.h>
 #include <qmmpui/mediaplayer.h>
 #include <qmmpui/qmmpuisettings.h>
 #include <qmmpui/playlistmanager.h>
@@ -260,6 +262,17 @@ QWidget *XUiPlayerCard::buildTransport()
             this, &XUiPlayerCard::updateRepeat);
     updateRepeat();
 
+    //Crossfade is an effect plugin rather than a player setting, so the glyph
+    //drives Effect::setEnabled() -- which adds or drops it in the running
+    //engine and writes the choice out, the same way the preferences page does.
+    m_crossfade = new XUiIconButton(XUiIcons::Crossfade, panel);
+    m_crossfade->setCheckable(true);
+    connect(m_crossfade, &XUiIconButton::toggled, this, [](bool on) {
+        if(EffectFactory *factory = Effect::findFactory(QStringLiteral("crossfade")))
+            Effect::setEnabled(factory, on);
+    });
+    updateCrossfade();
+
     m_volumeIcon = new XUiIconButton(XUiIcons::Volume, panel);
     connect(m_volumeIcon, &XUiIconButton::clicked, this, [this] {
         m_core->setMuted(!m_core->isMuted());
@@ -278,6 +291,8 @@ QWidget *XUiPlayerCard::buildTransport()
     layout->addWidget(next);
     layout->addSpacing(6);
     layout->addWidget(m_repeat);
+    layout->addSpacing(6);
+    layout->addWidget(m_crossfade);
     layout->addStretch(1);
     layout->addWidget(m_volumeIcon);
     layout->addWidget(buildVolume(panel));
@@ -501,6 +516,19 @@ void XUiPlayerCard::updateRepeat()
     m_repeat->setChecked(track || list);
     m_repeat->setToolTip(track ? tr("Repeat track")
                                : (list ? tr("Repeat playlist") : tr("No repeat")));
+}
+
+void XUiPlayerCard::updateCrossfade()
+{
+    //A build without the plugin would otherwise carry a switch that does
+    //nothing, so the glyph is left out entirely rather than shown dead.
+    EffectFactory *factory = Effect::findFactory(QStringLiteral("crossfade"));
+    m_crossfade->setVisible(factory != nullptr);
+    if(!factory)
+        return;
+
+    m_crossfade->setChecked(Effect::isEnabled(factory));
+    m_crossfade->setToolTip(tr("Crossfade between tracks"));
 }
 
 void XUiPlayerCard::updateScheduler()

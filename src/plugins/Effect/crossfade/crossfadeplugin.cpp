@@ -34,6 +34,11 @@ CrossfadePlugin::CrossfadePlugin() : Effect()
 
 CrossfadePlugin::~CrossfadePlugin()
 {
+    //the loud one: if this fires while a tail is held, the engine threw the
+    //effect away mid-crossfade and the buffered audio is lost
+    if(m_buffer_at > 0)
+        qCWarning(plugin, "crossfade: DESTROYED holding %zu buffered samples -- fade lost",
+                  m_buffer_at);
     if(m_buffer)
         free(m_buffer);
 }
@@ -48,12 +53,36 @@ void CrossfadePlugin::applyEffect(Buffer *b)
         {
             StateHandler::instance()->sendNextTrackRequest();
             m_state = CHECKING;
+            qCDebug(plugin, "crossfade: WAITING -> CHECKING (duration %lld, elapsed %lld)",
+                    m_core->duration(), m_handler->elapsed());
         }
         break;
     case CHECKING:
         //next source has been received and current engine will be used to play it
         if(SoundCore::instance()->nextTrackAccepted())
+        {
+            //x-AMP: A track in another format makes the engine rebuild the
+            //effect chain, and this object is destroyed with it -- taking the
+            //tail it had held back. That was worse than not fading at all:
+            //the current track went silent seconds early and the next one
+            //still began at full volume. Stand aside instead, so the tail
+            //plays where it belongs and only the fade is lost. Resampling it
+            //is the only way to fade across a rate change, and that does not
+            //belong in here.
+            const AudioParameters next = m_core->nextAudioParameters();
+            if(next.sampleRate() && (next.sampleRate() != sampleRate()
+                                     || next.channelMap() != channelMap()))
+            {
+                qCDebug(plugin, "crossfade: next track is %u Hz / %d channels against "
+                                "%u Hz / %d -- no fade across the change",
+                        next.sampleRate(), int(next.channelMap().count()),
+                        sampleRate(), channels());
+                m_state = SKIPPING;
+                break;
+            }
             m_state = PREPARING;
+            qCDebug(plugin, "crossfade: CHECKING -> PREPARING");
+        }
         break;
     case PREPARING:
         if(m_core->duration() && (m_core->duration() - m_handler->elapsed() <  m_overlap))
@@ -80,7 +109,12 @@ void CrossfadePlugin::applyEffect(Buffer *b)
             }
         }
         else if(m_buffer_at > 0)
+        {
             m_state = PROCESSING;
+            qCDebug(plugin, "crossfade: PREPARING -> PROCESSING (%zu samples buffered, "
+                            "new duration %lld, elapsed %lld)",
+                    m_buffer_at, m_core->duration(), m_handler->elapsed());
+        }
         break;
     case PROCESSING:
         if (m_buffer_at > 0)
@@ -92,7 +126,14 @@ void CrossfadePlugin::applyEffect(Buffer *b)
             memmove(m_buffer, m_buffer + samples, m_buffer_at * sizeof(float));
         }
         else
+        {
             m_state = WAITING;
+            qCDebug(plugin, "crossfade: PROCESSING -> WAITING (fade finished)");
+        }
+        break;
+    case SKIPPING:
+        //nothing to do: the buffer stays empty and the audio passes through
+        //untouched until the engine replaces this object
         break;
     default:
         ;
@@ -102,6 +143,7 @@ void CrossfadePlugin::applyEffect(Buffer *b)
 
 void CrossfadePlugin::configure(quint32 freq, ChannelMap map)
 {
+    qCDebug(plugin, "crossfade: configure(%u Hz, %d channels)", freq, int(map.count()));
     Effect::configure(freq, map);
 }
 

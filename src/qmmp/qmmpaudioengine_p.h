@@ -61,6 +61,13 @@ public:
     void removeEffect(EffectFactory *factory);
 
     static QmmpAudioEngine *instance();
+    /*!
+     * x-AMP: audio parameters of the track queued behind the one playing;
+     * the sample rate is zero when nothing is queued. Kept as a copy of its own,
+     * under its own mutex, so an effect can read it from the decode thread
+     * without taking the engine's lock -- which that thread may already hold.
+     */
+    AudioParameters queuedAudioParameters() const;
 
 private slots:
     void finish();
@@ -92,6 +99,9 @@ private:
     unsigned char *m_output_buf = nullptr;
     Decoder *m_decoder = nullptr;
     QQueue <Decoder*> m_decoders;
+    //x-AMP: see queuedAudioParameters()
+    mutable QMutex m_queuedApMutex;
+    AudioParameters m_queuedAp;
     QHash <Decoder*, InputSource*> m_inputs;
     AudioParameters m_ap;
     bool m_next;
