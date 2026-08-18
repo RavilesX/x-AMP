@@ -63,7 +63,7 @@ nítida a cualquier tamaño y resolución. Es nueva: aún le faltan cosas que
 `skinned` sí tiene (reordenar arrastrando, columnas configurables, pestañas de
 listas), por eso todavía no es la de por defecto.
 
-La lista exacta de paquetes de desarrollo para Ubuntu/Mint está en [PLAN.md](PLAN.md) y es la misma que usa el workflow de [integración continua](.github/workflows/build.yml).
+La lista exacta de paquetes de desarrollo para Ubuntu/Mint es la que instala el workflow de [integración continua](.github/workflows/build.yml), que compila sobre Ubuntu limpio en cada push.
 
 Detalles de arquitectura, opciones de compilación y cómo escribir plugins: [CLAUDE.md](CLAUDE.md).
 
