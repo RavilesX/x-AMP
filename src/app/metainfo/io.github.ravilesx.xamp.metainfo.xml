@@ -79,6 +79,30 @@
     <name>Ricardo Aviles Sanders</name>
   </developer>
   <releases>
+    <release version="1.1.0" date="2026-09-20">
+      <description>
+        <p>A scheduler, a shared play queue, and a build a fifth of the size.</p>
+        <ul>
+          <li>Scheduler: play a file or a playlist, close the player, suspend or shut the computer down, at a set time, after an interval or when the playlist ends. A clock in the player card shows whether it is armed and opens its settings.</li>
+          <li>Crossfade can be switched on from the transport row, and no longer cuts the end of a track short when the next one has a different sample rate.</li>
+          <li>One play queue behind all the playlists, and its commands gathered under one submenu.</li>
+          <li>The three windows snap together on every platform that lets the client place them, and can cross to a second monitor.</li>
+          <li>Alt+F4 on the equalizer or the playlist now quits the player instead of leaving it running.</li>
+          <li>The volume slider works when the ALSA mixer cannot be opened, as when an HDMI monitor takes the first sound card.</li>
+          <li>Built optimised by default: about half the installed size, and a minimal preset for one a fifth of it.</li>
+        </ul>
+        <p xml:lang="es">Un programador, una cola de reproducción compartida y un build de la quinta parte del tamaño.</p>
+        <ul xml:lang="es">
+          <li>Programador: reproducir un archivo o una lista, cerrar el reproductor, suspender o apagar el equipo, a una hora dada, tras un intervalo o al terminar la lista. Un reloj en la tarjeta del reproductor indica si está activado y abre sus ajustes.</li>
+          <li>El fundido entre pistas se activa desde la fila de transporte, y ya no corta el final de una pista cuando la siguiente tiene otra frecuencia de muestreo.</li>
+          <li>Una sola cola de reproducción detrás de todas las listas, con sus comandos reunidos en un submenú.</li>
+          <li>Las tres ventanas se acoplan en toda plataforma que deje al cliente colocarlas, y pueden pasar a un segundo monitor.</li>
+          <li>Alt+F4 sobre el ecualizador o la lista ahora cierra el reproductor en vez de dejarlo corriendo.</li>
+          <li>El control de volumen funciona cuando no se puede abrir el mezclador de ALSA, como cuando un monitor HDMI ocupa la primera tarjeta de sonido.</li>
+          <li>Compilado con optimización por defecto: cerca de la mitad de tamaño instalado, y un perfil mínimo con la quinta parte.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.0" date="2026-08-06">
       <description>
         <p>First release of x-AMP as its own player.</p>

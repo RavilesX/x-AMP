@@ -33,9 +33,10 @@ Partir de una base madura y estable para construir un reproductor propio: interf
 ## Características
 
 - **Interfaz propia (`xui`)** — dibujada con `QPainter`, no con mapas de bits, así que se ve nítida a cualquier resolución y escala. Color de acento configurable.
-- **Tres ventanas con imán** — reproductor, ecualizador y lista se mueven por separado y se acoplan entre sí; el conjunto viaja junto al arrastrar.
-- **Programador** — apagar el equipo, cerrar el reproductor o lanzar una lista a una hora dada, tras un intervalo o al terminar la lista.
-- **Fundido entre pistas** (*crossfade*), ecualizador de 10 bandas con presets, y cola de reproducción compartida por todas las listas.
+- **Tres ventanas con imán** — reproductor, ecualizador y lista se mueven por separado y se acoplan entre sí; el conjunto viaja junto al arrastrar y puede pasar a un segundo monitor.
+- **Programador** — reproducir un archivo o una lista, cerrar el reproductor, suspender o apagar el equipo, a una hora dada, tras un intervalo o al terminar la lista. Un reloj en la tarjeta del reproductor indica si está armado y lleva directo a sus ajustes.
+- **Fundido entre pistas** (*crossfade*) que se activa desde la fila de transporte, ecualizador de 10 bandas con presets, y una cola de reproducción compartida por todas las listas.
+- **Ligero** — compila optimizado por defecto y ocupa la mitad que antes; un perfil mínimo lo deja en 5 MB. Ver [Tamaño y optimización](#tamaño-y-optimización).
 - **Se instala junto a Qmmp**, sin sustituirlo: binario `xamp`, configuración en `~/.config/xamp`, librerías con sufijo `-xamp`. Los dos pueden convivir y ejecutarse a la vez.
 - **Instancia única** con control desde la línea de comandos, MPRIS, atajos globales y notificaciones de escritorio.
 
@@ -57,8 +58,8 @@ Cada formato es un plugin independiente que se detecta al configurar. Si falta l
 Descargá el tarball de la [última release](https://github.com/RavilesX/x-AMP/releases/latest):
 
 ```sh
-tar -xzf x-amp-1.0.0.tar.gz
-cd x-amp-1.0.0
+tar -xzf x-amp-1.1.0.tar.gz
+cd x-amp-1.1.0
 cmake -B build && make -C build -j"$(nproc)"
 sudo make -C build install/strip
 sudo ldconfig
@@ -173,9 +174,22 @@ xamp --ui-list       # ver las disponibles
 
 `xui` es la de por defecto desde la 1.0. Todavía le faltan cosas que `skinned` sí tiene —reordenar arrastrando, columnas configurables, pestañas de listas—, y por eso las otras dos siguen incluidas.
 
+## Novedades
+
+### 1.1.0
+
+- **Programador**, con un reloj en la tarjeta del reproductor que se apaga o se enciende según esté armado, y que sirve de acceso directo a sus ajustes.
+- **Crossfade** activable desde la fila de transporte. Ya no recorta el final de una pista cuando la siguiente tiene otra frecuencia de muestreo: en ese caso deja pasar la cola completa y solo omite el fundido.
+- **Una cola de reproducción** detrás de todas las listas, con sus comandos reunidos en un submenú.
+- **Ventanas**: el acople funciona en toda plataforma donde el cliente puede colocarlas, se detiene donde lo hace el gestor de ventanas y admite un segundo monitor. `Alt+F4` sobre el ecualizador o la lista cierra el reproductor entero.
+- **Volumen**: si el mezclador de ALSA no se puede abrir —por ejemplo, cuando un monitor con audio HDMI se queda con la primera tarjeta— el control cae al volumen por software en vez de quedar inerte.
+- **Compilación**: `Release` por defecto (antes salía sin optimizar en Linux), `install/strip`, y un preset `lean`. De 26,0 MB a 13,5 MB, o a 5,0 MB con el perfil mínimo.
+
+Antes de actualizar: la versión menor forma parte de la ruta de los plugins (`qmmp-1.1-xamp`), así que hay que desinstalar la anterior antes de instalar esta. Ver [CLAUDE.md](CLAUDE.md).
+
 ## Estado
 
-Versión **1.0.0**. Ya no es un fork de solo rebranding: la interfaz `xui` es propia, y el motor de audio, los decodificadores y el sistema de plugins siguen siendo los de Qmmp.
+Versión **1.1.0**. Ya no es un fork de solo rebranding: la interfaz `xui` es propia, y el motor de audio, los decodificadores y el sistema de plugins siguen siendo los de Qmmp.
 
 | | |
 |---|---|
@@ -183,7 +197,8 @@ Versión **1.0.0**. Ya no es un fork de solo rebranding: la interfaz `xui` es pr
 | Rebranding e instalación paralela | ✅ |
 | Integración continua (Linux y Windows) | ✅ |
 | Interfaz propia `xui` | ✅ por defecto desde 1.0 |
-| Primera release publicada | ✅ [v1.0.0](https://github.com/RavilesX/x-AMP/releases/latest) |
+| Programador y cola compartida | ✅ desde 1.1 |
+| Releases publicadas | ✅ [1.1.0](https://github.com/RavilesX/x-AMP/releases/latest) y [1.0.0](https://github.com/RavilesX/x-AMP/releases/tag/v1.0.0) |
 
 La CI compila en Ubuntu y en Windows (MinGW vía MSYS2) en cada push, con un guardián que falla si un plugin deja de construirse. Las releases se cortan por etiqueta y publican un tarball de fuentes con su suma SHA-256.
 

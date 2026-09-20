@@ -31,7 +31,7 @@
 //strands whatever an older build installed. STABLE drops the "-dev" suffix
 //from the version string; it belongs at 0 between releases.
 #define QMMP_VERSION_MAJOR 1
-#define QMMP_VERSION_MINOR 0
+#define QMMP_VERSION_MINOR 1
 #define QMMP_VERSION_PATCH 0
 #define QMMP_VERSION_STABLE 1
 
