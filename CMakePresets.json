@@ -1,0 +1,76 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 21, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "Todo",
+      "description": "Every plugin the machine has libraries for. What the CI builds, so its plugin guard stays meaningful.",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "lean",
+      "displayName": "Mínimo",
+      "description": "xui alone, no skins, no desktop-integration plugins, no chiptune or tracker decoders. Roughly a fifth of what the full build installs.",
+      "binaryDir": "${sourceDir}/build-lean",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "MinSizeRel",
+
+        "USE_SKINNED": "FALSE",
+        "USE_QSUI": "FALSE",
+
+        "USE_MPRIS": "FALSE",
+        "USE_SCROBBLER": "FALSE",
+        "USE_LISTENBRAINZ": "FALSE",
+        "USE_STATICON": "FALSE",
+        "USE_NOTIFIER": "FALSE",
+        "USE_KDENOTIFY": "FALSE",
+        "USE_LYRICS": "FALSE",
+        "USE_UDISKS": "FALSE",
+        "USE_HOTKEY": "FALSE",
+        "USE_GNOMEHOTKEY": "FALSE",
+        "USE_FILEOPS": "FALSE",
+        "USE_COVER": "FALSE",
+        "USE_CONVERTER": "FALSE",
+        "USE_RGSCAN": "FALSE",
+        "USE_SB": "FALSE",
+        "USE_TRACKCHANGE": "FALSE",
+        "USE_COPYPASTE": "FALSE",
+        "USE_HISTORY": "FALSE",
+        "USE_SLEEPINHIBITOR": "FALSE",
+        "USE_TAGEDITOR": "FALSE",
+        "USE_LIBRARY": "FALSE",
+
+        "USE_SID": "FALSE",
+        "USE_GME": "FALSE",
+        "USE_XMP": "FALSE",
+        "USE_MPC": "FALSE",
+        "USE_CDA": "FALSE",
+        "USE_ARCHIVE": "FALSE",
+
+        "USE_ANALYZER": "FALSE",
+        "USE_PROJECTM": "FALSE",
+
+        "USE_JACK": "FALSE",
+        "USE_SHOUT": "FALSE",
+        "USE_QTMULTIMEDIA": "FALSE",
+        "USE_NULL": "FALSE",
+
+        "USE_LADSPA": "FALSE",
+        "USE_BS2B": "FALSE",
+        "USE_STEREO": "FALSE",
+        "USE_MONOTOSTEREO": "FALSE",
+        "USE_FILEWRITER": "FALSE",
+
+        "USE_TWO_PANEL_DIALOG": "FALSE"
+      }
+    }
+  ],
+  "buildPresets": [
+    { "name": "default", "configurePreset": "default" },
+    { "name": "lean", "configurePreset": "lean" }
+  ]
+}

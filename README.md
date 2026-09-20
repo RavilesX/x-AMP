@@ -60,7 +60,7 @@ Descargá el tarball de la [última release](https://github.com/RavilesX/x-AMP/r
 tar -xzf x-amp-1.0.0.tar.gz
 cd x-amp-1.0.0
 cmake -B build && make -C build -j"$(nproc)"
-sudo make -C build install
+sudo make -C build install/strip
 sudo ldconfig
 ```
 
@@ -70,7 +70,7 @@ sudo ldconfig
 git clone https://github.com/RavilesX/x-AMP.git
 cd x-AMP
 cmake -B build && make -C build -j"$(nproc)"
-sudo make -C build install
+sudo make -C build install/strip
 sudo ldconfig
 ```
 
@@ -87,6 +87,53 @@ Al terminar de configurar, CMake imprime un resumen con los plugins realmente ha
 ```sh
 cmake -B build -DUSE_JACK:BOOL=FALSE
 ```
+
+### Tamaño y optimización
+
+Sin `CMAKE_BUILD_TYPE`, CMake no pasa ninguna bandera de optimización. x-AMP
+lo fija en `Release` cuando no se le indica otra cosa, así que basta con
+`cmake -B build`. Para elegir a mano:
+
+```sh
+cmake -B build -DCMAKE_BUILD_TYPE=MinSizeRel   # -Os, el binario más pequeño
+cmake -B build -DCMAKE_BUILD_TYPE=Release      # -O3, el de por defecto
+cmake -B build -DCMAKE_BUILD_TYPE=Debug        # -g, sin optimizar
+```
+
+`install/strip` en vez de `install` descarta las tablas de símbolos, que son
+cerca de un tercio de lo que se instala. Medido sobre el árbol completo:
+
+| | instalado |
+|---|---|
+| Sin tipo de build ni strip (lo que hacía antes) | 26,0 MB |
+| `Release` + `install/strip` | 13,5 MB |
+| `MinSizeRel` + `install/strip` | 11,5 MB |
+| `MinSizeRel` + `install/strip` + [perfil mínimo](#perfil-mínimo) | 5,0 MB |
+
+Los tres tardan prácticamente lo mismo en compilar: el código que `-O0` deja
+sin *inline* cuesta más de ensamblar y enlazar que lo que ahorra en optimizar.
+
+### Perfil mínimo
+
+Para una instalación de solo lo necesario —`xui` como única interfaz, sin
+skins, sin los plugins de escritorio y sin los decodificadores de música de
+consola— hay un preset:
+
+```sh
+cmake --preset lean && cmake --build build-lean -j"$(nproc)"
+sudo cmake --install build-lean --strip
+sudo ldconfig
+```
+
+Quita `skinned` y `qsui`, los 21 plugins de la categoría `General`, los
+decodificadores de *chiptune* y *tracker*, los visualizadores y las salidas
+que no se usan en escritorio. Requiere CMake ≥ 3.21.
+
+> [!NOTE]
+> El perfil mínimo deja fuera `statusicon` y `mpris`. Sin el primero, «ocultar
+> al cerrar» no tiene desde dónde restaurar la ventana y cerrar siempre
+> significa salir; sin el segundo no hay teclas multimedia ni integración con
+> el escritorio. Si los querés, agregá `-DUSE_STATICON=TRUE -DUSE_MPRIS=TRUE`.
 
 ## Uso
 

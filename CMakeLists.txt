@@ -25,6 +25,23 @@ if(POLICY CMP0175)
     cmake_policy(SET CMP0175 NEW)
 endif()
 
+#x-AMP: CMake passes no optimisation flags at all when CMAKE_BUILD_TYPE is
+#empty, which is its default -- so `cmake ./ && make`, the command the README
+#gives and the one the Linux CI and the release tarball both use, produced an
+#-O0 build with asserts live. Measured on the full tree: 26.0 MB installed
+#against 13.5 MB at -O3, and no build-time saving to show for it, since the
+#code -O0 leaves uninlined costs more to assemble and link than optimising it
+#does. The Windows job in the CI already set Release by hand; this makes every
+#platform agree. Set it only when the caller has not, so -DCMAKE_BUILD_TYPE
+#and multi-config generators still decide for themselves.
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+        "Build type: Release, MinSizeRel, RelWithDebInfo or Debug" FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+                 Release MinSizeRel RelWithDebInfo Debug)
+    message(STATUS "No build type given, defaulting to Release")
+endif()
+
 #Qt6 modules
 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} /home/user/qt6)
 

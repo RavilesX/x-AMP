@@ -86,7 +86,7 @@ jobs:
 
       - name: Staged install
         run: |
-          make -C build install DESTDIR="$PWD/stage"
+          make -C build install/strip DESTDIR="$PWD/stage"
           desktop-file-validate stage/usr/local/share/applications/*.desktop
           appstreamcli validate --no-net \
             stage/usr/local/share/metainfo/io.github.ravilesx.xamp.metainfo.xml

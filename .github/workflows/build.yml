@@ -84,8 +84,11 @@ jobs:
       # source file does not exist. It never shows up in a plain build.
       - name: Staged install
         run: |
-          make -C build install DESTDIR="$PWD/stage"
+          # install/strip, not install: the symbol tables are a third of what
+          # gets installed and nothing here reads them.
+          make -C build install/strip DESTDIR="$PWD/stage"
           echo "Installed files: $(find stage -type f -o -type l | wc -l)"
+          echo "Installed size: $(du -sh stage | cut -f1)"
           # Nothing installed may be named plain "qmmp*": that is what would
           # collide with the upstream package. Internal artefacts carry the
           # -xamp suffix, user-facing ones are named xamp.
