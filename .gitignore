@@ -65,3 +65,6 @@ ui_*.h
 .vscode/
 PLAN.md
 
+
+# in-source builds leave the launcher here
+/src/app/xamp
