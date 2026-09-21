@@ -104,7 +104,7 @@
     <message>
         <location filename="../ffmpegsettingsdialog.ui" line="138"/>
         <source>WebM Vorbis/Opus</source>
-        <translation type="unfinished"></translation>
+        <translation>WebM Vorbis/Opus</translation>
     </message>
     <message>
         <location filename="../ffmpegsettingsdialog.ui" line="145"/>

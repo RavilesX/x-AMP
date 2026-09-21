@@ -64,12 +64,12 @@
     <message>
         <location filename="../httpsettingsdialog.ui" line="34"/>
         <source>Default buffer size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamaño de búfer predeterminado:</translation>
     </message>
     <message>
         <location filename="../httpsettingsdialog.ui" line="50"/>
         <source>This value is used if information about bitrate is &lt;b&gt;not&lt;/b&gt; available.</source>
-        <translation type="unfinished"></translation>
+        <translation>Este valor se usa cuando &lt;b&gt;no&lt;/b&gt; hay información sobre la tasa de bits.</translation>
     </message>
     <message>
         <location filename="../httpsettingsdialog.ui" line="53"/>
@@ -84,12 +84,12 @@
     <message>
         <location filename="../httpsettingsdialog.ui" line="90"/>
         <source>Buffer duration:</source>
-        <translation type="unfinished"></translation>
+        <translation>Duración del búfer:</translation>
     </message>
     <message>
         <location filename="../httpsettingsdialog.ui" line="97"/>
         <source>This value is used if information about bitrate is available.</source>
-        <translation type="unfinished"></translation>
+        <translation>Este valor se usa cuando hay información sobre la tasa de bits.</translation>
     </message>
     <message>
         <location filename="../httpsettingsdialog.ui" line="100"/>

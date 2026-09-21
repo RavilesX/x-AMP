@@ -402,31 +402,31 @@
         <location filename="../forms/configdialog.ui" line="193"/>
         <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1067"/>
         <source>Group Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Modo de agrupación</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="202"/>
         <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1068"/>
         <source>Group size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamaño del grupo:</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="219"/>
         <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1069"/>
         <source>Show dividing line</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar línea divisoria</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="251"/>
         <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1072"/>
         <source>Extra row format:</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato de la fila adicional:</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="276"/>
         <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1074"/>
         <source>Show extra row</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar fila adicional</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="283"/>
@@ -456,7 +456,7 @@
         <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1124"/>
         <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1128"/>
         <source>A list of file masks separated by comma.</source>
-        <translation type="unfinished"></translation>
+        <translation>Una lista de máscaras de archivo separadas por comas.</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="316"/>
@@ -558,7 +558,7 @@
         <location filename="../forms/configdialog.ui" line="632"/>
         <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1108"/>
         <source>HH:mm</source>
-        <translation type="unfinished"></translation>
+        <translation>HH:mm</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="747"/>
@@ -763,22 +763,22 @@
     <message>
         <location filename="../configdialog.cpp" line="637"/>
         <source>1 row</source>
-        <translation type="unfinished"></translation>
+        <translation>1 fila</translation>
     </message>
     <message>
         <location filename="../configdialog.cpp" line="638"/>
         <source>3 rows</source>
-        <translation type="unfinished"></translation>
+        <translation>3 filas</translation>
     </message>
     <message>
         <location filename="../configdialog.cpp" line="639"/>
         <source>4 rows</source>
-        <translation type="unfinished"></translation>
+        <translation>4 filas</translation>
     </message>
     <message>
         <location filename="../configdialog.cpp" line="640"/>
         <source>5 rows</source>
-        <translation type="unfinished"></translation>
+        <translation>5 filas</translation>
     </message>
     <message>
         <location filename="../configdialog.cpp" line="641"/>
@@ -854,7 +854,7 @@
         <location filename="../configdialog.cpp" line="575"/>
         <location filename="../configdialog.cpp" line="584"/>
         <source>Priority</source>
-        <translation type="unfinished"></translation>
+        <translation>Prioridad</translation>
     </message>
     <message>
         <location filename="../configdialog.cpp" line="600"/>
@@ -1022,7 +1022,7 @@
     <message>
         <location filename="../covereditor.cpp" line="36"/>
         <source>External File</source>
-        <translation type="unfinished"></translation>
+        <translation>Archivo externo</translation>
     </message>
     <message>
         <location filename="../covereditor.cpp" line="37"/>
@@ -1280,18 +1280,18 @@
     <message>
         <location filename="../lyricseditor.cpp" line="83"/>
         <source>Load Lyrics</source>
-        <translation type="unfinished"></translation>
+        <translation>Cargar letra</translation>
     </message>
     <message>
         <location filename="../lyricseditor.cpp" line="83"/>
         <location filename="../lyricseditor.cpp" line="104"/>
         <source>Text Files</source>
-        <translation type="unfinished"></translation>
+        <translation>Archivos de texto</translation>
     </message>
     <message>
         <location filename="../lyricseditor.cpp" line="102"/>
         <source>Save Lyrics</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar letra</translation>
     </message>
 </context>
 <context>
@@ -1359,22 +1359,22 @@
     <message>
         <location filename="../metadataformattermenu.cpp" line="61"/>
         <source>Duration | Format | Bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Duración | Formato | Tasa de bits</translation>
     </message>
     <message>
         <location filename="../metadataformattermenu.cpp" line="64"/>
         <source>Year | Duration | Bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Año | Duración | Tasa de bits</translation>
     </message>
     <message>
         <location filename="../metadataformattermenu.cpp" line="65"/>
         <source>Year | Duration | Sample rate</source>
-        <translation type="unfinished"></translation>
+        <translation>Año | Duración | Frecuencia de muestreo</translation>
     </message>
     <message>
         <location filename="../metadataformattermenu.cpp" line="65"/>
         <source>%y | %if(%l,%l | ,)%{samplerate} Hz</source>
-        <translation type="unfinished"></translation>
+        <translation>%y | %if(%l,%l | ,)%{samplerate} Hz</translation>
     </message>
     <message>
         <location filename="../metadataformattermenu.cpp" line="69"/>
@@ -1456,32 +1456,32 @@
     <message>
         <location filename="../metadataformattermenu.cpp" line="61"/>
         <source>%if(%l,%l | ,)%{format} | %{bitrate} kbps</source>
-        <translation type="unfinished"></translation>
+        <translation>%if(%l,%l | ,)%{format} | %{bitrate} kbps</translation>
     </message>
     <message>
         <location filename="../metadataformattermenu.cpp" line="62"/>
         <source>%if(%l,%l | ,)%{format} | %{bitrate} kbps | %{samplerate} Hz</source>
-        <translation type="unfinished"></translation>
+        <translation>%if(%l,%l | ,)%{format} | %{bitrate} kbps | %{samplerate} Hz</translation>
     </message>
     <message>
         <location filename="../metadataformattermenu.cpp" line="62"/>
         <source>Duration | Format | Bitrate | Sample rate</source>
-        <translation type="unfinished"></translation>
+        <translation>Duración | Formato | Tasa de bits | Frecuencia de muestreo</translation>
     </message>
     <message>
         <location filename="../metadataformattermenu.cpp" line="63"/>
         <source>Duration | Format | Sample rate</source>
-        <translation type="unfinished"></translation>
+        <translation>Duración | Formato | Frecuencia de muestreo</translation>
     </message>
     <message>
         <location filename="../metadataformattermenu.cpp" line="63"/>
         <source>%if(%l,%l | ,)%{format} | %{samplerate} Hz</source>
-        <translation type="unfinished"></translation>
+        <translation>%if(%l,%l | ,)%{format} | %{samplerate} Hz</translation>
     </message>
     <message>
         <location filename="../metadataformattermenu.cpp" line="64"/>
         <source>%y | %if(%l,%l | ,)%{bitrate} kbps</source>
-        <translation type="unfinished"></translation>
+        <translation>%y | %if(%l,%l | ,)%{bitrate} kbps</translation>
     </message>
     <message>
         <location filename="../metadataformattermenu.cpp" line="68"/>
@@ -1502,12 +1502,12 @@
     <message>
         <location filename="../playlistgroup.cpp" line="160"/>
         <source>Streams</source>
-        <translation type="unfinished">Flujos</translation>
+        <translation>Flujos</translation>
     </message>
     <message>
         <location filename="../playlistgroup.cpp" line="176"/>
         <source>Empty group</source>
-        <translation type="unfinished">Grupo vacío</translation>
+        <translation>Grupo vacío</translation>
     </message>
 </context>
 <context>
@@ -1543,7 +1543,7 @@
         <location filename="../pluginitem.cpp" line="212"/>
         <location filename="../pluginitem.cpp" line="226"/>
         <source>Priority (a higher value means lower priority):</source>
-        <translation type="unfinished"></translation>
+        <translation>Prioridad (un valor más alto significa menor prioridad):</translation>
     </message>
 </context>
 <context>
@@ -1551,7 +1551,7 @@
     <message>
         <location filename="../qmmpuisettings.cpp" line="39"/>
         <source>%if(%l,%l | ,)%{format} | %{bitrate} kbps | %{samplerate} Hz</source>
-        <translation type="unfinished"></translation>
+        <translation>%if(%l,%l | ,)%{format} | %{bitrate} kbps | %{samplerate} Hz</translation>
     </message>
     <message>
         <location filename="../qmmpuisettings.cpp" line="64"/>
@@ -1693,19 +1693,19 @@
         <location filename="../forms/texteditor.ui" line="40"/>
         <location filename="../libqmmpui_autogen/include/ui_texteditor.h" line="78"/>
         <source>Load</source>
-        <translation type="unfinished">Cargar</translation>
+        <translation>Cargar</translation>
     </message>
     <message>
         <location filename="../forms/texteditor.ui" line="47"/>
         <location filename="../libqmmpui_autogen/include/ui_texteditor.h" line="79"/>
         <source>Delete</source>
-        <translation type="unfinished">Borrar</translation>
+        <translation>Borrar</translation>
     </message>
     <message>
         <location filename="../forms/texteditor.ui" line="54"/>
         <location filename="../libqmmpui_autogen/include/ui_texteditor.h" line="80"/>
         <source>Save as...</source>
-        <translation type="unfinished">Guardar como...</translation>
+        <translation>Guardar como...</translation>
     </message>
 </context>
 <context>

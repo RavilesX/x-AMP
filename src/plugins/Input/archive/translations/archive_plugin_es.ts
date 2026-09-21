@@ -26,7 +26,7 @@
     <message>
         <location filename="../decoderarchivefactory.cpp" line="168"/>
         <source>Compiled against:</source>
-        <translation type="unfinished"></translation>
+        <translation>Compilado con:</translation>
     </message>
     <message>
         <location filename="../decoderarchivefactory.cpp" line="171"/>

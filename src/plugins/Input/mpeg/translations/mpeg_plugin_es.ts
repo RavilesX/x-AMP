@@ -173,7 +173,7 @@
     <message>
         <location filename="../mpegsettingsdialog.cpp" line="32"/>
         <source>Detect by Locale</source>
-        <translation type="unfinished"></translation>
+        <translation>Detectar según la configuración regional</translation>
     </message>
 </context>
 </TS>

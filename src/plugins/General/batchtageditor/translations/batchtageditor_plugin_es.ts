@@ -6,17 +6,17 @@
     <message>
         <location filename="../batchtageditor.cpp" line="42"/>
         <source>Change Tags</source>
-        <translation type="unfinished"></translation>
+        <translation>Cambiar etiquetas</translation>
     </message>
     <message>
         <location filename="../batchtageditor.cpp" line="70"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Advertencia</translation>
     </message>
     <message>
         <location filename="../batchtageditor.cpp" line="70"/>
         <source>Unable to find editable tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>No se encontraron pistas editables</translation>
     </message>
 </context>
 <context>
@@ -24,57 +24,57 @@
     <message>
         <location filename="../batchtageditordialog.ui" line="14"/>
         <source>Change Tags of the Selected Files</source>
-        <translation type="unfinished"></translation>
+        <translation>Cambiar las etiquetas de los archivos seleccionados</translation>
     </message>
     <message>
         <location filename="../batchtageditordialog.cpp" line="16"/>
         <source>Artist</source>
-        <translation type="unfinished"></translation>
+        <translation>Artista</translation>
     </message>
     <message>
         <location filename="../batchtageditordialog.cpp" line="17"/>
         <source>Album Artist</source>
-        <translation type="unfinished"></translation>
+        <translation>Artista del álbum</translation>
     </message>
     <message>
         <location filename="../batchtageditordialog.cpp" line="18"/>
         <source>Album</source>
-        <translation type="unfinished"></translation>
+        <translation>Álbum</translation>
     </message>
     <message>
         <location filename="../batchtageditordialog.cpp" line="19"/>
         <source>Comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Comentario</translation>
     </message>
     <message>
         <location filename="../batchtageditordialog.cpp" line="20"/>
         <source>Genre</source>
-        <translation type="unfinished"></translation>
+        <translation>Género</translation>
     </message>
     <message>
         <location filename="../batchtageditordialog.cpp" line="21"/>
         <source>Composer</source>
-        <translation type="unfinished"></translation>
+        <translation>Compositor</translation>
     </message>
     <message>
         <location filename="../batchtageditordialog.cpp" line="22"/>
         <source>Year</source>
-        <translation type="unfinished"></translation>
+        <translation>Año</translation>
     </message>
     <message>
         <location filename="../batchtageditordialog.cpp" line="23"/>
         <source>Disc Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de disco</translation>
     </message>
     <message>
         <location filename="../batchtageditordialog.cpp" line="79"/>
         <source>Writing tags...</source>
-        <translation type="unfinished"></translation>
+        <translation>Escribiendo etiquetas...</translation>
     </message>
     <message>
         <location filename="../batchtageditordialog.cpp" line="79"/>
         <source>Interrupt</source>
-        <translation type="unfinished"></translation>
+        <translation>Interrumpir</translation>
     </message>
 </context>
 <context>
@@ -82,27 +82,27 @@
     <message>
         <location filename="../batchtageditorfactory.cpp" line="28"/>
         <source>Tag Editor Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Complemento editor de etiquetas</translation>
     </message>
     <message>
         <location filename="../batchtageditorfactory.cpp" line="48"/>
         <source>About Tag Editor Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Acerca del complemento editor de etiquetas</translation>
     </message>
     <message>
         <location filename="../batchtageditorfactory.cpp" line="49"/>
         <source>Qmmp Tag Editor Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Complemento editor de etiquetas de Qmmp</translation>
     </message>
     <message>
         <location filename="../batchtageditorfactory.cpp" line="50"/>
         <source>This plugin allows for batch editing of tags</source>
-        <translation type="unfinished"></translation>
+        <translation>Este complemento permite editar etiquetas por lotes</translation>
     </message>
     <message>
         <location filename="../batchtageditorfactory.cpp" line="51"/>
         <source>Written by: Ilya Kotov &lt;forkotov02@ya.ru&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Escrito por: Ilya Kotov &lt;forkotov02@ya.ru&gt;</translation>
     </message>
 </context>
 </TS>

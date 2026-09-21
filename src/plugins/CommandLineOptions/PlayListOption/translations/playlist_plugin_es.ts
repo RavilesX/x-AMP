@@ -21,17 +21,17 @@
     <message>
         <location filename="../playlistoption.cpp" line="36"/>
         <source>Select playlist</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccionar lista de reproducción</translation>
     </message>
     <message>
         <location filename="../playlistoption.cpp" line="37"/>
         <source>Create playlist</source>
-        <translation type="unfinished"></translation>
+        <translation>Crear lista de reproducción</translation>
     </message>
     <message>
         <location filename="../playlistoption.cpp" line="38"/>
         <source>Play track in the specified playlist</source>
-        <translation type="unfinished"></translation>
+        <translation>Reproducir una pista de la lista indicada</translation>
     </message>
     <message>
         <location filename="../playlistoption.cpp" line="39"/>
@@ -41,7 +41,7 @@
     <message>
         <location filename="../playlistoption.cpp" line="40"/>
         <source>Remove playlist</source>
-        <translation type="unfinished"></translation>
+        <translation>Eliminar lista de reproducción</translation>
     </message>
     <message>
         <location filename="../playlistoption.cpp" line="41"/>
@@ -71,22 +71,22 @@
     <message>
         <location filename="../playlistoption.cpp" line="94"/>
         <source>Arguments:</source>
-        <translation type="unfinished"></translation>
+        <translation>Argumentos:</translation>
     </message>
     <message>
         <location filename="../playlistoption.cpp" line="95"/>
         <source>%1 - index or name of the playlist</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 - índice o nombre de la lista</translation>
     </message>
     <message>
         <location filename="../playlistoption.cpp" line="96"/>
         <source>%1 - index of the track</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 - índice de la pista</translation>
     </message>
     <message>
         <location filename="../playlistoption.cpp" line="97"/>
         <source>%1 - name of the new playlist</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 - nombre de la lista nueva</translation>
     </message>
     <message>
         <location filename="../playlistoption.cpp" line="118"/>
@@ -100,12 +100,12 @@
     <message>
         <location filename="../playlistoption.cpp" line="142"/>
         <source>Invalid playlist name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre de lista no válido</translation>
     </message>
     <message>
         <location filename="../playlistoption.cpp" line="147"/>
         <source>Playlist with name &quot;%1&quot; already exists</source>
-        <translation type="unfinished"></translation>
+        <translation>Ya existe una lista llamada &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../playlistoption.cpp" line="156"/>
@@ -120,12 +120,12 @@
     <message>
         <location filename="../playlistoption.cpp" line="206"/>
         <source>Unable to remove last remaining playlist</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede eliminar la única lista que queda</translation>
     </message>
     <message>
         <location filename="../playlistoption.cpp" line="209"/>
         <source>Missing playlist ID</source>
-        <translation type="unfinished"></translation>
+        <translation>Falta el identificador de la lista</translation>
     </message>
 </context>
 </TS>
