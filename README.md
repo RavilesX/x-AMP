@@ -59,8 +59,8 @@ Descargá de la [última release](https://github.com/RavilesX/x-AMP/releases/lat
 
 | Archivo | Para qué |
 |---|---|
-| `x-amp-1.1.0-setup.exe` | Instalador con asistente. Instala por usuario, así que no pide permisos de administrador. |
-| `x-amp-1.1.0-windows-x64.zip` | Portable: descomprimir y ejecutar `bin\xamp.exe`. |
+| `x-amp-1.2.0-setup.exe` | Instalador con asistente. Instala por usuario, así que no pide permisos de administrador. |
+| `x-amp-1.2.0-windows-x64.zip` | Portable: descomprimir y ejecutar `bin\xamp.exe`. |
 
 Windows 10 o posterior, 64 bits. Los dos llevan dentro el entorno de Qt, el de
 MinGW y todos los plugins de decodificación, así que no hace falta instalar
@@ -75,8 +75,8 @@ con» sin necesidad de marcarla.
 En Linux se compila desde el tarball de la [última release](https://github.com/RavilesX/x-AMP/releases/latest):
 
 ```sh
-tar -xzf x-amp-1.1.0.tar.gz
-cd x-amp-1.1.0
+tar -xzf x-amp-1.2.0.tar.gz
+cd x-amp-1.2.0
 cmake -B build && make -C build -j"$(nproc)"
 sudo make -C build install/strip
 sudo ldconfig
@@ -123,10 +123,9 @@ cerca de un tercio de lo que se instala. Medido sobre el árbol completo:
 
 | | instalado |
 |---|---|
-| Sin tipo de build ni strip (lo que hacía antes) | 26,0 MB |
-| `Release` + `install/strip` | 13,5 MB |
-| `MinSizeRel` + `install/strip` | 11,5 MB |
-| `MinSizeRel` + `install/strip` + [perfil mínimo](#perfil-mínimo) | 5,0 MB |
+| Sin tipo de build ni strip (como se compilaba hasta la 1.0) | 26,0 MB |
+| `Release` + `install/strip` | 8,3 MB |
+| `MinSizeRel` + `install/strip` + [perfil mínimo](#perfil-mínimo) | 3,8 MB |
 
 Los tres tardan prácticamente lo mismo en compilar: el código que `-O0` deja
 sin *inline* cuesta más de ensamblar y enlazar que lo que ahorra en optimizar.
@@ -190,6 +189,17 @@ xamp --ui-list       # queda por compatibilidad; lista solo xui
 
 ## Novedades
 
+### 1.2.0
+
+- **Una sola interfaz.** `skinned` y `qsui`, las dos que venían de Qmmp, se eliminaron del árbol: 226 archivos y 20,8 MB que nada aquí usaba. x-AMP ya no carga skins.
+- **Solo español e inglés.** Se retiraron las traducciones a 28 idiomas más, congeladas en la revisión de la que partió el fork. La traducción al español está completa, y la pestaña de créditos del diálogo Acerca de lo refleja.
+- **Buscador de actualizaciones** contra las versiones de este repositorio, desde el menú principal. La comprobación al iniciar está desactivada salvo que se active en Preferencias → Interfaz.
+- **Eliminar referencias muertas**, en el menú de quitar de la lista: reescanea y descarta las pistas cuyo archivo ya no existe.
+- **Compilaciones de Windows en la release**: instalador con asistente y paquete portable, además del tarball de fuentes.
+- El diálogo Acerca de se ensancha para que quepan sus pestañas, en vez de esconderlas tras flechas de desplazamiento.
+
+Instalado: **8,3 MB**, o **3,8 MB** con el perfil mínimo. Eran 26,0 MB en la 1.0.
+
 ### 1.1.0
 
 - **Programador**, con un reloj en la tarjeta del reproductor que se apaga o se enciende según esté armado, y que sirve de acceso directo a sus ajustes.
@@ -199,11 +209,11 @@ xamp --ui-list       # queda por compatibilidad; lista solo xui
 - **Volumen**: si el mezclador de ALSA no se puede abrir —por ejemplo, cuando un monitor con audio HDMI se queda con la primera tarjeta— el control cae al volumen por software en vez de quedar inerte.
 - **Compilación**: `Release` por defecto (antes salía sin optimizar en Linux), `install/strip`, y un preset `lean`. De 26,0 MB a 13,5 MB, o a 5,0 MB con el perfil mínimo.
 
-Antes de actualizar: la versión menor forma parte de la ruta de los plugins (`qmmp-1.1-xamp`), así que hay que desinstalar la anterior antes de instalar esta. Ver [CLAUDE.md](CLAUDE.md).
+Antes de actualizar: la versión menor forma parte de la ruta de los plugins (`qmmp-1.2-xamp`), así que hay que desinstalar la anterior antes de instalar esta. Ver [CLAUDE.md](CLAUDE.md).
 
 ## Estado
 
-Versión **1.1.0**. Ya no es un fork de solo rebranding: la interfaz `xui` es propia, y el motor de audio, los decodificadores y el sistema de plugins siguen siendo los de Qmmp.
+Versión **1.2.0**. Ya no es un fork de solo rebranding: la interfaz es propia y es la única, y el motor de audio, los decodificadores y el sistema de plugins siguen siendo los de Qmmp.
 
 | | |
 |---|---|
@@ -212,7 +222,8 @@ Versión **1.1.0**. Ya no es un fork de solo rebranding: la interfaz `xui` es pr
 | Integración continua (Linux y Windows) | ✅ |
 | Interfaz propia `xui` | ✅ por defecto desde 1.0, la única desde 1.2 |
 | Programador y cola compartida | ✅ desde 1.1 |
-| Releases publicadas | ✅ [1.1.0](https://github.com/RavilesX/x-AMP/releases/latest) y [1.0.0](https://github.com/RavilesX/x-AMP/releases/tag/v1.0.0) |
+| Compilaciones de Windows en la release | ✅ desde 1.2 |
+| Releases publicadas | ✅ [1.2.0](https://github.com/RavilesX/x-AMP/releases/latest), [1.1.0](https://github.com/RavilesX/x-AMP/releases/tag/v1.1.0) y [1.0.0](https://github.com/RavilesX/x-AMP/releases/tag/v1.0.0) |
 
 La CI compila en Ubuntu y en Windows (MinGW vía MSYS2) en cada push, con un guardián que falla si un plugin deja de construirse. Las releases se cortan por etiqueta y publican el tarball de fuentes, el instalador de Windows y el paquete portable, cada uno con su suma SHA-256. El build de Windows sale de la misma acción compuesta que usa la CI, para que no puedan divergir.
 

@@ -301,7 +301,7 @@
 #define __PRAGMA_REDEFINE_EXTNAME 1
 #define __SIZE_WIDTH__ 64
 #define __SEG_FS 1
-#define QMMP_PLUGIN_DIR "/usr/local/lib/qmmp-1.0-xamp"
+#define QMMP_PLUGIN_DIR "/usr/local/lib/qmmp-1.2-xamp"
 #define __INT_LEAST16_MAX__ 0x7fff
 #define __FLT16_NORM_MAX__ 6.55040000000000000000000000000000000e+4F16
 #define __DEC64_MANT_DIG__ 16

@@ -79,6 +79,30 @@
     <name>Ricardo Aviles Sanders</name>
   </developer>
   <releases>
+    <release version="1.2.0" date="2026-09-20">
+      <description>
+        <p>One interface, two languages, and Windows builds on the release page.</p>
+        <ul>
+          <li>The skinned and qsui interfaces inherited from Qmmp are gone: x-AMP has its own and no longer loads skins.</li>
+          <li>English and Spanish only. The other 28 translations were frozen at the revision this fork was taken from and have been removed; the Spanish one is now complete.</li>
+          <li>Checks the project's releases for a newer version, from the main menu. The check at startup is off unless switched on.</li>
+          <li>Remove Dead Entries, in the playlist's remove menu: rescans and drops the tracks whose file is no longer there.</li>
+          <li>Windows installer and portable package published with each release.</li>
+          <li>The About dialog widens to fit its tabs instead of hiding them behind scroll arrows.</li>
+          <li>8.3 MB installed, or 3.8 MB with the minimal preset, against 26.0 MB in 1.0.</li>
+        </ul>
+        <p xml:lang="es">Una sola interfaz, dos idiomas y compilaciones de Windows en la página de versiones.</p>
+        <ul xml:lang="es">
+          <li>Se eliminaron las interfaces skinned y qsui heredadas de Qmmp: x-AMP tiene la suya y ya no carga skins.</li>
+          <li>Solo español e inglés. Las otras 28 traducciones estaban congeladas en la revisión de la que partió este fork y se retiraron; la española está ahora completa.</li>
+          <li>Busca versiones nuevas del proyecto desde el menú principal. La comprobación al iniciar está desactivada salvo que se active.</li>
+          <li>Eliminar referencias muertas, en el menú de quitar de la lista: reescanea y descarta las pistas cuyo archivo ya no existe.</li>
+          <li>Instalador de Windows y paquete portable publicados con cada versión.</li>
+          <li>El diálogo Acerca de se ensancha para que quepan sus pestañas en vez de esconderlas tras flechas.</li>
+          <li>8,3 MB instalado, o 3,8 MB con el perfil mínimo, frente a 26,0 MB en la 1.0.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.1.0" date="2026-09-20">
       <description>
         <p>A scheduler, a shared play queue, and a build a fifth of the size.</p>
