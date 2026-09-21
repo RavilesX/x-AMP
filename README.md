@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>Reproductor de audio para escritorio, construido con Qt 6.</strong><br>
-  Interfaz propia dibujada por código, más de 60 plugins, y sin pisar tu instalación de Qmmp.
+  Interfaz propia dibujada por código, sin skins que cargar, y sin pisar tu instalación de Qmmp.
 </p>
 
 <p align="center">
@@ -143,9 +143,9 @@ sudo cmake --install build-lean --strip
 sudo ldconfig
 ```
 
-Quita `skinned` y `qsui`, los 21 plugins de la categoría `General`, los
-decodificadores de *chiptune* y *tracker*, los visualizadores y las salidas
-que no se usan en escritorio. Requiere CMake ≥ 3.21.
+Quita los 21 plugins de la categoría `General`, los decodificadores de
+*chiptune* y *tracker*, los visualizadores y las salidas que no se usan en
+escritorio. Requiere CMake ≥ 3.21.
 
 > [!NOTE]
 > El perfil mínimo deja fuera `statusicon` y `mpris`. Sin el primero, «ocultar
@@ -178,18 +178,15 @@ Una segunda invocación no abre otro proceso: reenvía la orden a la instancia q
 
 `xamp --help` lista todas las opciones; `xamp --pl-help` las de manipulación de listas.
 
-## Interfaces
+## Interfaz
 
-Se incluyen tres. Se elige con `--ui` y la elección queda guardada:
+x-AMP tiene una sola interfaz, `xui`, y es la que se abre siempre. Las dos que
+venían de Qmmp —`skinned`, con skins de Winamp 2.x, y `qsui`, de widgets Qt
+convencionales— se eliminaron del árbol en la 1.2.
 
 ```sh
-xamp --ui xui        # la propia de x-AMP (por defecto)
-xamp --ui skinned    # clásica, con skins de Winamp 2.x
-xamp --ui qsui       # widgets Qt convencionales
-xamp --ui-list       # ver las disponibles
+xamp --ui-list       # queda por compatibilidad; lista solo xui
 ```
-
-`xui` es la de por defecto desde la 1.0. Todavía le faltan cosas que `skinned` sí tiene —reordenar arrastrando, columnas configurables, pestañas de listas—, y por eso las otras dos siguen incluidas.
 
 ## Novedades
 
@@ -213,7 +210,7 @@ Versión **1.1.0**. Ya no es un fork de solo rebranding: la interfaz `xui` es pr
 | Base de Qmmp importada | ✅ r13210, en la rama `upstream` |
 | Rebranding e instalación paralela | ✅ |
 | Integración continua (Linux y Windows) | ✅ |
-| Interfaz propia `xui` | ✅ por defecto desde 1.0 |
+| Interfaz propia `xui` | ✅ por defecto desde 1.0, la única desde 1.2 |
 | Programador y cola compartida | ✅ desde 1.1 |
 | Releases publicadas | ✅ [1.1.0](https://github.com/RavilesX/x-AMP/releases/latest) y [1.0.0](https://github.com/RavilesX/x-AMP/releases/tag/v1.0.0) |
 
@@ -235,7 +232,6 @@ No hay suite de pruebas: la verificación es manual —compilar, instalar, repro
 x-AMP se distribuye bajo la **GNU General Public License, versión 2 o posterior**, heredada de Qmmp. Texto completo en [COPYING](COPYING).
 
 - Código base: © 2006–2026 Ilya Kotov y colaboradores de Qmmp — GPL-2+.
-- Skin por defecto *Glare*, de sixsixfive ([src/plugins/Ui/skinned/glare](src/plugins/Ui/skinned/glare)): **CC BY-SA 4.0**, texto en [COPYING.CC-by-sa_V4](COPYING.CC-by-sa_V4).
 
 La lista completa de autores, traductores y artistas del proyecto original está en [AUTHORS](AUTHORS). Sus créditos se conservan íntegros.
 

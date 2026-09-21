@@ -24,7 +24,6 @@
 #include <QLocalSocket>
 #include <QSettings>
 #include <QIcon>
-#include <QProcess>
 #include <QTranslator>
 #include <QLibraryInfo>
 #include <cstdlib>
@@ -342,15 +341,10 @@ void QMMPStarter::startPlayer()
             for(const QString &name : std::as_const(filesToCopy))
                 QFile::copy(QDir::homePath() + u"/.qmmp/"_s + name, Qmmp::configDir() + QLatin1Char('/') + name);
 
-            QProcess::execute(QStringLiteral("cp"), { u"-r"_s, QDir::homePath() + u"/.qmmp/skins"_s, Qmmp::configDir() });
-            if(qApp->platformName() == QLatin1String("wayland"))
-            {
-                //force qsui by default for wayland
-                //x-AMP: must target our own settings; with qmmp/qmmp this
-                //wrote into the system Qmmp's config
-                QSettings settings(QStringLiteral("xamp"), QStringLiteral("xamp"));
-                settings.remove("Ui/current_plugin"_L1);
-            }
+            //x-AMP: upstream also copied ~/.qmmp/skins across and cleared the
+            //saved interface on Wayland so qsui would be picked. Neither
+            //interface exists here, so a skin has nothing to load it and the
+            //saved value is x-AMP's own.
         }
     }
 #endif

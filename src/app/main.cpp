@@ -31,7 +31,6 @@
 #include "qmmpstarter.h"
 
 #ifdef Q_OS_UNIX
-#include <QSettings>
 #include <signal.h>
 #endif
 
@@ -61,15 +60,10 @@ int main(int argc, char *argv[])
     QCoreApplication::setQuitLockEnabled(false);
 
 #ifdef Q_OS_UNIX
-    //using XWayland for skinned user interface
-    if(qEnvironmentVariable("XDG_SESSION_TYPE") == QLatin1String("wayland") && !qEnvironmentVariableIsSet("QT_QPA_PLATFORM"))
-    {
-        //x-AMP: must match the names set on QApplication below; this runs
-        //before it exists, so they are spelled out here
-        QSettings settings(QStringLiteral("xamp"), QStringLiteral("xamp"));
-        if(settings.value(QStringLiteral("Ui/current_plugin")).toString() == QLatin1String("skinned"))
-            qputenv("QT_QPA_PLATFORM", "xcb");
-    }
+    //x-AMP: upstream forced QT_QPA_PLATFORM=xcb on Wayland when the saved
+    //interface was skinned, which could not draw natively there. That
+    //interface is gone and xui is a plain Qt widget tree, so the session is
+    //left to be whatever it is.
     setupUnixSignalHandlers();
 #endif
 

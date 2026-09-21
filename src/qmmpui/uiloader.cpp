@@ -117,14 +117,10 @@ UiFactory *UiLoader::selected()
 {
     UiLoaderPrivate::loadPlugins();
     QSettings settings;
-#ifdef Q_OS_UNIX
-    QString defaultUi = QStringLiteral(QMMP_DEFAULT_UI);
-    if(defaultUi == QLatin1String("skinned") && qApp->platformName() == QLatin1String("wayland"))
-        defaultUi = u"qsui"_s;
-    QString name = settings.value(u"Ui/current_plugin"_s, defaultUi).toString();
-#else
+    //x-AMP: upstream swapped the default to qsui on Wayland, because skinned
+    //needs X11. Both interfaces are gone and xui draws itself, so the session
+    //type no longer decides anything.
     QString name = settings.value(u"Ui/current_plugin"_s, QStringLiteral(QMMP_DEFAULT_UI)).toString();
-#endif
     for(QmmpUiPluginCache *item : std::as_const(*uiCache))
     {
         if(item->shortName() == name && item->uiFactory())

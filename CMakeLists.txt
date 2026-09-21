@@ -155,7 +155,6 @@ set(APP_NAME_SUFFIX "-xamp")
 set(APP_BINARY_NAME "xamp")
 
 set(PLUGIN_DIR "${CMAKE_INSTALL_LIBDIR}/qmmp-${QMMP_VERSION_MAJOR}.${QMMP_VERSION_MINOR}${APP_NAME_SUFFIX}" CACHE STRING "plugin path")
-option(USE_SKINNED "standard skinned user interface" ON)
 option(USE_DIR_ASSOC "inode/directory mime type association" ON)
 
 get_target_property(QtGui_enabled_features Qt6::Gui QT_ENABLED_PUBLIC_FEATURES)
@@ -163,10 +162,6 @@ if("xcb" IN_LIST QtGui_enabled_features)
     pkg_search_module(X11 x11 IMPORTED_TARGET)
     set(XCB_ENABLED YES)
     add_definitions(-DQMMP_WS_X11)
-endif()
-
-if(X11_FOUND OR NOT XCB_ENABLED)
-    set(SKINNED_AVAILABLE YES)
 endif()
 
 add_subdirectory(src/qmmp)
@@ -320,8 +315,6 @@ PRINT_SUMMARY ("Two-panel File File Dialog ............" USE_TWO_PANEL_DIALOG 1)
 
 message("")
 message("User Interfaces:")
-PRINT_SUMMARY ("Skinned user interface ................" USE_SKINNED SKINNED_AVAILABLE)
-PRINT_SUMMARY ("Simple user interface (QSUI) .........." USE_QSUI 1)
 PRINT_SUMMARY ("x-AMP user interface (XUI) ............" USE_XUI 1)
 
 message("")

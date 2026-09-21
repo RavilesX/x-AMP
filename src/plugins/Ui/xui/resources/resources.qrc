@@ -1,11 +1,12 @@
 <!--
   The equalizer presets a fresh profile starts with: the Winamp set upstream
-  ships for the skinned interface. Referenced rather than copied, so the two
-  interfaces cannot drift apart over what "Rock" means, and it is the same
-  10-band format xui reads for the user's own file.
+  shipped with the skinned interface. It used to be referenced across from
+  there so the two could not drift over what "Rock" means; with that interface
+  gone the file lives here, in the same 10-band format xui reads for the
+  user's own presets.
 -->
 <RCC>
     <qresource prefix="/xui">
-        <file alias="eq.preset">../../skinned/resources/eq.preset</file>
+        <file>eq.preset</file>
     </qresource>
 </RCC>

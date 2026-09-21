@@ -14,13 +14,10 @@
     {
       "name": "lean",
       "displayName": "Mínimo",
-      "description": "xui alone, no skins, no desktop-integration plugins, no chiptune or tracker decoders. Roughly a fifth of what the full build installs.",
+      "description": "No desktop-integration plugins, no chiptune or tracker decoders, no visualisers. Roughly a third of what the full build installs.",
       "binaryDir": "${sourceDir}/build-lean",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "MinSizeRel",
-
-        "USE_SKINNED": "FALSE",
-        "USE_QSUI": "FALSE",
 
         "USE_MPRIS": "FALSE",
         "USE_SCROBBLER": "FALSE",

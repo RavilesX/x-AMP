@@ -29,7 +29,7 @@ Common configure flags:
 ```sh
 cmake ./ -DUSE_JACK:BOOL=FALSE          # disable a plugin (full USE_* list in README)
 cmake ./ -DCMAKE_INSTALL_LIBDIR=lib64
-cmake ./ -DQMMP_DEFAULT_OUTPUT=pulse -DQMMP_DEFAULT_UI=qsui
+cmake ./ -DQMMP_DEFAULT_OUTPUT=pulse -DQMMP_DEFAULT_UI=xui
 cmake ./ -DSVN_VERSION=1                # appends svn rev; also drops unfinished translations
 ```
 
@@ -120,7 +120,7 @@ Discovery goes through `Qmmp::findPlugins(prefix)` and `QmmpPluginCache` ([qmmpp
 
 Input plugin dispatch: `DecoderProperties::priority` (lower wins) plus `canDecode(QIODevice*)` content sniffing; `filters`/`contentTypes`/`protocols` drive file-dialog and stream matching. `noInput = true` means the plugin opens the source itself (cdaudio, ffmpeg URLs) and bypasses transports.
 
-Two UIs ship: `skinned` (XMMS/Winamp 2.x skins, needs X11/xcb) and `qsui` (plain widgets). `UiLoader` picks one at startup; only one is loaded per process.
+One UI ships: `xui`. Upstream's `skinned` (XMMS/Winamp 2.x skins, needs X11/xcb) and `qsui` (plain widgets) were deleted in 1.2, so a `git merge upstream` will bring both directories back as `deleted by us` conflicts -- `git rm -r` them, as with the qmake files. `UiLoader` still picks one at startup, and only one is loaded per process.
 
 ### Adding a plugin
 
