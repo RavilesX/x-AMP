@@ -185,11 +185,11 @@ QString AboutDialog::loadAuthors()
 {
     //x-AMP: the fork's own credits are built here rather than written into
     //authors.txt, because that resource has a translated copy per language --
-    //authors_es.txt and two dozen more -- and getStringFromResource() picks
-    //the one matching the user's locale. Editing the English file alone left
-    //x-AMP unattributed on every system not running in English. Going through
-    //tr() puts these lines in the same .ts files as the rest of the interface,
-    //so one edit covers every language, and upstream's files stay untouched:
+    //authors_es.txt beside the English one -- and getStringFromResource()
+    //picks the one matching the user's locale. Editing the English file alone
+    //left x-AMP unattributed on every system not running in English. Going
+    //through tr() puts these lines in the same .ts files as the rest of the
+    //interface, so one edit covers both, and upstream's files stay untouched:
     //they are the credits for the earlier work, which is all they claim to be.
     QString text = u"x-AMP\n=====\n\n"_s;
     text += tr("Lead Developer:") + u"\n\n"_s;

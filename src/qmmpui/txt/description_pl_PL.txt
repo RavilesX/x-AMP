@@ -1,1 +1,0 @@
-x-AMP to odtwarzacz muzyki napisany przy użyciu biblioteki Qt.
