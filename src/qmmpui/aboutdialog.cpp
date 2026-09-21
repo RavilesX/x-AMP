@@ -20,6 +20,7 @@
 
 #include <QFile>
 #include <QSysInfo>
+#include <QTabBar>
 #include <qmmp/decoder.h>
 #include <qmmp/decoderfactory.h>
 #include <qmmp/output.h>
@@ -53,6 +54,20 @@ AboutDialog::AboutDialog(QWidget* parent)
     m_ui->authorsTextBrowser->setPlainText(loadAuthors());
     m_ui->thanksToTextBrowser->setPlainText(getStringFromResource(u":thanks"_s));
     m_ui->translatorsTextBrowser->setPlainText(getStringFromResource(u":translators"_s));
+
+    //x-AMP: widen the dialog to whatever the tab bar actually needs. The .ui
+    //carries a width that fits the English labels, and a longer translation
+    //-- "Contrato de licenciamento" against "License Agreement" -- pushes the
+    //bar past it, at which point Qt hides the overflow behind two scroll
+    //arrows. There are thirty languages here and no width is right for all of
+    //them, so it is asked rather than guessed. Only ever grows the dialog.
+    if(QTabBar *bar = m_ui->tabWidget->tabBar())
+    {
+        const QMargins margins = layout() ? layout()->contentsMargins() : QMargins();
+        const int needed = bar->sizeHint().width() + margins.left() + margins.right();
+        if(needed > width())
+            resize(needed, height());
+    }
 }
 
 AboutDialog::~AboutDialog()
