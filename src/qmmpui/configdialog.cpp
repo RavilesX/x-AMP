@@ -592,37 +592,14 @@ private:
 
     void loadLanguages()
     {
+        //x-AMP: the list is what the fork actually ships, not what upstream
+        //translated. Every other language was dropped from the tree, and an
+        //entry here for one whose .qm does not exist is a menu item that
+        //silently does nothing -- the interface simply stays in English.
         const QMap<QString, QString> l = {
                                           { u"auto"_s, tr("<Autodetect>") },
-                                          { u"pt_BR"_s, tr("Brazilian Portuguese") },
-                                          { u"zh_CN"_s, tr("Chinese Simplified") },
-                                          { u"zh_TW"_s, tr("Chinese Traditional") },
-                                          { u"cs"_s, tr("Czech") },
-                                          { u"nl"_s, tr("Dutch") },
                                           { u"en_US"_s, tr("English") },
-                                          { u"fr"_s, tr("French") },
-                                          { u"gl_ES"_s, tr("Galician") },
-                                          { u"de"_s, tr("German") },
-                                          { u"el"_s, tr("Greek") },
-                                          { u"he"_s, tr("Hebrew") },
-                                          { u"hu"_s, tr("Hungarian") },
-                                          { u"id"_s, tr("Indonesian") },
-                                          { u"it"_s, tr("Italian") },
-                                          { u"ja"_s, tr("Japanese") },
-                                          { u"kk"_s, tr("Kazakh") },
-                                          { u"ko"_s, tr("Korean") },
-                                          { u"lt"_s, tr("Lithuanian") },
-                                          { u"pl_PL"_s, tr("Polish") },
-                                          { u"pt"_s, tr("Portuguese") },
-                                          { u"ru_RU"_s, tr("Russian") },
-                                          { u"sr_RS"_s, tr("Serbian") },
-                                          { u"sk"_s, tr("Slovak") },
-                                          { u"sv"_s, tr("Swedish") },
                                           { u"es"_s, tr("Spanish") },
-                                          { u"tr"_s, tr("Turkish") },
-                                          { u"uk_UA"_s, tr("Ukrainian") },
-                                          { u"sr_BA"_s, tr("Serbian (Ijekavian)") },
-                                          { u"sr_RS"_s, tr("Serbian (Ekavian)") },
                                           };
 
         for(auto it = l.cbegin(); it != l.cend(); ++it)
