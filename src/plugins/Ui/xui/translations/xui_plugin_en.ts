@@ -537,114 +537,142 @@
 <context>
     <name>XUiPlaylistCard</name>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="119"/>
+        <location filename="../xuiplaylistcard.cpp" line="121"/>
         <source>PLAYLIST</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="139"/>
+        <location filename="../xuiplaylistcard.cpp" line="141"/>
         <source>Search tracks...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="423"/>
+        <location filename="../xuiplaylistcard.cpp" line="425"/>
         <source>Playlists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="165"/>
+        <location filename="../xuiplaylistcard.cpp" line="167"/>
         <source>Search (Ctrl+F)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="169"/>
+        <location filename="../xuiplaylistcard.cpp" line="171"/>
         <source>Hide the playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="333"/>
+        <location filename="../xuiplaylistcard.cpp" line="335"/>
         <source>&amp;Rename...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="335"/>
+        <location filename="../xuiplaylistcard.cpp" line="337"/>
         <source>Rename Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="419"/>
+        <location filename="../xuiplaylistcard.cpp" line="421"/>
         <source>Add tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="420"/>
+        <location filename="../xuiplaylistcard.cpp" line="422"/>
         <source>Remove tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="421"/>
+        <location filename="../xuiplaylistcard.cpp" line="423"/>
         <source>Select tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="453"/>
+        <location filename="../xuiplaylistcard.cpp" line="455"/>
         <source>Add &amp;File...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="455"/>
+        <location filename="../xuiplaylistcard.cpp" line="457"/>
         <source>Add &amp;Directory...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="457"/>
+        <location filename="../xuiplaylistcard.cpp" line="459"/>
         <source>Add &amp;URL...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="466"/>
+        <location filename="../xuiplaylistcard.cpp" line="468"/>
         <source>Remove &amp;Selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="468"/>
+        <location filename="../xuiplaylistcard.cpp" line="470"/>
         <source>Remove &amp;All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="477"/>
-        <source>Select &amp;All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../xuiplaylistcard.cpp" line="480"/>
-        <source>Select &amp;None</source>
+        <location filename="../xuiplaylistcard.cpp" line="473"/>
+        <source>Remove &amp;Dead Entries</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../xuiplaylistcard.cpp" line="501"/>
+        <source>Dead entries removed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../xuiplaylistcard.cpp" line="502"/>
+        <source>Removed %n track(s) whose file is missing.</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../xuiplaylistcard.cpp" line="505"/>
+        <source>No dead entries</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuiplaylistcard.cpp" line="506"/>
+        <source>Every track in this playlist still points at a file that exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuiplaylistcard.cpp" line="517"/>
+        <source>Select &amp;All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuiplaylistcard.cpp" line="520"/>
+        <source>Select &amp;None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuiplaylistcard.cpp" line="541"/>
         <source>&amp;New Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="503"/>
+        <location filename="../xuiplaylistcard.cpp" line="543"/>
         <source>New Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="335"/>
-        <location filename="../xuiplaylistcard.cpp" line="503"/>
+        <location filename="../xuiplaylistcard.cpp" line="337"/>
+        <location filename="../xuiplaylistcard.cpp" line="543"/>
         <source>Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="504"/>
+        <location filename="../xuiplaylistcard.cpp" line="544"/>
         <source>Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuiplaylistcard.cpp" line="341"/>
-        <location filename="../xuiplaylistcard.cpp" line="509"/>
+        <location filename="../xuiplaylistcard.cpp" line="343"/>
+        <location filename="../xuiplaylistcard.cpp" line="549"/>
         <source>&amp;Remove Playlist</source>
         <translation type="unfinished"></translation>
     </message>

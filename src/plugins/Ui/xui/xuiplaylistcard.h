@@ -73,6 +73,11 @@ protected:
 private slots:
     void showAddMenu();
     void showRemoveMenu();
+    /*!
+     * Rescans the playlist and drops the tracks whose file is no longer
+     * there, leaving everything that still plays.
+     */
+    void removeDeadEntries();
     void showSelectMenu();
     void showPlaylistsMenu();
 
@@ -111,6 +116,10 @@ private:
     UiHelper *m_uiHelper;
     MediaPlayer *m_player;
     PlayListManager *m_manager;
+    //true between asking for the scan and hearing back. The scan runs on a
+    //thread and a second request while one is in flight is dropped by the
+    //model without a word, so the reply would be about the first one.
+    bool m_scanningDeadEntries = false;
     XUiListView *m_list;
     QLineEdit *m_search;
     XUiMenuButton *m_playlists;

@@ -17,6 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
+#include <memory>
 #include <QCoreApplication>
 #include <QKeyEvent>
 #include <QHBoxLayout>
@@ -24,6 +25,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QMenu>
+#include <QMessageBox>
 #include <QPainter>
 #include <QPainterPath>
 #include <QScrollArea>
@@ -467,7 +469,45 @@ void XUiPlaylistCard::showRemoveMenu()
             model, &PlayListModel::removeSelected);
     connect(menu.addAction(tr("Remove &All")), &QAction::triggered,
             model, &PlayListModel::clear);
+    menu.addSeparator();
+    connect(menu.addAction(tr("Remove &Dead Entries")), &QAction::triggered,
+            this, &XUiPlaylistCard::removeDeadEntries);
     menu.exec(QCursor::pos());
+}
+
+void XUiPlaylistCard::removeDeadEntries()
+{
+    if(m_scanningDeadEntries)
+        return;
+
+    PlayListModel *model = m_manager->selectedPlayList();
+    const int before = model->trackCount();
+    m_scanningDeadEntries = true;
+
+    //The scan runs on a thread of its own, so how many went is only known
+    //once the model reports back. The connection is one-shot: left in place
+    //it would announce a removal on the next edit the user made by hand.
+    //Held in a shared_ptr because the lambda has to disconnect the very
+    //connection being assigned to.
+    auto link = std::make_shared<QMetaObject::Connection>();
+    *link = connect(model, &PlayListModel::listChanged, this,
+                    [this, model, before, link](int) {
+        disconnect(*link);
+        m_scanningDeadEntries = false;
+        const int removed = before - model->trackCount();
+        //Said either way: with nothing to remove the playlist does not move,
+        //and silence is indistinguishable from the action having failed.
+        if(removed > 0)
+            QMessageBox::information(this, tr("Dead entries removed"),
+                                     tr("Removed %n track(s) whose file is missing.",
+                                        nullptr, removed));
+        else
+            QMessageBox::information(this, tr("No dead entries"),
+                                     tr("Every track in this playlist still points "
+                                        "at a file that exists."));
+    });
+
+    model->removeInvalidTracks();
 }
 
 void XUiPlaylistCard::showSelectMenu()
