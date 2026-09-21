@@ -116,6 +116,8 @@ libqmmpui_autogen/timestamp: \
 	/home/ravilesx/Documentos/Proyectos\ Github/x-AMP/src/qmmpui/uihelper.h \
 	/home/ravilesx/Documentos/Proyectos\ Github/x-AMP/src/qmmpui/uiloader.cpp \
 	/home/ravilesx/Documentos/Proyectos\ Github/x-AMP/src/qmmpui/uiloader.h \
+	/home/ravilesx/Documentos/Proyectos\ Github/x-AMP/src/qmmpui/updatechecker.cpp \
+	/home/ravilesx/Documentos/Proyectos\ Github/x-AMP/src/qmmpui/updatechecker.h \
 	/home/ravilesx/Documentos/Proyectos\ Github/x-AMP/src/qmmpui/visualmenu.cpp \
 	/home/ravilesx/Documentos/Proyectos\ Github/x-AMP/src/qmmpui/visualmenu.h \
 	/usr/include/alloca.h \

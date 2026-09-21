@@ -27,13 +27,19 @@
 #include <QColor>
 #include <QGuiApplication>
 #include <QScreen>
+#include <QDesktopServices>
+#include <QMessageBox>
+#include <QPushButton>
 #include <QSettings>
+#include <QTimer>
 #include <QVBoxLayout>
+#include <qmmp/qmmp.h>
 #include <qmmp/soundcore.h>
 #include <qmmpui/mediaplayer.h>
 #include <qmmpui/playlistmanager.h>
 #include <qmmpui/uihelper.h>
 #include <qmmpui/configdialog.h>
+#include <qmmpui/updatechecker.h>
 #include "xuitheme.h"
 #include "xuicontrols.h"
 #include "xuiplayercard.h"
@@ -142,6 +148,12 @@ XUiMainWindow::XUiMainWindow(QWidget *parent) : XUiWindow(QStringLiteral("player
     createShortcuts();
     readSettings();
     updateWindowTitle();
+    //Off unless the user asked for it, and deferred so the check never delays
+    //the window appearing -- a slow or filtered network would otherwise be
+    //felt as a slow startup.
+    if(UpdateChecker::isAutomatic())
+        QTimer::singleShot(2000, this, [this] { checkForUpdates(true); });
+
     //the starter only constructs the interface; showing it is ours to do
     show();
     //after show(): placing a companion needs this window's real geometry
@@ -241,6 +253,8 @@ void XUiMainWindow::showMainMenu()
         m_mainMenu->addSeparator();
         m_mainMenu->addAction(tr("&Preferences..."), QKeySequence(tr("Ctrl+P")),
                               this, &XUiMainWindow::showPreferences);
+        m_mainMenu->addAction(tr("Check for &updates..."), this,
+                              [this] { checkForUpdates(); });
         m_mainMenu->addAction(tr("&About x-AMP"), this, [this] { m_uiHelper->about(this); });
         m_mainMenu->addSeparator();
         m_mainMenu->addAction(tr("&Quit"), QKeySequence(tr("Ctrl+Q")),
@@ -296,6 +310,46 @@ void XUiMainWindow::openPreferences(bool scheduler)
         m_playerCard->updateCrossfade();
         m_playlistCard->reloadBackground();
     }
+}
+
+void XUiMainWindow::checkForUpdates(bool quiet)
+{
+    if(!m_updates)
+    {
+        m_updates = new UpdateChecker(this);
+        connect(m_updates, &UpdateChecker::updateAvailable, this,
+                [this](const QString &version, const QString &url) {
+            QMessageBox box(this);
+            box.setIcon(QMessageBox::Information);
+            box.setWindowTitle(tr("Update available"));
+            box.setText(tr("x-AMP %1 is available.").arg(version));
+            box.setInformativeText(tr("You are running %1.").arg(Qmmp::strVersion()));
+            QPushButton *open = box.addButton(tr("Open the releases page"),
+                                              QMessageBox::AcceptRole);
+            box.addButton(tr("Not now"), QMessageBox::RejectRole);
+            box.exec();
+            //The address comes from UpdateChecker, which builds it rather than
+            //taking it from the reply, so nothing a server says decides where
+            //the browser goes.
+            if(box.clickedButton() == open)
+                QDesktopServices::openUrl(QUrl(url));
+        });
+        connect(m_updates, &UpdateChecker::noUpdateAvailable, this, [this] {
+            if(!m_quietCheck)
+                QMessageBox::information(this, tr("No update"),
+                                         tr("x-AMP %1 is the newest release.")
+                                         .arg(Qmmp::strVersion()));
+        });
+        connect(m_updates, &UpdateChecker::checkFailed, this, [this](const QString &reason) {
+            if(!m_quietCheck)
+                QMessageBox::warning(this, tr("Could not check for updates"), reason);
+        });
+    }
+
+    if(m_updates->isChecking())
+        return;
+    m_quietCheck = quiet;
+    m_updates->check();
 }
 
 void XUiMainWindow::createShortcuts()

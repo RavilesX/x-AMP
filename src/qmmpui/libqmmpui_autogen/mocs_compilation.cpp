@@ -30,4 +30,5 @@
 #include "EWIEGA46WW/moc_tageditor_p.cpp"
 #include "EWIEGA46WW/moc_templateeditor.cpp"
 #include "EWIEGA46WW/moc_uihelper.cpp"
+#include "EWIEGA46WW/moc_updatechecker.cpp"
 #include "EWIEGA46WW/moc_visualmenu.cpp"

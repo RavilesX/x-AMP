@@ -5,141 +5,147 @@
     <name>AboutDialog</name>
     <message>
         <location filename="../forms/aboutdialog.ui" line="14"/>
+        <location filename="../libqmmpui_autogen/include/ui_aboutdialog.h" line="145"/>
         <source>About x-AMP</source>
         <translation>Acerca de x-AMP</translation>
     </message>
     <message>
         <location filename="../forms/aboutdialog.ui" line="49"/>
+        <location filename="../libqmmpui_autogen/include/ui_aboutdialog.h" line="147"/>
         <source>About</source>
         <translation>Acerca de</translation>
     </message>
     <message>
         <location filename="../forms/aboutdialog.ui" line="63"/>
+        <location filename="../libqmmpui_autogen/include/ui_aboutdialog.h" line="148"/>
         <source>Authors</source>
         <translation>Autores</translation>
     </message>
     <message>
         <location filename="../forms/aboutdialog.ui" line="77"/>
+        <location filename="../libqmmpui_autogen/include/ui_aboutdialog.h" line="149"/>
         <source>Translators</source>
         <translation>Traductores</translation>
     </message>
     <message>
         <location filename="../forms/aboutdialog.ui" line="91"/>
+        <location filename="../libqmmpui_autogen/include/ui_aboutdialog.h" line="150"/>
         <source>Thanks To</source>
         <translation>Gracias a</translation>
     </message>
     <message>
         <location filename="../forms/aboutdialog.ui" line="105"/>
+        <location filename="../libqmmpui_autogen/include/ui_aboutdialog.h" line="151"/>
         <source>License Agreement</source>
         <translation>Contrato de licencia</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="72"/>
+        <location filename="../aboutdialog.cpp" line="87"/>
         <source>Version: %1</source>
         <translation>Versión %1</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="83"/>
+        <location filename="../aboutdialog.cpp" line="98"/>
         <source>(c) %1 x-AMP contributors</source>
         <translation>(c) %1 colaboradores de x-AMP</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="85"/>
+        <location filename="../aboutdialog.cpp" line="101"/>
         <source>Lead developer: %1</source>
         <translation>Desarrollador principal: %1</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="90"/>
+        <location filename="../aboutdialog.cpp" line="108"/>
         <source>Based on Qmmp:</source>
         <translation>Basado en Qmmp:</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="91"/>
+        <location filename="../aboutdialog.cpp" line="109"/>
         <source>(c) %1-%2 Qmmp Development Team</source>
         <translation>(c) %1-%2 Equipo de desarrollo de Qmmp</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="96"/>
+        <location filename="../aboutdialog.cpp" line="114"/>
         <source>Transports:</source>
         <translation>Transportes:</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="102"/>
+        <location filename="../aboutdialog.cpp" line="120"/>
         <source>Decoders:</source>
         <translation>Decodificadores:</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="110"/>
+        <location filename="../aboutdialog.cpp" line="128"/>
         <source>Engines:</source>
         <translation>Motores:</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="117"/>
+        <location filename="../aboutdialog.cpp" line="135"/>
         <source>Effects:</source>
         <translation>Efectos:</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="146"/>
+        <location filename="../aboutdialog.cpp" line="164"/>
         <source>File dialogs:</source>
         <translation>Diálogos de archivo:</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="155"/>
+        <location filename="../aboutdialog.cpp" line="173"/>
         <source>User interfaces:</source>
         <translation>Interfaces de usuario:</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="177"/>
+        <location filename="../aboutdialog.cpp" line="195"/>
         <source>Lead Developer:</source>
         <translation>Desarrollador Principal:</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="179"/>
+        <location filename="../aboutdialog.cpp" line="197"/>
         <source>x-AMP fork, xui interface, artwork and maintenance</source>
         <translation>fork x-AMP, interfaz xui, arte y mantenimiento</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="182"/>
+        <location filename="../aboutdialog.cpp" line="202"/>
         <source>x-AMP is built on Qmmp, by Ilya Kotov and the Qmmp Development Team. The engine, the plugin architecture and most of the decoders are their work, and x-AMP would not exist without it. The people listed below are credited for that earlier work. They are not involved in x-AMP and should not be contacted about it.</source>
         <translation>x-AMP está construido sobre Qmmp, de Ilya Kotov y el equipo de desarrollo de Qmmp. El motor, la arquitectura de módulos y la mayoría de los decodificadores son obra suya, y x-AMP no existiría sin ellos. Las personas listadas a continuación figuran como crédito por ese trabajo previo. No participan en x-AMP y no deben ser contactadas por asuntos de este.</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="138"/>
+        <location filename="../aboutdialog.cpp" line="156"/>
         <source>Output plugins:</source>
         <translation>Módulos de salida: </translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="69"/>
+        <location filename="../aboutdialog.cpp" line="84"/>
         <source>Qt-based Multimedia Player (x-AMP)</source>
         <translation>Reproductor multimedia basado en Qt (x-AMP)</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="73"/>
+        <location filename="../aboutdialog.cpp" line="88"/>
         <source>Qt version: %1 (compiled with %2)</source>
         <translation>Versión de Qt: %1 (compilado con %2)</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="74"/>
+        <location filename="../aboutdialog.cpp" line="89"/>
         <source>Qt platform: %1</source>
         <translation>Plataforma Qt: %1</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="75"/>
+        <location filename="../aboutdialog.cpp" line="90"/>
         <source>System: %1</source>
         <translation>Sistema: %1</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="76"/>
+        <location filename="../aboutdialog.cpp" line="91"/>
         <source>Build ABI: %1</source>
         <translation>ABI de compilación: %1</translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="125"/>
+        <location filename="../aboutdialog.cpp" line="143"/>
         <source>Visual plugins:</source>
         <translation>Módulos visuales: </translation>
     </message>
     <message>
-        <location filename="../aboutdialog.cpp" line="132"/>
+        <location filename="../aboutdialog.cpp" line="150"/>
         <source>General plugins:</source>
         <translation>Módulos generales: </translation>
     </message>
@@ -148,6 +154,7 @@
     <name>AddUrlDialog</name>
     <message>
         <location filename="../forms/addurldialog.ui" line="14"/>
+        <location filename="../libqmmpui_autogen/include/ui_addurldialog.h" line="60"/>
         <source>Enter URL to add</source>
         <translation>Ingresar URL a añadir</translation>
     </message>
@@ -174,26 +181,31 @@
     <name>ColumnEditor</name>
     <message>
         <location filename="../forms/columneditor.ui" line="14"/>
+        <location filename="../libqmmpui_autogen/include/ui_columneditor.h" line="112"/>
         <source>Edit Column</source>
         <translation>Editar Columna</translation>
     </message>
     <message>
         <location filename="../forms/columneditor.ui" line="36"/>
+        <location filename="../libqmmpui_autogen/include/ui_columneditor.h" line="114"/>
         <source>Name:</source>
         <translation>Nombre:</translation>
     </message>
     <message>
         <location filename="../forms/columneditor.ui" line="76"/>
+        <location filename="../libqmmpui_autogen/include/ui_columneditor.h" line="116"/>
         <source>Format:</source>
         <translation>Formato</translation>
     </message>
     <message>
         <location filename="../forms/columneditor.ui" line="64"/>
+        <location filename="../libqmmpui_autogen/include/ui_columneditor.h" line="115"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
         <location filename="../forms/columneditor.ui" line="29"/>
+        <location filename="../libqmmpui_autogen/include/ui_columneditor.h" line="113"/>
         <source>Type:</source>
         <translation>Tipo:</translation>
     </message>
@@ -302,697 +314,681 @@
     <name>ConfigDialog</name>
     <message>
         <location filename="../forms/configdialog.ui" line="58"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1051"/>
         <source>Playlists</source>
         <translation>Playlists</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="67"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1053"/>
         <source>Plugins</source>
         <translation>Módulos</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="76"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1055"/>
         <source>Advanced</source>
         <translation>Avanzado</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="85"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1057"/>
         <source>Connectivity</source>
         <translation>Conectividad</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="94"/>
-        <location filename="../forms/configdialog.ui" line="1029"/>
+        <location filename="../forms/configdialog.ui" line="1199"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1059"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1153"/>
         <source>Audio</source>
         <translation>Sonido</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="153"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1062"/>
         <source>Metadata</source>
         <translation>Metainformación</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="183"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1066"/>
         <source>Convert %20 to blanks</source>
         <translation>Convertir los %20 en espacios</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="159"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1063"/>
         <source>Load metadata from files</source>
         <translation>Cargar la metainformación de los archivos</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="176"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1065"/>
         <source>Convert underscores to blanks</source>
         <translation>Convertir los guiones bajos en espacios</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="226"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1070"/>
         <source>Group format:</source>
         <translation>Formato del grupo:</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="242"/>
         <location filename="../forms/configdialog.ui" line="267"/>
-        <location filename="../forms/configdialog.ui" line="743"/>
+        <location filename="../forms/configdialog.ui" line="714"/>
+        <location filename="../forms/configdialog.ui" line="909"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1071"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1073"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1117"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1137"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="169"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1064"/>
         <source>Read tags while loading a playlist</source>
         <translation>Leer etiquetas mientras se carga la lista de reproducción</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="14"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1046"/>
         <source>x-AMP Settings</source>
         <translation>Ajustes de x-AMP</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="193"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1067"/>
         <source>Group Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="202"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1068"/>
         <source>Group size:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="219"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1069"/>
         <source>Show dividing line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="251"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1072"/>
         <source>Extra row format:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="276"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1074"/>
         <source>Show extra row</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="283"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1075"/>
         <source>Show cover</source>
         <translation>Mostrar carátula</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="293"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1076"/>
         <source>Directory Scanning Options</source>
         <translation>Opciones de escaneo de directorio</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="299"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1077"/>
         <source>Restrict files to:</source>
         <translation>Restringir archivos a:</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="306"/>
         <location filename="../forms/configdialog.ui" line="323"/>
-        <location filename="../forms/configdialog.ui" line="604"/>
-        <location filename="../forms/configdialog.ui" line="618"/>
+        <location filename="../forms/configdialog.ui" line="770"/>
+        <location filename="../forms/configdialog.ui" line="784"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1079"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1083"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1124"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1128"/>
         <source>A list of file masks separated by comma.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="316"/>
-        <location filename="../forms/configdialog.ui" line="611"/>
+        <location filename="../forms/configdialog.ui" line="777"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1081"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1126"/>
         <source>Exclude files:</source>
         <translation>Excluir archivos:</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="336"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1085"/>
         <source>Miscellaneous</source>
         <translation>Miceláneos</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="342"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1086"/>
         <source>Auto-save playlist when modified</source>
         <translation>Auto-guardar lista de reproducción al modificarse</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="349"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1087"/>
         <source>Clear previous playlist when opening new one</source>
         <translation>Limpiar lista de reproducción previa cuando se abre una nueva</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="415"/>
-        <location filename="../configdialog.cpp" line="421"/>
-        <location filename="../configdialog.cpp" line="428"/>
+        <location filename="../configdialog.cpp" line="571"/>
+        <location filename="../configdialog.cpp" line="578"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1090"/>
         <source>Preferences</source>
         <translation>Preferencias</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="432"/>
-        <location filename="../configdialog.cpp" line="423"/>
-        <location filename="../configdialog.cpp" line="431"/>
+        <location filename="../configdialog.cpp" line="573"/>
+        <location filename="../configdialog.cpp" line="581"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1091"/>
         <source>Information</source>
         <translation>Información</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="478"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1094"/>
         <source>Description</source>
         <translation>Descripción</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="483"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1093"/>
         <source>Filename</source>
         <translation>Nombre del archivo</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="495"/>
+        <location filename="../forms/configdialog.ui" line="520"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1095"/>
         <source>Look and Feel</source>
         <translation>Apariencia y comportamiento</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="501"/>
+        <location filename="../forms/configdialog.ui" line="526"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1096"/>
         <source>Language:</source>
         <translation>Idioma:</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="534"/>
+        <location filename="../forms/configdialog.ui" line="559"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1097"/>
         <source>Display average bitrate</source>
         <translation>Mostrar tasa de bits promedio</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="544"/>
+        <location filename="../forms/configdialog.ui" line="569"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1098"/>
         <source>Playback</source>
         <translation>Reproducción</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="550"/>
+        <location filename="../forms/configdialog.ui" line="575"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1099"/>
         <source>Continue playback on startup</source>
         <translation>Continuar la reproducción al iniciar</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="557"/>
+        <location filename="../forms/configdialog.ui" line="582"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1100"/>
         <source>Determine file type by content</source>
         <translation>Determine tipo de archivos por contenido</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="564"/>
+        <location filename="../forms/configdialog.ui" line="589"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1101"/>
         <source>Add files from command line to this playlist:</source>
         <translation>Añadir archivos desde consola hacia lista de reproducción</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="581"/>
+        <location filename="../forms/configdialog.ui" line="632"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1108"/>
+        <source>HH:mm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/configdialog.ui" line="747"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1120"/>
         <source>Cover Image Retrieve</source>
         <translation>Obtener las imagenes de carátula</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="587"/>
+        <location filename="../forms/configdialog.ui" line="753"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1121"/>
         <source>Use separate image files</source>
         <translation>Usar archivos de imágen separados</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="597"/>
+        <location filename="../forms/configdialog.ui" line="763"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1122"/>
         <source>Include files:</source>
         <translation>Incluir archivos:</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="627"/>
+        <location filename="../forms/configdialog.ui" line="793"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1130"/>
         <source>Recursive search depth:</source>
         <translation>Profundidad de la búsqueda recursiva:</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="665"/>
+        <location filename="../forms/configdialog.ui" line="831"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1131"/>
         <source>URL Dialog</source>
         <translation>Diálogo URL</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="671"/>
+        <location filename="../forms/configdialog.ui" line="837"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1132"/>
         <source>Auto-paste URL from clipboard</source>
         <translation>Auto-pegar URL desde portapapeles</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="681"/>
+        <location filename="../forms/configdialog.ui" line="847"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1133"/>
         <source>CUE Editor</source>
         <translation>Editor CUE</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="687"/>
+        <location filename="../forms/configdialog.ui" line="853"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1134"/>
         <source>Use system font</source>
         <translation>Usar tipografía del sistema </translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="708"/>
+        <location filename="../forms/configdialog.ui" line="874"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1135"/>
         <source>Font:</source>
         <translation>Tipografía:</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="733"/>
+        <location filename="../forms/configdialog.ui" line="899"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1136"/>
         <source>???</source>
         <translation>???</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="772"/>
+        <location filename="../forms/configdialog.ui" line="942"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1138"/>
         <source>Proxy</source>
         <translation>Proxy</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="784"/>
+        <location filename="../forms/configdialog.ui" line="954"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1139"/>
         <source>Enable proxy usage</source>
         <translation>Habilitar el uso de proxy</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="791"/>
+        <location filename="../forms/configdialog.ui" line="961"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1140"/>
         <source>Proxy type:</source>
         <translation>Tipo de proxy:</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="801"/>
+        <location filename="../forms/configdialog.ui" line="971"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1141"/>
         <source>Proxy host name:</source>
         <translation>Nombre del servidor proxy: </translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="818"/>
+        <location filename="../forms/configdialog.ui" line="988"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1142"/>
         <source>Proxy port:</source>
         <translation>Puerto del proxy: </translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="835"/>
+        <location filename="../forms/configdialog.ui" line="1005"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1143"/>
         <source>Use authentication with proxy</source>
         <translation>Usar autentificación con el proxy</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="842"/>
+        <location filename="../forms/configdialog.ui" line="1012"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1144"/>
         <source>Proxy user name:</source>
         <translation>Usuario del proxy:</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="859"/>
+        <location filename="../forms/configdialog.ui" line="1029"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1145"/>
         <source>Proxy password:</source>
         <translation>Contraseña del proxy:</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="899"/>
+        <location filename="../forms/configdialog.ui" line="1069"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1146"/>
         <source>Replay Gain</source>
         <translation>Normalización</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="905"/>
+        <location filename="../forms/configdialog.ui" line="1075"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1147"/>
         <source>Replay Gain mode:</source>
         <translation>Método de normalización:</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="922"/>
+        <location filename="../forms/configdialog.ui" line="1092"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1148"/>
         <source>Preamp:</source>
         <translation>Preamp:</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="954"/>
-        <location filename="../forms/configdialog.ui" line="999"/>
+        <location filename="../forms/configdialog.ui" line="1124"/>
+        <location filename="../forms/configdialog.ui" line="1169"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1149"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1151"/>
         <source>dB</source>
         <translation>dB</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="967"/>
+        <location filename="../forms/configdialog.ui" line="1137"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1150"/>
         <source>Default gain:</source>
         <translation>Normalización predeterminada:</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="1019"/>
+        <location filename="../forms/configdialog.ui" line="1189"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1152"/>
         <source>Use  peak info to prevent clipping</source>
         <translation>Procesar picos para evitar cortes</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="1035"/>
+        <location filename="../forms/configdialog.ui" line="1205"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1154"/>
         <source>Buffer size:</source>
         <translation>Tamaño del buffer:</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="1061"/>
+        <location filename="../forms/configdialog.ui" line="1231"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1156"/>
         <source>ms</source>
         <translation>ms</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="1094"/>
+        <location filename="../forms/configdialog.ui" line="1264"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1158"/>
         <source>Use software volume control</source>
         <translation>Usar control de volumen por software</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="1134"/>
+        <location filename="../forms/configdialog.ui" line="1304"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1160"/>
         <source>Use two passes for equalizer</source>
         <translation>Usar dos pases para equalizador</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="1077"/>
+        <location filename="../forms/configdialog.ui" line="1247"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1157"/>
         <source>Volume adjustment step:</source>
         <translation>Paso de ajuste de volúmen</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="356"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1088"/>
         <source>Skip already existing tracks when adding</source>
         <translation>Saltar pistas existentes al agregar</translation>
     </message>
     <message>
         <location filename="../forms/configdialog.ui" line="363"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1089"/>
         <source>Stop playback after removing of current track</source>
         <translation>Detener la reproducción al eliminar la pista actual</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="1101"/>
+        <location filename="../forms/configdialog.ui" line="1271"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1159"/>
         <source>Output bit depth:</source>
         <translation>Salida de profundidad de bits</translation>
     </message>
     <message>
-        <location filename="../forms/configdialog.ui" line="1042"/>
+        <location filename="../forms/configdialog.ui" line="1212"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1155"/>
         <source>Use dithering</source>
         <translation>Usar tramado (dithering)</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="510"/>
+        <location filename="../configdialog.cpp" line="637"/>
         <source>1 row</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="511"/>
+        <location filename="../configdialog.cpp" line="638"/>
         <source>3 rows</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="512"/>
+        <location filename="../configdialog.cpp" line="639"/>
         <source>4 rows</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="513"/>
+        <location filename="../configdialog.cpp" line="640"/>
         <source>5 rows</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="514"/>
+        <location filename="../configdialog.cpp" line="641"/>
         <source>Track</source>
         <translation>Pista</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="515"/>
+        <location filename="../configdialog.cpp" line="642"/>
         <source>Album</source>
         <translation>Álbum</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="516"/>
+        <location filename="../configdialog.cpp" line="643"/>
         <source>Disabled</source>
         <translation>Deshabilitado</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="521"/>
+        <location filename="../configdialog.cpp" line="648"/>
         <source>HTTP</source>
         <translation>HTTP</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="522"/>
+        <location filename="../configdialog.cpp" line="649"/>
         <source>SOCKS5</source>
         <translation>SOCKS5</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="313"/>
+        <location filename="../configdialog.cpp" line="427"/>
         <source>Transports</source>
         <translation>Transportes</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="322"/>
+        <location filename="../configdialog.cpp" line="436"/>
         <source>Decoders</source>
         <translation>Decodificadores</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="331"/>
+        <location filename="../configdialog.cpp" line="445"/>
         <source>Engines</source>
         <translation>Motores</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="341"/>
+        <location filename="../configdialog.cpp" line="455"/>
         <source>Effects</source>
         <translation>Efectos</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="350"/>
+        <location filename="../configdialog.cpp" line="464"/>
         <source>Visualization</source>
         <translation>Visualización</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="360"/>
+        <location filename="../configdialog.cpp" line="474"/>
         <source>General</source>
         <translation>General</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="369"/>
+        <location filename="../configdialog.cpp" line="483"/>
         <source>Output</source>
         <translation>Salida</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="378"/>
+        <location filename="../configdialog.cpp" line="492"/>
         <source>File Dialogs</source>
         <translation>Diálogos de archivo</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="388"/>
+        <location filename="../configdialog.cpp" line="502"/>
         <source>User Interfaces</source>
         <translation>Interfaz de usuario</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="425"/>
-        <location filename="../configdialog.cpp" line="434"/>
+        <location filename="../configdialog.cpp" line="575"/>
+        <location filename="../configdialog.cpp" line="584"/>
         <source>Priority</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="446"/>
+        <location filename="../configdialog.cpp" line="600"/>
         <source>&lt;Autodetect&gt;</source>
         <translation>&lt;Autodetectar&gt;</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="447"/>
-        <source>Brazilian Portuguese</source>
-        <translation>Portugués Brasil</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="448"/>
-        <source>Chinese Simplified</source>
-        <translation>Chino simplificado</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="449"/>
-        <source>Chinese Traditional</source>
-        <translation>Chino tradicional</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="450"/>
-        <source>Czech</source>
-        <translation>Checo</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="451"/>
-        <source>Dutch</source>
-        <translation>Holandés</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="452"/>
+        <location filename="../configdialog.cpp" line="601"/>
         <source>English</source>
         <translation>Inglés</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="453"/>
-        <source>French</source>
-        <translation>Fránces</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="454"/>
-        <source>Galician</source>
-        <translation>Gallego</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="455"/>
-        <source>German</source>
-        <translation>Alemán</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="456"/>
-        <source>Greek</source>
-        <translation>Griego</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="457"/>
-        <source>Hebrew</source>
-        <translation>Hebreo</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="458"/>
-        <source>Hungarian</source>
-        <translation>Húngaro</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="459"/>
-        <source>Indonesian</source>
-        <translation>Indonesio</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="460"/>
-        <source>Italian</source>
-        <translation>Italiano</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="461"/>
-        <source>Japanese</source>
-        <translation>Japonés</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="462"/>
-        <source>Kazakh</source>
-        <translation>Kazajo</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="463"/>
-        <source>Korean</source>
-        <translation>Coreano</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="464"/>
-        <source>Lithuanian</source>
-        <translation>Lituano</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="465"/>
-        <source>Polish</source>
-        <translation>Polaco</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="466"/>
-        <source>Portuguese</source>
-        <translation>Portugués</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="467"/>
-        <source>Russian</source>
-        <translation>Ruso</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="468"/>
-        <source>Serbian</source>
-        <translation>Serbio</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="469"/>
-        <source>Slovak</source>
-        <translation>Eslovaco</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="470"/>
-        <source>Swedish</source>
-        <translation>Sueco</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="471"/>
+        <location filename="../configdialog.cpp" line="602"/>
         <source>Spanish</source>
         <translation>Español</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="472"/>
-        <source>Turkish</source>
-        <translation>Turco</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="473"/>
-        <source>Ukrainian</source>
-        <translation>Ucraniano</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="474"/>
-        <source>Serbian (Ijekavian)</source>
-        <translation>Serbio (Ijekavian)</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.cpp" line="475"/>
-        <source>Serbian (Ekavian)</source>
-        <translation>Serbio (Ekavian)</translation>
-    </message>
-    <message>
+        <location filename="../forms/configdialog.ui" line="606"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1102"/>
         <source>Scheduler</source>
         <translation>Planificador</translation>
     </message>
     <message>
+        <location filename="../forms/configdialog.ui" line="609"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1104"/>
         <source>Runs a single action once and then switches itself off.</source>
         <translation>Ejecuta una sola acción una vez y después se desactiva.</translation>
     </message>
     <message>
+        <location filename="../forms/configdialog.ui" line="615"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1106"/>
         <source>Enable the scheduler</source>
         <translation>Activar el planificador</translation>
     </message>
     <message>
+        <location filename="../forms/configdialog.ui" line="622"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1107"/>
         <source>At:</source>
         <translation>A las:</translation>
     </message>
     <message>
+        <location filename="../forms/configdialog.ui" line="652"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1109"/>
         <source>After:</source>
         <translation>Pasados:</translation>
     </message>
     <message>
+        <location filename="../forms/configdialog.ui" line="659"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1110"/>
         <source> min</source>
         <translation> min</translation>
     </message>
     <message>
+        <location filename="../forms/configdialog.ui" line="675"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1111"/>
         <source>When the playlist ends</source>
         <translation>Al terminar la lista de reproducción</translation>
     </message>
     <message>
+        <location filename="../forms/configdialog.ui" line="678"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1113"/>
         <source>The &quot;Repeat All&quot; option is ignored, so playback stops at the end of the playlist.</source>
         <translation>Se ignora la opción «Repetir todo»: la reproducción se detiene al final de la lista.</translation>
     </message>
     <message>
+        <location filename="../forms/configdialog.ui" line="685"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1115"/>
         <source>Action:</source>
         <translation>Acción:</translation>
     </message>
     <message>
+        <location filename="../forms/configdialog.ui" line="702"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1116"/>
         <source>File:</source>
         <translation>Archivo:</translation>
     </message>
     <message>
+        <location filename="../forms/configdialog.ui" line="723"/>
+        <location filename="../libqmmpui_autogen/include/ui_configdialog.h" line="1118"/>
         <source>Playlist:</source>
         <translation>Lista de reproducción:</translation>
     </message>
     <message>
+        <location filename="../configdialog.cpp" line="651"/>
         <source>Play a file</source>
         <translation>Reproducir un archivo</translation>
     </message>
     <message>
+        <location filename="../configdialog.cpp" line="652"/>
         <source>Play a playlist</source>
         <translation>Reproducir una lista</translation>
     </message>
     <message>
+        <location filename="../configdialog.cpp" line="653"/>
         <source>Close the player</source>
         <translation>Cerrar el reproductor</translation>
     </message>
     <message>
+        <location filename="../configdialog.cpp" line="654"/>
         <source>Suspend the computer</source>
         <translation>Suspender el equipo</translation>
     </message>
     <message>
+        <location filename="../configdialog.cpp" line="655"/>
         <source>Shut the computer down</source>
         <translation>Apagar el equipo</translation>
     </message>
     <message>
+        <location filename="../configdialog.cpp" line="143"/>
         <source>Select a file to play</source>
         <translation>Seleccionar un archivo para reproducir</translation>
     </message>
     <message>
+        <location filename="../configdialog.cpp" line="137"/>
         <source>All Supported Bitstreams</source>
         <translation>Todos los flujos de bits soportados</translation>
     </message>
     <message>
+        <location filename="../configdialog.cpp" line="178"/>
         <source>The scheduler is switched off.</source>
         <translation>El planificador está desactivado.</translation>
     </message>
     <message>
+        <location filename="../configdialog.cpp" line="192"/>
         <source>The action runs at %1, in %2 h %3 min.</source>
         <translation>La acción se ejecuta el %1, dentro de %2 h y %3 min.</translation>
     </message>
     <message>
+        <location filename="../configdialog.cpp" line="199"/>
         <source>The countdown starts over every time these settings are applied or the player is restarted.</source>
         <translation>La cuenta atrás vuelve a empezar cada vez que se aplican estos ajustes o se reinicia el reproductor.</translation>
     </message>
     <message>
+        <location filename="../configdialog.cpp" line="203"/>
         <source>The action runs once the playing playlist reaches its last track.</source>
         <translation>La acción se ejecuta cuando la lista en reproducción llega a su última pista.</translation>
     </message>
@@ -1001,21 +997,25 @@
     <name>CoverEditor</name>
     <message>
         <location filename="../forms/covereditor.ui" line="22"/>
+        <location filename="../libqmmpui_autogen/include/ui_covereditor.h" line="110"/>
         <source>Image source:</source>
         <translation>Fuente imagen:</translation>
     </message>
     <message>
         <location filename="../forms/covereditor.ui" line="76"/>
+        <location filename="../libqmmpui_autogen/include/ui_covereditor.h" line="111"/>
         <source>Load</source>
         <translation>Cargar</translation>
     </message>
     <message>
         <location filename="../forms/covereditor.ui" line="83"/>
+        <location filename="../libqmmpui_autogen/include/ui_covereditor.h" line="112"/>
         <source>Delete</source>
         <translation>Borrar</translation>
     </message>
     <message>
         <location filename="../forms/covereditor.ui" line="90"/>
+        <location filename="../libqmmpui_autogen/include/ui_covereditor.h" line="113"/>
         <source>Save as...</source>
         <translation>Guardar como...</translation>
     </message>
@@ -1077,21 +1077,25 @@
     <name>DetailsDialog</name>
     <message>
         <location filename="../forms/detailsdialog.ui" line="14"/>
+        <location filename="../libqmmpui_autogen/include/ui_detailsdialog.h" line="143"/>
         <source>Details</source>
         <translation>Detalles</translation>
     </message>
     <message>
         <location filename="../forms/detailsdialog.ui" line="44"/>
+        <location filename="../libqmmpui_autogen/include/ui_detailsdialog.h" line="145"/>
         <source>Open the directory containing this file</source>
         <translation>Abrir el directorio que contiene este archivo</translation>
     </message>
     <message>
         <location filename="../forms/detailsdialog.ui" line="47"/>
+        <location filename="../libqmmpui_autogen/include/ui_detailsdialog.h" line="147"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
         <location filename="../forms/detailsdialog.ui" line="63"/>
+        <location filename="../libqmmpui_autogen/include/ui_detailsdialog.h" line="151"/>
         <source>Summary</source>
         <translation>Resumen</translation>
     </message>
@@ -1230,11 +1234,13 @@
     <name>JumpToTrackDialog</name>
     <message>
         <location filename="../forms/jumptotrackdialog.ui" line="14"/>
+        <location filename="../libqmmpui_autogen/include/ui_jumptotrackdialog.h" line="125"/>
         <source>Jump To Track</source>
         <translation>Saltar a pista</translation>
     </message>
     <message>
         <location filename="../forms/jumptotrackdialog.ui" line="46"/>
+        <location filename="../libqmmpui_autogen/include/ui_jumptotrackdialog.h" line="126"/>
         <source>Filter</source>
         <translation>Filtro</translation>
     </message>
@@ -1242,11 +1248,13 @@
         <location filename="../forms/jumptotrackdialog.ui" line="85"/>
         <location filename="../jumptotrackdialog.cpp" line="119"/>
         <location filename="../jumptotrackdialog.cpp" line="150"/>
+        <location filename="../libqmmpui_autogen/include/ui_jumptotrackdialog.h" line="127"/>
         <source>Queue</source>
         <translation>Cola</translation>
     </message>
     <message>
         <location filename="../forms/jumptotrackdialog.ui" line="105"/>
+        <location filename="../libqmmpui_autogen/include/ui_jumptotrackdialog.h" line="128"/>
         <source>Jump To</source>
         <translation>Ir a</translation>
     </message>
@@ -1523,8 +1531,8 @@
 <context>
     <name>PlayListManager</name>
     <message>
-        <location filename="../playlistmanager.cpp" line="195"/>
-        <location filename="../playlistmanager.cpp" line="367"/>
+        <location filename="../playlistmanager.cpp" line="196"/>
+        <location filename="../playlistmanager.cpp" line="399"/>
         <source>Playlist</source>
         <translation>Lista de reproducción</translation>
     </message>
@@ -1563,11 +1571,13 @@
     <name>ShortcutDialog</name>
     <message>
         <location filename="../forms/shortcutdialog.ui" line="14"/>
+        <location filename="../libqmmpui_autogen/include/ui_shortcutdialog.h" line="68"/>
         <source>Change Shortcut</source>
         <translation>Cambiar atajo</translation>
     </message>
     <message>
         <location filename="../forms/shortcutdialog.ui" line="29"/>
+        <location filename="../libqmmpui_autogen/include/ui_shortcutdialog.h" line="69"/>
         <source>Press the key combination you want to assign</source>
         <translation>Pulse la combinación de teclas que quiere asignar</translation>
     </message>
@@ -1581,41 +1591,49 @@
     <name>TagEditor</name>
     <message>
         <location filename="../forms/tageditor.ui" line="14"/>
+        <location filename="../libqmmpui_autogen/include/ui_tageditor.h" line="255"/>
         <source>Tag Editor</source>
         <translation>Editor de etiquetas</translation>
     </message>
     <message>
         <location filename="../forms/tageditor.ui" line="38"/>
+        <location filename="../libqmmpui_autogen/include/ui_tageditor.h" line="256"/>
         <source>Title:</source>
         <translation>Título:</translation>
     </message>
     <message>
         <location filename="../forms/tageditor.ui" line="64"/>
+        <location filename="../libqmmpui_autogen/include/ui_tageditor.h" line="257"/>
         <source>Artist:</source>
         <translation>Intérprete:</translation>
     </message>
     <message>
         <location filename="../forms/tageditor.ui" line="90"/>
+        <location filename="../libqmmpui_autogen/include/ui_tageditor.h" line="258"/>
         <source>Album:</source>
         <translation>Álbum:</translation>
     </message>
     <message>
         <location filename="../forms/tageditor.ui" line="113"/>
+        <location filename="../libqmmpui_autogen/include/ui_tageditor.h" line="260"/>
         <source>Album artist:</source>
         <translation>Artista del álbum:</translation>
     </message>
     <message>
         <location filename="../forms/tageditor.ui" line="123"/>
+        <location filename="../libqmmpui_autogen/include/ui_tageditor.h" line="261"/>
         <source>Composer:</source>
         <translation>Compositor:</translation>
     </message>
     <message>
         <location filename="../forms/tageditor.ui" line="143"/>
+        <location filename="../libqmmpui_autogen/include/ui_tageditor.h" line="262"/>
         <source>Genre:</source>
         <translation>Género:</translation>
     </message>
     <message>
         <location filename="../forms/tageditor.ui" line="169"/>
+        <location filename="../libqmmpui_autogen/include/ui_tageditor.h" line="263"/>
         <source>Track:</source>
         <translation>Pista:</translation>
     </message>
@@ -1623,26 +1641,33 @@
         <location filename="../forms/tageditor.ui" line="190"/>
         <location filename="../forms/tageditor.ui" line="228"/>
         <location filename="../forms/tageditor.ui" line="260"/>
+        <location filename="../libqmmpui_autogen/include/ui_tageditor.h" line="264"/>
+        <location filename="../libqmmpui_autogen/include/ui_tageditor.h" line="266"/>
+        <location filename="../libqmmpui_autogen/include/ui_tageditor.h" line="269"/>
         <source>?</source>
         <translation>?</translation>
     </message>
     <message>
         <location filename="../forms/tageditor.ui" line="203"/>
+        <location filename="../libqmmpui_autogen/include/ui_tageditor.h" line="265"/>
         <source>Year:</source>
         <translation>Año:</translation>
     </message>
     <message>
         <location filename="../forms/tageditor.ui" line="250"/>
+        <location filename="../libqmmpui_autogen/include/ui_tageditor.h" line="268"/>
         <source>Disc number:</source>
         <translation>Número de disco:</translation>
     </message>
     <message>
         <location filename="../forms/tageditor.ui" line="275"/>
+        <location filename="../libqmmpui_autogen/include/ui_tageditor.h" line="270"/>
         <source>Comment:</source>
         <translation>Comentario:</translation>
     </message>
     <message>
         <location filename="../forms/tageditor.ui" line="311"/>
+        <location filename="../libqmmpui_autogen/include/ui_tageditor.h" line="271"/>
         <source>Include selected tag in file</source>
         <translation>Incluir la etiqueta seleccionada en el archivo</translation>
     </message>
@@ -1651,11 +1676,13 @@
     <name>TemplateEditor</name>
     <message>
         <location filename="../forms/templateeditor.ui" line="14"/>
+        <location filename="../libqmmpui_autogen/include/ui_templateeditor.h" line="70"/>
         <source>Template Editor</source>
         <translation>Editor de plantillas</translation>
     </message>
     <message>
         <location filename="../forms/templateeditor.ui" line="30"/>
+        <location filename="../libqmmpui_autogen/include/ui_templateeditor.h" line="71"/>
         <source>Insert</source>
         <translation>Insertar</translation>
     </message>
@@ -1664,16 +1691,19 @@
     <name>TextEditor</name>
     <message>
         <location filename="../forms/texteditor.ui" line="40"/>
+        <location filename="../libqmmpui_autogen/include/ui_texteditor.h" line="78"/>
         <source>Load</source>
         <translation type="unfinished">Cargar</translation>
     </message>
     <message>
         <location filename="../forms/texteditor.ui" line="47"/>
+        <location filename="../libqmmpui_autogen/include/ui_texteditor.h" line="79"/>
         <source>Delete</source>
         <translation type="unfinished">Borrar</translation>
     </message>
     <message>
         <location filename="../forms/texteditor.ui" line="54"/>
+        <location filename="../libqmmpui_autogen/include/ui_texteditor.h" line="80"/>
         <source>Save as...</source>
         <translation type="unfinished">Guardar como...</translation>
     </message>
@@ -1724,6 +1754,19 @@
 Do you want to replace it?</source>
         <translation>%1 ya existe.
 ¿Quiere reemplazarlo?</translation>
+    </message>
+</context>
+<context>
+    <name>UpdateChecker</name>
+    <message>
+        <location filename="../updatechecker.cpp" line="153"/>
+        <source>The server sent a reply x-AMP could not read.</source>
+        <translation>El servidor envió una respuesta que x-AMP no pudo leer.</translation>
+    </message>
+    <message>
+        <location filename="../updatechecker.cpp" line="163"/>
+        <source>The server did not say which release is the newest.</source>
+        <translation>El servidor no indicó cuál es la versión más reciente.</translation>
     </message>
 </context>
 <context>

@@ -37,6 +37,7 @@ set(libqmmpui_SRCS
     metadataformattermenu.cpp
     templateeditor.cpp
     uiloader.cpp
+    updatechecker.cpp
     jumptotrackdialog.cpp
     configdialog.cpp
     pluginitem.cpp
@@ -106,6 +107,7 @@ SET(libqmmpui_DEVEL_HDRS
     templateeditor.h
     uifactory.h
     uihelper.h
+    updatechecker.h
     uiloader.h
     visualmenu.h
 )

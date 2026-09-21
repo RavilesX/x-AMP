@@ -211,143 +211,188 @@
 <context>
     <name>XUiMainWindow</name>
     <message>
-        <location filename="../xuimainwindow.cpp" line="200"/>
+        <location filename="../xuimainwindow.cpp" line="212"/>
         <source>&amp;Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="201"/>
+        <location filename="../xuimainwindow.cpp" line="213"/>
         <source>Add &amp;File...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="201"/>
+        <location filename="../xuimainwindow.cpp" line="213"/>
         <source>Ctrl+Shift+A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="203"/>
+        <location filename="../xuimainwindow.cpp" line="215"/>
         <source>Ctrl+Shift+D</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="220"/>
+        <location filename="../xuimainwindow.cpp" line="232"/>
         <source>Ctrl+F</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="203"/>
+        <location filename="../xuimainwindow.cpp" line="215"/>
         <source>Add &amp;Directory...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="119"/>
+        <location filename="../xuimainwindow.cpp" line="125"/>
         <source>x-AMP Equalizer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="128"/>
+        <location filename="../xuimainwindow.cpp" line="134"/>
         <source>x-AMP Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="205"/>
+        <location filename="../xuimainwindow.cpp" line="217"/>
         <source>Add &amp;URL...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="205"/>
+        <location filename="../xuimainwindow.cpp" line="217"/>
         <source>Ctrl+U</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="208"/>
+        <location filename="../xuimainwindow.cpp" line="220"/>
         <source>&amp;Playback</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="209"/>
+        <location filename="../xuimainwindow.cpp" line="221"/>
         <source>&amp;Play/Pause</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="211"/>
+        <location filename="../xuimainwindow.cpp" line="223"/>
         <source>&amp;Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="211"/>
+        <location filename="../xuimainwindow.cpp" line="223"/>
         <source>Ctrl+.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="213"/>
+        <location filename="../xuimainwindow.cpp" line="225"/>
         <source>&amp;Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="213"/>
+        <location filename="../xuimainwindow.cpp" line="225"/>
         <source>Ctrl+Right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="215"/>
+        <location filename="../xuimainwindow.cpp" line="227"/>
         <source>P&amp;revious</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="215"/>
+        <location filename="../xuimainwindow.cpp" line="227"/>
         <source>Ctrl+Left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="219"/>
+        <location filename="../xuimainwindow.cpp" line="231"/>
         <source>&amp;View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="220"/>
+        <location filename="../xuimainwindow.cpp" line="232"/>
         <source>&amp;Search Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="224"/>
+        <location filename="../xuimainwindow.cpp" line="236"/>
         <source>&amp;Equalizer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="232"/>
+        <location filename="../xuimainwindow.cpp" line="244"/>
         <source>&amp;Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="242"/>
+        <location filename="../xuimainwindow.cpp" line="254"/>
         <source>&amp;Preferences...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="242"/>
+        <location filename="../xuimainwindow.cpp" line="254"/>
         <source>Ctrl+P</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="244"/>
+        <location filename="../xuimainwindow.cpp" line="256"/>
+        <source>Check for &amp;updates...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuimainwindow.cpp" line="258"/>
         <source>&amp;About x-AMP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="246"/>
+        <location filename="../xuimainwindow.cpp" line="260"/>
         <source>&amp;Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="246"/>
+        <location filename="../xuimainwindow.cpp" line="260"/>
         <source>Ctrl+Q</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuimainwindow.cpp" line="270"/>
+        <location filename="../xuimainwindow.cpp" line="284"/>
         <source>Interface</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuimainwindow.cpp" line="324"/>
+        <source>Update available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuimainwindow.cpp" line="325"/>
+        <source>x-AMP %1 is available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuimainwindow.cpp" line="326"/>
+        <source>You are running %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuimainwindow.cpp" line="327"/>
+        <source>Open the releases page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuimainwindow.cpp" line="329"/>
+        <source>Not now</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuimainwindow.cpp" line="339"/>
+        <source>No update</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuimainwindow.cpp" line="340"/>
+        <source>x-AMP %1 is the newest release.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuimainwindow.cpp" line="345"/>
+        <source>Could not check for updates</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -677,87 +722,102 @@
 <context>
     <name>XUiSettings</name>
     <message>
-        <location filename="../xuisettings.cpp" line="46"/>
+        <location filename="../xuisettings.cpp" line="47"/>
         <source>Sections</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="52"/>
+        <location filename="../xuisettings.cpp" line="53"/>
         <source>Show equalizer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="56"/>
+        <location filename="../xuisettings.cpp" line="57"/>
         <source>Show playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="62"/>
+        <location filename="../xuisettings.cpp" line="63"/>
         <source>Colour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="71"/>
+        <location filename="../xuisettings.cpp" line="72"/>
         <source>Accent colour:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="77"/>
+        <location filename="../xuisettings.cpp" line="78"/>
         <source>Reset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="89"/>
+        <location filename="../xuisettings.cpp" line="90"/>
         <source>Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="96"/>
+        <location filename="../xuisettings.cpp" line="97"/>
         <source>Playlist background:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="100"/>
+        <location filename="../xuisettings.cpp" line="101"/>
         <source>Choose...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="103"/>
+        <location filename="../xuisettings.cpp" line="104"/>
         <source>Clear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="109"/>
+        <location filename="../xuisettings.cpp" line="110"/>
         <source>Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="114"/>
+        <location filename="../xuisettings.cpp" line="115"/>
         <source>Hide instead of quitting when closed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="139"/>
+        <location filename="../xuisettings.cpp" line="119"/>
+        <source>Updates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuisettings.cpp" line="127"/>
+        <source>Check for new releases at startup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuisettings.cpp" line="129"/>
+        <source>Contacts github.com to compare the newest release against this one.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuisettings.cpp" line="155"/>
         <source>Accent colour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="144"/>
+        <location filename="../xuisettings.cpp" line="160"/>
         <source>See the colour on the interface, keeping this open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="177"/>
+        <location filename="../xuisettings.cpp" line="193"/>
         <source>Playlist background</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="179"/>
+        <location filename="../xuisettings.cpp" line="195"/>
         <source>Images (*.png *.jpg *.jpeg *.bmp *.webp *.tif *.tiff);;All files (*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuisettings.cpp" line="205"/>
+        <location filename="../xuisettings.cpp" line="221"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>

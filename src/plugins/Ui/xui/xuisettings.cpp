@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include <QCheckBox>
+#include <qmmpui/updatechecker.h>
 #include <QColorDialog>
 #include <QDialogButtonBox>
 #include <QFileDialog>
@@ -115,6 +116,20 @@ XUiSettings::XUiSettings(QWidget *parent) : QWidget(parent)
     m_hideOnClose->setChecked(settings.value(HideOnCloseKey, false).toBool());
     layout->addWidget(m_hideOnClose);
 
+    QLabel *updates = new QLabel(tr("Updates"), this);
+    updates->setFont(bold);
+    layout->addSpacing(6);
+    layout->addWidget(updates);
+
+    //Off unless it is turned on here. The check reaches GitHub, and a player
+    //that does that on its first run without being asked is not the default
+    //to pick; the menu entry is there for anyone who would rather ask.
+    m_checkUpdates = new QCheckBox(tr("Check for new releases at startup"), this);
+    m_checkUpdates->setChecked(UpdateChecker::isAutomatic());
+    m_checkUpdates->setToolTip(tr("Contacts github.com to compare the newest "
+                                  "release against this one."));
+    layout->addWidget(m_checkUpdates);
+
     layout->addStretch(1);
 }
 
@@ -126,6 +141,7 @@ void XUiSettings::writeSettings()
     settings.setValue(HideOnCloseKey, m_hideOnClose->isChecked());
     settings.setValue(XUi::AccentKey, m_accent);
     settings.setValue(BackgroundKey, m_background);
+    UpdateChecker::setAutomatic(m_checkUpdates->isChecked());
 }
 
 void XUiSettings::pickAccent()

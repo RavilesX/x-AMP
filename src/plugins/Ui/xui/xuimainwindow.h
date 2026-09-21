@@ -33,6 +33,7 @@ class PlayListManager;
 class XUiPlayerCard;
 class XUiEqualizerCard;
 class XUiPlaylistCard;
+class UpdateChecker;
 
 /*!
  * The player window: title bar, player card, and the menu that drives the
@@ -60,6 +61,13 @@ private slots:
     void showPreferences();
     /*! The preferences, opened straight at the scheduler. */
     void showSchedulerSettings();
+    /*!
+     * Asks GitHub whether a newer release exists and reports either way.
+     * \b quiet suppresses everything but a positive answer, which is what the
+     * check on startup wants: nobody wants a dialog telling them nothing has
+     * changed, still less one saying the network was down.
+     */
+    void checkForUpdates(bool quiet = false);
 
 private:
     QWidget *buildTitleBar();
@@ -96,6 +104,12 @@ private:
     XUiWindow *m_equalizerWindow = nullptr;
     XUiWindow *m_playlistWindow = nullptr;
     QMenu *m_mainMenu = nullptr;
+    //built on first use: an interface that never checks never creates it,
+    //and creating it is what sets a proxy up
+    UpdateChecker *m_updates = nullptr;
+    //whether the check in flight was the one on startup, which reports only
+    //good news
+    bool m_quietCheck = false;
     //kept so closing a companion by its own button unticks it in the menu
     QAction *m_equalizerAction = nullptr;
     QAction *m_playlistAction = nullptr;

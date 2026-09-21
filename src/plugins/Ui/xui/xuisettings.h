@@ -87,6 +87,7 @@ private:
     QCheckBox *m_showEqualizer;
     QCheckBox *m_showPlaylist;
     QCheckBox *m_hideOnClose;
+    QCheckBox *m_checkUpdates;
 };
 
 #endif
