@@ -12,7 +12,8 @@ permissions:
   contents: write # required to create the release and upload to it
 
 jobs:
-  release:
+  # The source tarball, and the version guard every other job trusts.
+  source:
     runs-on: ubuntu-24.04
 
     defaults:
@@ -30,10 +31,12 @@ jobs:
       # which is the kind of thing nobody notices until a bug report is
       # unreproducible. Cheapest possible guard, so it runs first.
       - name: Check the tag matches the version in the source
+        id: version
         run: |
           v() { grep -Po "#define QMMP_VERSION_$1\s+\K[0-9]+" src/qmmp/qmmp.h; }
           version="$(v MAJOR).$(v MINOR).$(v PATCH)"
           echo "VERSION=$version" >> "$GITHUB_ENV"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "Version in qmmp.h: $version"
 
           if [ "$(v STABLE)" != "1" ]; then
@@ -122,26 +125,116 @@ jobs:
             x-amp-*.tar.gz.sha256
           retention-days: 14
 
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+  # The same build the CI runs, through the same composite action, plus the
+  # packaging the release needs: a portable zip and an installer.
+  windows:
+    # After the source job rather than beside it: that job holds the guard
+    # that the tag and qmmp.h agree, and packaging Windows for twenty minutes
+    # before finding out they do not is runner time spent on nothing.
+    needs: source
+    runs-on: windows-2022
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/windows-build
+
+      # Inno Setup rather than NSIS or CPack. The staged tree already starts on
+      # its own, so all the installer does is carry a directory, and a single
+      # .iss says that in a form someone can read and run by hand. Pinned so a
+      # new Inno release cannot change the wizard under a future tag.
+      - name: Install Inno Setup
+        run: choco install innosetup --version=6.2.2 -y --no-progress
+
+      - name: Package
+        run: |
+          version="${{ needs.source.outputs.version }}"
+          mkdir -p dist
+
+          # Portable: the staged tree as it stands, for anyone who would
+          # rather not run an installer or wants it on a stick.
+          portable="x-amp-${version}-windows-x64"
+          cp -r stage "$portable"
+          7z a -tzip -mx=9 "dist/${portable}.zip" "$portable" > /dev/null
+
+          # Installed: the wizard. iscc is not on PATH after choco.
+          iscc="/c/Program Files (x86)/Inno Setup 6/ISCC.exe"
+          "$iscc" \
+            "/DAppVersion=${version}" \
+            "/DStageDir=$(pwd -W)\\stage" \
+            "/DSourceRoot=$(pwd -W)" \
+            "/DOutputDir=$(pwd -W)\\dist" \
+            packaging/windows/xamp.iss
+
+          # Both are what the release page offers, so a missing one has to
+          # fail here rather than produce a release with half its assets.
+          setup="dist/x-amp-${version}-setup.exe"
+          [ -f "$setup" ] || { echo "::error::The installer was not produced."; exit 1; }
+          ( cd dist && sha256sum "${portable}.zip" > "${portable}.zip.sha256" \
+                    && sha256sum "x-amp-${version}-setup.exe" > "x-amp-${version}-setup.exe.sha256" )
+          ls -l dist
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-package
+          path: dist/*
+          retention-days: 14
+
+  # Publishing is its own job so it cannot run until both builds are green: a
+  # release whose Windows asset is missing is worse than one that is late.
+  publish:
+    needs: [source, windows]
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-24.04
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: assets
+
       # gh is preinstalled on the runner, so no third-party action gets a token.
       # --verify-tag refuses to invent a tag that is not really there.
       - name: Publish the release
-        if: github.ref_type == 'tag'
         env:
           GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.source.outputs.version }}
         run: |
+          find assets -type f | sort
           notes="$(mktemp)"
           {
             echo "## x-AMP ${VERSION}"
             echo
             echo "Built and packaged from \`${GITHUB_SHA}\`."
             echo
-            echo "### Install from source"
+            echo "### Windows"
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| \`x-amp-${VERSION}-setup.exe\` | Installer. Per-user by default, so no administrator prompt. |"
+            echo "| \`x-amp-${VERSION}-windows-x64.zip\` | Portable: unpack and run \`bin\\xamp.exe\`. |"
+            echo
+            echo "Windows 10 or newer, 64-bit. Both carry the Qt and MinGW"
+            echo "runtimes and every decoder plugin, so nothing else is needed."
+            echo
+            echo "### Linux, from source"
             echo
             echo '```sh'
-            echo "tar -xzf ${TARBALL}"
+            echo "tar -xzf x-amp-${VERSION}.tar.gz"
             echo "cd x-amp-${VERSION}"
             echo 'cmake -B build && make -C build -j"$(nproc)"'
-            echo 'sudo make -C build install'
+            echo 'sudo make -C build install/strip && sudo ldconfig'
             echo '```'
             echo
             echo "Requires Qt 6.2 or newer and taglib; every other dependency is"
@@ -157,5 +250,5 @@ jobs:
             --verify-tag \
             --title "x-AMP ${VERSION}" \
             --notes-file "$notes" \
-            "${TARBALL}" \
-            "${TARBALL}.sha256"
+            --repo "${GITHUB_REPOSITORY}" \
+            $(find assets -type f | sort)

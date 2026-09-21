@@ -53,9 +53,26 @@ Cada formato es un plugin independiente que se detecta al configurar. Si falta l
 
 ## Instalación
 
+### Windows
+
+Descargá de la [última release](https://github.com/RavilesX/x-AMP/releases/latest):
+
+| Archivo | Para qué |
+|---|---|
+| `x-amp-1.1.0-setup.exe` | Instalador con asistente. Instala por usuario, así que no pide permisos de administrador. |
+| `x-amp-1.1.0-windows-x64.zip` | Portable: descomprimir y ejecutar `bin\xamp.exe`. |
+
+Windows 10 o posterior, 64 bits. Los dos llevan dentro el entorno de Qt, el de
+MinGW y todos los plugins de decodificación, así que no hace falta instalar
+nada más. Cada uno viene con su `.sha256`.
+
+El asistente ofrece un acceso directo en el escritorio y, desmarcada por
+defecto, la asociación de archivos de audio. x-AMP aparece igual en «Abrir
+con» sin necesidad de marcarla.
+
 ### Desde una versión publicada
 
-Descargá el tarball de la [última release](https://github.com/RavilesX/x-AMP/releases/latest):
+En Linux se compila desde el tarball de la [última release](https://github.com/RavilesX/x-AMP/releases/latest):
 
 ```sh
 tar -xzf x-amp-1.1.0.tar.gz
@@ -200,7 +217,7 @@ Versión **1.1.0**. Ya no es un fork de solo rebranding: la interfaz `xui` es pr
 | Programador y cola compartida | ✅ desde 1.1 |
 | Releases publicadas | ✅ [1.1.0](https://github.com/RavilesX/x-AMP/releases/latest) y [1.0.0](https://github.com/RavilesX/x-AMP/releases/tag/v1.0.0) |
 
-La CI compila en Ubuntu y en Windows (MinGW vía MSYS2) en cada push, con un guardián que falla si un plugin deja de construirse. Las releases se cortan por etiqueta y publican un tarball de fuentes con su suma SHA-256.
+La CI compila en Ubuntu y en Windows (MinGW vía MSYS2) en cada push, con un guardián que falla si un plugin deja de construirse. Las releases se cortan por etiqueta y publican el tarball de fuentes, el instalador de Windows y el paquete portable, cada uno con su suma SHA-256. El build de Windows sale de la misma acción compuesta que usa la CI, para que no puedan divergir.
 
 ### Ramas
 

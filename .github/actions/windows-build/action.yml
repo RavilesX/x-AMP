@@ -1,0 +1,253 @@
+name: Build x-AMP for Windows
+description: >
+  Installs the MinGW toolchain and codec libraries from MSYS2, builds x-AMP,
+  and stages a tree that runs on its own. Shared by the CI workflow and the
+  release workflow so the two cannot drift: the staging is the delicate part,
+  and a Windows build that works in one and not the other is only discovered
+  by someone downloading it.
+
+outputs:
+  stage:
+    description: Path to the staged, runnable tree.
+    value: ${{ steps.stage.outputs.path }}
+
+runs:
+  using: composite
+  steps:
+    # MinGW, not MSVC. The equalizer core carries __attribute__((aligned)) on
+    # every coefficient table (src/qmmp/equ/iir_cfs.c), which is GCC syntax
+    # MSVC does not accept at all -- upstream builds Windows with MinGW and
+    # the code says so.
+    #
+    # Everything comes from MSYS2's mingw64 repository, which the runner
+    # image already carries at C:\msys64, rather than from aqtinstall and
+    # vcpkg. The decoders decide this: they are all found through
+    # pkg_check_modules, so they need .pc files and a pkg-config that reads
+    # them, and taglib is C++, so it has to have been built by the same
+    # compiler. vcpkg's default triplet is MSVC, and its MinGW triplets build
+    # from source -- half an hour a run for libraries MSYS2 ships prebuilt.
+    #
+    # Nothing here needs the MSYS2 shell: pacman drops native Windows
+    # binaries into C:\msys64\mingw64, and the steps stay on Git bash with
+    # that directory ahead of everything else on PATH.
+    - name: Install the toolchain and the codec libraries
+      shell: bash
+      run: |
+        # Through MSYS2's own login shell rather than by putting pacman on
+        # PATH: pacman is an MSYS program, Git bash is another MSYS runtime,
+        # and running one inside the other is what broke the first attempt.
+        # -l is what sets up the environment pacman expects.
+        msys() { C:/msys64/usr/bin/bash.exe -lc "$1"; }
+
+        msys 'pacman --version | head -1'
+
+        # The keyring is as old as the runner image, and pacman refuses
+        # packages it cannot verify.
+        msys 'pacman -Sy --noconfirm --needed --disable-download-timeout msys2-keyring'
+
+        # One variable rather than a quoted multi-line command: inside single
+        # quotes a trailing backslash is a literal backslash, not a line
+        # continuation, and pacman would be handed it as a package name.
+        p=mingw-w64-x86_64
+
+        # Split in two because pacman treats one unknown name as a reason to
+        # abort the whole transaction -- which is how a single wrong package
+        # ("soxr", packaged as libsoxr) took the entire job down. Without the
+        # toolchain there is nothing to build, so that half must succeed; a
+        # codec that gets renamed upstream should cost its own plugin and
+        # nothing else. The decoder check below is the real gate.
+        required="$p-gcc $p-cmake $p-ninja $p-pkgconf $p-ntldd"
+        required="$required $p-qt6-base $p-qt6-tools $p-taglib $p-libiconv"
+        msys "pacman -S --noconfirm --needed --disable-download-timeout $required"
+
+        optional="$p-qt6-multimedia"
+        optional="$optional $p-mpg123 $p-libmad $p-libvorbis $p-libogg"
+        optional="$optional $p-flac $p-opusfile $p-wavpack $p-libsndfile"
+        optional="$optional $p-ffmpeg $p-libxmp $p-libsidplayfp $p-libcdio"
+        optional="$optional $p-libbs2b $p-libsoxr $p-curl $p-libarchive"
+        for one in $optional; do
+          msys "pacman -S --noconfirm --needed --disable-download-timeout $one" \
+            || echo "::warning::$one could not be installed; its plugin will be missing"
+        done
+
+        echo "C:\\msys64\\mingw64\\bin" >> "$GITHUB_PATH"
+        echo "QT_ROOT=C:/msys64/mingw64" >> "$GITHUB_ENV"
+
+    # Ninja rather than "MinGW Makefiles": these steps run through Git bash,
+    # so sh.exe is on PATH, and that generator refuses to run when it is.
+    # The compilers are named explicitly because Visual Studio is on the
+    # runner and CMake would otherwise find cl.exe.
+    # The log tail is re-emitted as an annotation on failure. A failed step
+    # otherwise says only "Process completed with exit code 1" to anything
+    # reading this run through the API, and the logs themselves need a token,
+    # so a broken build here is diagnosed by guesswork.
+    - name: Configure
+      shell: bash
+      run: |
+        # %-escaping and one line per %0A is how a workflow command carries a
+        # multi-line message; a raw % would be read as the start of another.
+        annotate() {
+          printf '::error title=%s::%s\n' "$1" \
+            "$(tail -40 "$2" | sed 's/%/%25/g; s/\r//g' | awk '{printf "%s%%0A", $0}')"
+        }
+
+        if ! cmake -B build -G Ninja \
+               -DCMAKE_BUILD_TYPE=Release \
+               -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ \
+               -DCMAKE_PREFIX_PATH=C:/msys64/mingw64 > configure-windows.log 2>&1; then
+          cat configure-windows.log
+          annotate "configure failed" configure-windows.log
+          exit 1
+        fi
+        cat configure-windows.log
+
+    # The point of pulling the codec libraries in is the Input plugins, and
+    # a silently empty set is the failure worth catching: pkg_check_modules
+    # reports a missing library by disabling its plugin, not by failing, so
+    # a broken PKG_CONFIG_PATH would otherwise sail through as a green build
+    # that plays nothing -- which is exactly where this job started.
+    - name: Check the decoders were found
+      shell: bash
+      run: |
+        missing=""
+        for dec in MAD mpg123 Vorbis FLAC Opus FFmpeg WavPack; do
+          grep -qi "$dec" configure-windows.log || missing="$missing $dec"
+        done
+        if [ -n "$missing" ]; then
+          echo "::error::Decoders absent from the configure summary:$missing"
+          exit 1
+        fi
+        echo "Every expected decoder appears in the configure summary."
+
+    - name: Build
+      shell: bash
+      run: |
+        # "undefined reference to ..." carries no word matching /error/, so a
+        # filter on that alone reports the collect2 summary line and hides
+        # every symbol that actually failed to resolve. ninja's own "FAILED:"
+        # marks the command that died.
+        annotate() {
+          printf '::error title=%s::%s\n' "$1" \
+            "$(grep -E 'FAILED:|undefined reference|cannot find|No such file|error:|Error [0-9]' "$2" \
+               | cut -c1-300 | tail -30 | sed 's/%/%25/g; s/\r//g' \
+               | awk '{printf "%s%%0A", $0}')"
+        }
+
+        if ! cmake --build build --parallel > build-windows.log 2>&1; then
+          tail -100 build-windows.log
+          annotate "build failed" build-windows.log
+          exit 1
+        fi
+        tail -20 build-windows.log
+
+    # The .rc is the one file no other job can check: it is only ever fed to
+    # a resource compiler here, and it is generated from qmmp.h, so a version
+    # bump can break it without anyone touching it.
+    - name: Check the executable and its resources
+      shell: bash
+      run: |
+        exe=$(find build -name 'xamp.exe' | head -1)
+        if [ -z "$exe" ]; then
+          echo "::error::xamp.exe was not produced."
+          exit 1
+        fi
+        echo "Built $exe"
+        rc="build/src/app/qmmp.rc"
+        if [ ! -f "$rc" ]; then
+          echo "::error::qmmp.rc was never configured from qmmp.rc.in."
+          exit 1
+        fi
+        v() { grep -Po "#define QMMP_VERSION_$1\s+\K[0-9]+" src/qmmp/qmmp.h; }
+        want="$(v MAJOR),$(v MINOR),$(v PATCH),0"
+        if ! grep -qF "$want" "$rc"; then
+          echo "::error::The resource script says $(grep -m1 FILEVERSION "$rc") but qmmp.h says $want."
+          exit 1
+        fi
+        echo "Resource version matches qmmp.h: $want"
+
+    # xamp.exe on its own does not start: it needs the Qt DLLs, the qwindows
+    # platform plugin, the MinGW runtime, and x-AMP's own plugin tree beside
+    # it. The installed layout already puts the pieces where the player looks
+    # for them -- Qmmp::pluginPath() falls back to <exe>/../lib/qmmp-<ver>-xamp
+    # on Windows, and both libraries install their DLLs to bin -- so this
+    # stages the install and lets windeployqt fill in Qt.
+    #
+    # windeployqt only knows about Qt. Every decoder plugin also links a
+    # library of its own -- libmpg123, libFLAC, libvorbis, avcodec and the
+    # rest -- and a plugin whose DLL is missing simply fails to load, so the
+    # player would come up looking healthy and refuse every file.
+    #
+    # ntldd rather than ldd: ldd understands MSYS binaries, these are native
+    # Windows ones. It answers in Windows paths, hence the backslash fold.
+    - name: Stage a runnable tree
+      id: stage
+      shell: bash
+      run: |
+        cmake --install build --prefix "$PWD/stage" > /dev/null
+        plugins=$(find stage/lib -name '*.dll' 2>/dev/null || true)
+        "$QT_ROOT/bin/windeployqt.exe" --release --compiler-runtime \
+          --dir "$PWD/stage/bin" "$PWD/stage/bin/xamp.exe" $plugins
+
+        # Dependencies are compared by name against what MSYS2 provides,
+        # rather than by whether ntldd could resolve them. ntldd reports the
+        # Windows API sets -- api-ms-win-crt-*, ext-ms-* -- as "not found",
+        # because they are loader constructs and not files at all, and every
+        # binary using the C runtime depends on a dozen of them. Asking
+        # instead "does mingw64 ship this, and is it here yet" answers the
+        # only question that matters and ignores the system entirely.
+        MINGW=C:/msys64/mingw64/bin
+        deps() { ntldd -R "$1" 2>/dev/null | awk '{print $1}' | grep -i '\.dll$' | sort -u; }
+
+        # Repeated because a copied DLL brings dependencies of its own, and
+        # those are only visible once it is in place. It settles quickly;
+        # the loop stops as soon as a pass copies nothing.
+        for pass in 1 2 3 4 5; do
+          copied=0
+          for binary in $(find stage -name '*.dll' -o -name '*.exe'); do
+            for dep in $(deps "$binary"); do
+              if [ -f "$MINGW/$dep" ] && [ ! -f "stage/bin/$dep" ]; then
+                cp "$MINGW/$dep" stage/bin/ && copied=$((copied + 1))
+              fi
+            done
+          done
+          echo "pass $pass: $copied DLLs copied"
+          [ "$copied" -eq 0 ] && break
+        done
+
+        # Without the platform plugin the executable dies before it draws
+        # anything, and it is deployed to a subdirectory rather than beside
+        # the binary, which is easy to lose in a repackaging.
+        if [ ! -f stage/bin/platforms/qwindows.dll ]; then
+          echo "::error::The qwindows platform plugin was not deployed; the build would not start."
+          exit 1
+        fi
+        # A decoder that cannot resolve one of its own DLLs is invisible at
+        # runtime: the player starts, the plugin never loads, and every file
+        # is simply "unsupported". Checking here is the difference between
+        # shipping that and knowing about it.
+        missing=""
+        for binary in $(find stage -name '*.dll' -o -name '*.exe'); do
+          for dep in $(deps "$binary"); do
+            if [ -f "$MINGW/$dep" ] && [ ! -f "stage/bin/$dep" ]; then
+              missing="$missing $dep"
+            fi
+          done
+        done
+        if [ -n "$missing" ]; then
+          echo "::error::Libraries mingw64 provides that were not bundled:$(echo $missing | tr ' ' '\n' | sort -u | tr '\n' ' ')"
+          exit 1
+        fi
+
+        # The same guard the Linux job applies, which never sees the targets
+        # that only exist here -- and that is exactly how the console build
+        # shipped as qmmp-cli.exe rather than xamp-cli.exe.
+        strays=$(find stage -type f | grep -E '/qmmp[^/]*$' | grep -v -- '-xamp' || true)
+        if [ -n "$strays" ]; then
+          echo "::error::Unsuffixed files that would collide with upstream qmmp:%0A$(echo "$strays" | awk '{printf "%s%%0A", $0}')"
+          exit 1
+        fi
+
+        echo "Staged $(find stage -type f | wc -l) files, $(du -sm stage | cut -f1) MB"
+        echo "x-AMP plugins: $(printf '%s\n' "$plugins" | grep -c . || true)"
+        echo "Input plugins: $(find stage/lib -path '*Input*' -name '*.dll' | wc -l)"
+        echo "path=stage" >> "$GITHUB_OUTPUT"
