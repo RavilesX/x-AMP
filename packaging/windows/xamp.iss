@@ -63,9 +63,16 @@ UninstallDisplayName={#AppName} {#AppVersion}
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 ; The build is MinGW x86_64 and there is no 32-bit one, so say so rather than
-; letting it install somewhere it cannot run.
+; letting it install somewhere it cannot run. 6.3 renamed these values and
+; deprecated the old ones, so the compiler decides which spelling it gets and
+; the script stays buildable on either.
+#if Ver >= EncodeVer(6,3,0,0)
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
+#else
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
+#endif
 DisableProgramGroupPage=yes
 ShowLanguageDialog=auto
 ; A running player holds its DLLs open, and an upgrade over the top would
@@ -100,7 +107,11 @@ Name: "associate"; Description: "{cm:AssociateFiles}"; GroupDescription: "{cm:As
 ; and import libraries are installed by CMake because the libraries are
 ; public; they are dead weight in a player.
 Source: "{#StageDir}\bin\*"; DestDir: "{app}\bin"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#StageDir}\lib\qmmp-*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Everything under lib, which is the plugin tree, minus what CMake puts there
+; for building against the libraries. Spelled as a plain wildcard rather than
+; "qmmp-*": a wildcard standing for a directory rather than files is the kind
+; of thing that is easy to get subtly wrong about where it lands.
+Source: "{#StageDir}\lib\*"; DestDir: "{app}\lib"; Excludes: "pkgconfig,*.a,*.dll.a"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#StageDir}\share\*"; DestDir: "{app}\share"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
 Source: "{#SourceRoot}\COPYING"; DestDir: "{app}"; DestName: "COPYING.txt"; Flags: ignoreversion
 Source: "{#SourceRoot}\README.md"; DestDir: "{app}"; DestName: "README.md"; Flags: ignoreversion

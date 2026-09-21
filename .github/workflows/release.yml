@@ -148,10 +148,36 @@ jobs:
 
       # Inno Setup rather than NSIS or CPack. The staged tree already starts on
       # its own, so all the installer does is carry a directory, and a single
-      # .iss says that in a form someone can read and run by hand. Pinned so a
-      # new Inno release cannot change the wizard under a future tag.
-      - name: Install Inno Setup
-        run: choco install innosetup --version=6.2.2 -y --no-progress
+      # .iss says that in a form someone can read and run by hand.
+      #
+      # The runner image ships Inno Setup, so this only installs one when it
+      # does not. No version is pinned: the first attempt asked for 6.2.2 and
+      # the job died on "A newer version of InnoSetup (v6.7.1) is already
+      # installed", because choco refuses a downgrade. A pin below whatever
+      # the image carries can only ever break, and the .iss targets 6.x as a
+      # whole rather than one release of it.
+      - name: Make sure Inno Setup is available
+        id: inno
+        run: |
+          iscc=""
+          for candidate in "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" \
+                           "/c/Program Files/Inno Setup 6/ISCC.exe"; do
+            [ -x "$candidate" ] && { iscc="$candidate"; break; }
+          done
+
+          if [ -z "$iscc" ]; then
+            echo "Not on the image; installing."
+            choco install innosetup -y --no-progress
+            iscc=$(find "/c/Program Files (x86)" "/c/Program Files" \
+                        -maxdepth 2 -name ISCC.exe 2>/dev/null | head -1)
+          fi
+
+          if [ -z "$iscc" ]; then
+            echo "::error::ISCC.exe was not found; the installer cannot be built."
+            exit 1
+          fi
+          echo "Using $iscc"
+          echo "iscc=$iscc" >> "$GITHUB_OUTPUT"
 
       - name: Package
         run: |
@@ -164,13 +190,23 @@ jobs:
           cp -r stage "$portable"
           7z a -tzip -mx=9 "dist/${portable}.zip" "$portable" > /dev/null
 
-          # Installed: the wizard. iscc is not on PATH after choco.
-          iscc="/c/Program Files (x86)/Inno Setup 6/ISCC.exe"
-          "$iscc" \
+          # Installed: the wizard. ISCC is not on PATH, so the step above
+          # found it and handed the location over.
+          #
+          # MSYS_NO_PATHCONV is what makes the /D switches arrive intact. The
+          # shell here is Git bash, which rewrites any argument that looks
+          # like an absolute POSIX path before handing it to a native Windows
+          # program -- so "/DAppVersion=1.2.0" reaches ISCC as
+          # "C:/Program Files/Git/DAppVersion=1.2.0" and the define is never
+          # set. MSYS2_ARG_CONV_EXCL covers the same rewriting under the
+          # MSYS2 runtime, which this job also has on PATH.
+          iscc="${{ steps.inno.outputs.iscc }}"
+          root="$(pwd -W)"
+          MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL='*' "$iscc" \
             "/DAppVersion=${version}" \
-            "/DStageDir=$(pwd -W)\\stage" \
-            "/DSourceRoot=$(pwd -W)" \
-            "/DOutputDir=$(pwd -W)\\dist" \
+            "/DStageDir=${root}/stage" \
+            "/DSourceRoot=${root}" \
+            "/DOutputDir=${root}/dist" \
             packaging/windows/xamp.iss
 
           # Both are what the release page offers, so a missing one has to
