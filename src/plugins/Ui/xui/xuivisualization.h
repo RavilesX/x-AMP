@@ -23,10 +23,11 @@
 #include <QVector>
 #include <qmmp/visual.h>
 
+class QPainter;
 class QTimer;
 
 /*!
- * Spectrum analyser drawn as rounded bars with a vertical gradient.
+ * Spectrum analyser, drawn in one of three styles over the same band data.
  *
  * Registered with Visual::add() so the engine feeds it PCM; the widget pulls
  * FFT data on a timer rather than being pushed to, which is the pattern the
@@ -36,10 +37,21 @@ class XUiSpectrum : public Visual
 {
     Q_OBJECT
 public:
+    enum Style
+    {
+        Bars,   //rounded bars with a vertical gradient and falling caps
+        Blocks, //LED segments, lit from the bottom like the level meters
+        Wave,   //one filled curve through the tops of the bands
+        Scope,  //oscilloscope: the waveform itself rather than its spectrum
+        StyleCount
+    };
+
     explicit XUiSpectrum(QWidget *parent = nullptr);
     ~XUiSpectrum();
 
     void clear();
+    void setStyle(Style style);
+    Style style() const { return m_style; }
 
 protected:
     void paintEvent(QPaintEvent *) override;
@@ -52,9 +64,14 @@ private slots:
 
 private:
     void rebuildBands();
+    void paintBars(QPainter *p);
+    void paintBlocks(QPainter *p);
+    void paintWave(QPainter *p);
+    void paintScope(QPainter *p);
 
+    Style m_style = Bars;
     QTimer *m_timer;
-    float m_buffer[QMMP_VISUAL_NODE_SIZE] = { 0 };
+    float m_buffer[QMMP_VISUAL_NODE_SIZE] = { 0 }; //FFT bins, or PCM for the scope
     QVector<qreal> m_bands;  //current bar heights, 0..1
     QVector<qreal> m_peaks;  //slowly falling peak markers, 0..1
 };

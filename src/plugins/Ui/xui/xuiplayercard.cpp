@@ -21,6 +21,7 @@
 #include <QLabel>
 #include <QLocale>
 #include <QPainter>
+#include <QSettings>
 #include <QVBoxLayout>
 #include <qmmp/soundcore.h>
 #include <qmmp/metadatamanager.h>
@@ -38,6 +39,8 @@
 
 namespace
 {
+    const QString SpectrumStyleKey = QStringLiteral("XUi/spectrum_style");
+
     QString formatTime(qint64 ms)
     {
         if(ms < 0)
@@ -206,6 +209,25 @@ QWidget *XUiPlayerCard::buildDetails()
     m_spectrum = new XUiSpectrum(panel);
     m_spectrum->setMinimumHeight(34);
     visRow->addWidget(m_spectrum, 1);
+
+    //Steps the analyser on to its next style. The choice outlives the
+    //session; qBound keeps a hand-edited or out-of-range value from indexing
+    //past the styles there are.
+    XUiIconButton *spectrumStyle = new XUiIconButton(XUiIcons::Spectrum, panel);
+    spectrumStyle->setIconSize(16);
+    auto applyStyle = [this, spectrumStyle](int style) {
+        m_spectrum->setStyle(XUiSpectrum::Style(qBound(0, style, XUiSpectrum::StyleCount - 1)));
+        const QString names[XUiSpectrum::StyleCount] = { tr("Bars"), tr("Blocks"), tr("Wave"),
+                                                           tr("Oscilloscope") };
+        spectrumStyle->setToolTip(tr("Spectrum: %1").arg(names[m_spectrum->style()])
+                                  + QLatin1Char('\n') + tr("Click for the next style"));
+    };
+    applyStyle(QSettings().value(SpectrumStyleKey, 0).toInt());
+    connect(spectrumStyle, &XUiIconButton::clicked, this, [this, applyStyle] {
+        applyStyle((m_spectrum->style() + 1) % XUiSpectrum::StyleCount);
+        QSettings().setValue(SpectrumStyleKey, int(m_spectrum->style()));
+    });
+    visRow->addWidget(spectrumStyle, 0, Qt::AlignBottom);
     m_time = makeLabel(XUi::TextDim, 1.0, true);
     visRow->addWidget(m_time, 0, Qt::AlignBottom);
     visRow->addWidget(channels, 0, Qt::AlignBottom);

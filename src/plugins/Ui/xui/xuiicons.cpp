@@ -379,6 +379,16 @@ void XUiIcons::paint(QPainter *p, Icon icon, const QRectF &rect, const QColor &c
         strokePath(p, rising, color, W);
         break;
     }
+    case Spectrum:
+    {
+        //four bars of uneven height, the analyser in miniature
+        p->setPen(Qt::NoPen);
+        p->setBrush(color);
+        const qreal tops[4] = { 11, 5, 9, 14 };
+        for(int i = 0; i < 4; ++i)
+            p->drawRoundedRect(QRectF(4 + i * 4.5, tops[i], 3, 20 - tops[i]), 1, 1);
+        break;
+    }
     case ChevronDown:
     case ChevronRight:
     {

@@ -70,6 +70,7 @@ namespace XUiIcons
         MusicNote,
         Clock,      //scheduler armed
         Crossfade,
+        Spectrum,   //analyser style switch
         ChevronDown,
         ChevronRight,
     };

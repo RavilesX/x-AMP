@@ -18,8 +18,11 @@
  ***************************************************************************/
 
 #include <QPainter>
+#include <QPainterPath>
 #include <QTimer>
+#include <algorithm>
 #include <cmath>
+#include <iterator>
 #include "xuitheme.h"
 #include "xuivisualization.h"
 
@@ -72,6 +75,7 @@ XUiSpectrum::~XUiSpectrum() = default;
 
 void XUiSpectrum::clear()
 {
+    std::fill(std::begin(m_buffer), std::end(m_buffer), 0.0f);
     m_bands.fill(0.0);
     m_peaks.fill(0.0);
     update();
@@ -103,6 +107,26 @@ void XUiSpectrum::hideEvent(QHideEvent *)
 
 void XUiSpectrum::timeout()
 {
+    //Both take*() calls consume the engine's next node, so only the one the
+    //current style draws from is made.
+    if(m_style == Scope)
+    {
+        if(!takeData(m_buffer))
+        {
+            //nothing playing: let the trace settle onto the centre line
+            bool moving = false;
+            for(float &sample : m_buffer)
+            {
+                sample = std::abs(sample) < 0.002f ? 0.0f : sample * 0.7f;
+                moving = moving || sample != 0.0f;
+            }
+            if(!moving)
+                return;
+        }
+        update();
+        return;
+    }
+
     rebuildBands();
     if(m_bands.isEmpty())
         return;
@@ -138,14 +162,42 @@ void XUiSpectrum::timeout()
     update();
 }
 
+void XUiSpectrum::setStyle(Style style)
+{
+    m_style = style;
+    //the buffer holds FFT magnitudes or PCM depending on the style, and the
+    //one is nonsense read as the other until the next node arrives
+    std::fill(std::begin(m_buffer), std::end(m_buffer), 0.0f);
+    update();
+}
+
 void XUiSpectrum::paintEvent(QPaintEvent *)
 {
     if(m_bands.isEmpty())
         return;
 
     QPainter p(this);
-    p.setRenderHint(QPainter::Antialiasing, true);
     p.setPen(Qt::NoPen);
+    switch(m_style)
+    {
+    case Blocks:
+        paintBlocks(&p);
+        break;
+    case Wave:
+        paintWave(&p);
+        break;
+    case Scope:
+        paintScope(&p);
+        break;
+    default:
+        paintBars(&p);
+        break;
+    }
+}
+
+void XUiSpectrum::paintBars(QPainter *p)
+{
+    p->setRenderHint(QPainter::Antialiasing, true);
 
     const qreal h = height();
     QLinearGradient g(0, h, 0, 0);
@@ -158,8 +210,8 @@ void XUiSpectrum::paintEvent(QPaintEvent *)
     {
         const qreal x = i * (BAR_WIDTH + BAR_GAP);
         const qreal barHeight = qMax(2.0, m_bands[i] * h);
-        p.setBrush(brush);
-        p.drawRoundedRect(QRectF(x, h - barHeight, BAR_WIDTH, barHeight), 1.5, 1.5);
+        p->setBrush(brush);
+        p->drawRoundedRect(QRectF(x, h - barHeight, BAR_WIDTH, barHeight), 1.5, 1.5);
 
         //The cap that hangs at each band's recent maximum and sinks back
         //towards the bar, as the classic analyser does. Drawn only once it
@@ -168,10 +220,104 @@ void XUiSpectrum::paintEvent(QPaintEvent *)
         const qreal peakHeight = m_peaks[i] * h;
         if(peakHeight > barHeight + PEAK_HEIGHT)
         {
-            p.setBrush(XUi::AccentBright);
-            p.drawRect(QRectF(x, h - peakHeight - PEAK_HEIGHT, BAR_WIDTH, PEAK_HEIGHT));
+            p->setBrush(XUi::AccentBright);
+            p->drawRect(QRectF(x, h - peakHeight - PEAK_HEIGHT, BAR_WIDTH, PEAK_HEIGHT));
         }
     }
+}
+
+void XUiSpectrum::paintBlocks(QPainter *p)
+{
+    //unlit cells are drawn too, as the level meters do, so the grid reads
+    //as a panel of LEDs rather than as bars with gaps cut into them
+    constexpr qreal CELL = 3.0;
+    constexpr qreal CELL_GAP = 1.0;
+    const qreal h = height();
+    const int rows = qMax(1, int((h + CELL_GAP) / (CELL + CELL_GAP)));
+
+    for(int i = 0; i < m_bands.size(); ++i)
+    {
+        const qreal x = i * (BAR_WIDTH + BAR_GAP);
+        const int lit = int(std::round(m_bands[i] * rows));
+        const int peak = int(std::round(m_peaks[i] * rows));
+        for(int row = 0; row < rows; ++row) //row 0 sits on the baseline
+        {
+            const qreal t = qreal(row + 1) / rows;
+            if(row < lit)
+                p->setBrush(t > 0.85 ? XUi::AccentBright : (t > 0.35 ? XUi::Accent : XUi::AccentDeep));
+            else if(row == peak - 1)
+                p->setBrush(XUi::AccentBright);
+            else
+                p->setBrush(XUi::Border);
+            p->drawRect(QRectF(x, h - (row + 1) * CELL - row * CELL_GAP, BAR_WIDTH, CELL));
+        }
+    }
+}
+
+void XUiSpectrum::paintWave(QPainter *p)
+{
+    p->setRenderHint(QPainter::Antialiasing, true);
+
+    const qreal h = height();
+    //kept a pixel off the bottom so a silent player still shows the line
+    auto point = [this, h](int i) {
+        return QPointF(i * (BAR_WIDTH + BAR_GAP) + BAR_WIDTH / 2.0,
+                       qMin(h - 1.0, h - m_bands[i] * h));
+    };
+
+    //Smoothed by curving through the midpoints between bands, with each band
+    //as the control point: the curve stays within the bands' own range, so it
+    //never overshoots above a peak or dips below the floor.
+    const int last = m_bands.size() - 1;
+    QPainterPath curve;
+    curve.moveTo(0, point(0).y());
+    curve.lineTo(point(0));
+    for(int i = 1; i <= last; ++i)
+        curve.quadTo(point(i - 1), (point(i - 1) + point(i)) / 2.0);
+    curve.lineTo(point(last));
+    curve.lineTo(width(), point(last).y());
+
+    QPainterPath area = curve;
+    area.lineTo(width(), h);
+    area.lineTo(0, h);
+    area.closeSubpath();
+
+    QColor top = XUi::Accent;
+    top.setAlphaF(0.55f);
+    QColor bottom = XUi::AccentDeep;
+    bottom.setAlphaF(0.08f);
+    QLinearGradient g(0, 0, 0, h);
+    g.setColorAt(0.0, top);
+    g.setColorAt(1.0, bottom);
+    p->fillPath(area, g);
+    p->strokePath(curve, QPen(XUi::AccentBright, 1.5));
+}
+
+void XUiSpectrum::paintScope(QPainter *p)
+{
+    p->setRenderHint(QPainter::Antialiasing, true);
+
+    const qreal mid = height() / 2.0;
+    const qreal step = qreal(width()) / (QMMP_VISUAL_NODE_SIZE - 1);
+    p->fillRect(QRectF(0, mid - 0.5, width(), 1), XUi::Border); //the zero line
+
+    //takeData() hands out PCM normalised to ±1, so full scale fills the
+    //widget; qBound keeps a clipped sample from drawing outside it
+    QPainterPath trace;
+    for(int i = 0; i < QMMP_VISUAL_NODE_SIZE; ++i)
+    {
+        const QPointF point(i * step, mid - qBound(-1.0f, m_buffer[i], 1.0f) * (mid - 1.0));
+        if(i == 0)
+            trace.moveTo(point);
+        else
+            trace.lineTo(point);
+    }
+
+    //a wide, faint pass under the line gives it the glow of a phosphor trace
+    QColor glow = XUi::Accent;
+    glow.setAlphaF(0.3f);
+    p->strokePath(trace, QPen(glow, 4.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    p->strokePath(trace, QPen(XUi::AccentBright, 1.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 }
 
 // ------------------------------------------------------------------ VU meter

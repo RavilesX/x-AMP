@@ -399,137 +399,167 @@
 <context>
     <name>XUiPlayerCard</name>
     <message>
-        <location filename="../xuiplayercard.cpp" line="158"/>
+        <location filename="../xuiplayercard.cpp" line="161"/>
         <source>Track details</source>
         <translation>Detalles de la pista</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="192"/>
+        <location filename="../xuiplayercard.cpp" line="195"/>
         <source>MONO</source>
         <translation>MONO</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="194"/>
+        <location filename="../xuiplayercard.cpp" line="197"/>
         <source>STEREO</source>
         <translation>ESTÉREO</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="246"/>
+        <location filename="../xuiplayercard.cpp" line="220"/>
+        <source>Bars</source>
+        <translation>Barras</translation>
+    </message>
+    <message>
+        <location filename="../xuiplayercard.cpp" line="220"/>
+        <source>Blocks</source>
+        <translation>Bloques</translation>
+    </message>
+    <message>
+        <location filename="../xuiplayercard.cpp" line="220"/>
+        <source>Wave</source>
+        <translation>Onda</translation>
+    </message>
+    <message>
+        <location filename="../xuiplayercard.cpp" line="221"/>
+        <source>Oscilloscope</source>
+        <translation>Osciloscopio</translation>
+    </message>
+    <message>
+        <location filename="../xuiplayercard.cpp" line="222"/>
+        <source>Spectrum: %1</source>
+        <translation>Espectro: %1</translation>
+    </message>
+    <message>
+        <location filename="../xuiplayercard.cpp" line="223"/>
+        <source>Click for the next style</source>
+        <translation>Pulse para pasar al siguiente estilo</translation>
+    </message>
+    <message>
+        <location filename="../xuiplayercard.cpp" line="268"/>
         <source>Stop</source>
         <translation>Detener</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="251"/>
+        <location filename="../xuiplayercard.cpp" line="273"/>
         <source>Next</source>
         <translation>Siguiente</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="312"/>
+        <location filename="../xuiplayercard.cpp" line="334"/>
         <source>MUTE</source>
         <translation>MUTE</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="313"/>
+        <location filename="../xuiplayercard.cpp" line="335"/>
         <source>Silence, and back to the previous level</source>
         <translation>Silencio, y de vuelta al nivel anterior</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="314"/>
+        <location filename="../xuiplayercard.cpp" line="336"/>
         <source>100%</source>
         <translation>100%</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="316"/>
+        <location filename="../xuiplayercard.cpp" line="338"/>
         <source>Full volume, and back to the previous level</source>
         <translation>Volumen máximo, y de vuelta al nivel anterior</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="376"/>
+        <location filename="../xuiplayercard.cpp" line="398"/>
         <source>x-AMP</source>
         <translation>x-AMP</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="378"/>
+        <location filename="../xuiplayercard.cpp" line="400"/>
         <source>Not playing</source>
         <translation>No se está reproduciendo</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="384"/>
+        <location filename="../xuiplayercard.cpp" line="406"/>
         <source>%1 kHz</source>
         <translation>%1 kHz</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="412"/>
+        <location filename="../xuiplayercard.cpp" line="434"/>
         <source>%1 kbps</source>
         <translation>%1 kbps</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="517"/>
+        <location filename="../xuiplayercard.cpp" line="539"/>
         <source>Repeat track</source>
         <translation>Repetir pista</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="518"/>
+        <location filename="../xuiplayercard.cpp" line="540"/>
         <source>Repeat playlist</source>
         <translation>Repetir lista</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="518"/>
+        <location filename="../xuiplayercard.cpp" line="540"/>
         <source>No repeat</source>
         <translation>Sin repetición</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="531"/>
+        <location filename="../xuiplayercard.cpp" line="553"/>
         <source>Crossfade between tracks</source>
         <translation>Fundido entre canciones</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="541"/>
+        <location filename="../xuiplayercard.cpp" line="563"/>
         <source>Scheduler off</source>
         <translation>Programador desactivado</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="549"/>
+        <location filename="../xuiplayercard.cpp" line="571"/>
         <source>play a file</source>
         <translation>reproducir un archivo</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="552"/>
+        <location filename="../xuiplayercard.cpp" line="574"/>
         <source>play a playlist</source>
         <translation>reproducir una lista</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="555"/>
+        <location filename="../xuiplayercard.cpp" line="577"/>
         <source>close the player</source>
         <translation>cerrar el reproductor</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="558"/>
+        <location filename="../xuiplayercard.cpp" line="580"/>
         <source>suspend the computer</source>
         <translation>suspender el equipo</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="561"/>
+        <location filename="../xuiplayercard.cpp" line="583"/>
         <source>shut the computer down</source>
         <translation>apagar el equipo</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="567"/>
+        <location filename="../xuiplayercard.cpp" line="589"/>
         <source>at the end of the playlist</source>
         <translation>al final de la lista</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="569"/>
+        <location filename="../xuiplayercard.cpp" line="591"/>
         <source>at %1</source>
         <translation>a las %1</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="574"/>
+        <location filename="../xuiplayercard.cpp" line="596"/>
         <source>Scheduled: %1 %2</source>
         <translation>Programado: %1 %2</translation>
     </message>
     <message>
-        <location filename="../xuiplayercard.cpp" line="537"/>
+        <location filename="../xuiplayercard.cpp" line="559"/>
         <source>Click to open the scheduler</source>
         <translation>Pulse para abrir el programador</translation>
     </message>
