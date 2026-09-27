@@ -113,97 +113,107 @@
 <context>
     <name>XUiListView</name>
     <message>
-        <location filename="../xuilistview.cpp" line="394"/>
+        <location filename="../xuilistview.cpp" line="395"/>
         <source>&amp;Play</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="405"/>
+        <location filename="../xuilistview.cpp" line="426"/>
+        <source>Copy Pa&amp;th</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuilistview.cpp" line="431"/>
+        <source>&amp;Copy File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../xuilistview.cpp" line="446"/>
         <source>&amp;Remove Selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="407"/>
+        <location filename="../xuilistview.cpp" line="448"/>
         <source>Remove &amp;All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="415"/>
+        <location filename="../xuilistview.cpp" line="456"/>
         <source>&amp;Queue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="426"/>
+        <location filename="../xuilistview.cpp" line="467"/>
         <source>&amp;Remove from Queue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="427"/>
+        <location filename="../xuilistview.cpp" line="468"/>
         <source>&amp;Add to Queue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="433"/>
+        <location filename="../xuilistview.cpp" line="474"/>
         <source>Add to &amp;Top of Queue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="437"/>
+        <location filename="../xuilistview.cpp" line="478"/>
         <source>&amp;Clear Queue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="442"/>
+        <location filename="../xuilistview.cpp" line="483"/>
         <source>&amp;Manage...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="551"/>
+        <location filename="../xuilistview.cpp" line="592"/>
         <source>Add Here</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="552"/>
+        <location filename="../xuilistview.cpp" line="593"/>
         <source>Add to the End</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="553"/>
+        <location filename="../xuilistview.cpp" line="594"/>
         <source>Add to the Beginning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="555"/>
+        <location filename="../xuilistview.cpp" line="596"/>
         <source>Add to a New Playlist...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="571"/>
+        <location filename="../xuilistview.cpp" line="612"/>
         <source>New Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="572"/>
+        <location filename="../xuilistview.cpp" line="613"/>
         <source>Playlist name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="644"/>
+        <location filename="../xuilistview.cpp" line="685"/>
         <source>No matching tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="644"/>
+        <location filename="../xuilistview.cpp" line="685"/>
         <source>No tracks in playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="652"/>
+        <location filename="../xuilistview.cpp" line="693"/>
         <source>Try a different search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../xuilistview.cpp" line="653"/>
+        <location filename="../xuilistview.cpp" line="694"/>
         <source>Add tracks and enjoy your music</source>
         <translation type="unfinished"></translation>
     </message>

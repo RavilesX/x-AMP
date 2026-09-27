@@ -17,6 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
+#include <QClipboard>
 #include <QContextMenuEvent>
 #include <QDir>
 #include <QFileInfo>
@@ -401,6 +402,46 @@ void XUiListView::contextMenuEvent(QContextMenuEvent *e)
         }
     });
     addQueueMenu(&menu);
+    menu.addSeparator();
+
+    //taken now rather than when an entry is picked: strings cannot dangle if
+    //the playlist changes under the open menu
+    QStringList paths;
+    QList<QUrl> files;
+    const QList<PlayListTrack *> selected = m_model->selectedTracks();
+    for(PlayListTrack *track : selected)
+    {
+        const QString path = track->path();
+        //decided by protocol alone, so a selection on a network mount does not
+        //stall the menu; streams and tracks inside a CUE sheet have no file
+        if(path.contains(u"://"_s))
+        {
+            paths << path;
+            continue;
+        }
+        paths << QDir::toNativeSeparators(path);
+        files << QUrl::fromLocalFile(path);
+    }
+
+    QAction *copyPath = menu.addAction(tr("Copy Pa&th"));
+    copyPath->setEnabled(!paths.isEmpty());
+    connect(copyPath, &QAction::triggered, this, [paths] {
+        QApplication::clipboard()->setText(paths.join(QLatin1Char('\n')));
+    });
+    QAction *copyFile = menu.addAction(tr("&Copy File"));
+    copyFile->setEnabled(!files.isEmpty());
+    connect(copyFile, &QAction::triggered, this, [files] {
+        QMimeData *data = new QMimeData;
+        //text/uri-list is what Dolphin reads, and Qt turns it into CF_HDROP
+        //for Explorer on Windows
+        data->setUrls(files);
+        //Nautilus and its kin paste files only from GNOME's own format
+        QByteArray gnome("copy");
+        for(const QUrl &url : files)
+            gnome += '\n' + url.toEncoded();
+        data->setData(u"x-special/gnome-copied-files"_s, gnome);
+        QApplication::clipboard()->setMimeData(data);
+    });
     menu.addSeparator();
     connect(menu.addAction(tr("&Remove Selected")), &QAction::triggered,
             m_model, &PlayListModel::removeSelected);
