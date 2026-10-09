@@ -59,24 +59,25 @@ Descargá de la [última release](https://github.com/RavilesX/x-AMP/releases/lat
 
 | Archivo | Para qué |
 |---|---|
-| `x-amp-1.2.0-setup.exe` | Instalador con asistente. Instala por usuario, así que no pide permisos de administrador. |
-| `x-amp-1.2.0-windows-x64.zip` | Portable: descomprimir y ejecutar `bin\xamp.exe`. |
+| `x-amp-1.2.1-setup.exe` | Instalador con asistente. Instala por usuario, así que no pide permisos de administrador. |
+| `x-amp-1.2.1-windows-x64.zip` | Portable: descomprimir y ejecutar `bin\xamp.exe`. |
 
 Windows 10 o posterior, 64 bits. Los dos llevan dentro el entorno de Qt, el de
 MinGW y todos los plugins de decodificación, así que no hace falta instalar
 nada más. Cada uno viene con su `.sha256`.
 
 El asistente ofrece un acceso directo en el escritorio y, desmarcada por
-defecto, la asociación de archivos de audio. x-AMP aparece igual en «Abrir
-con» sin necesidad de marcarla.
+defecto, la asociación de archivos de audio, con un icono propio para los
+formatos más comunes. x-AMP aparece igual en «Abrir con» sin necesidad de
+marcarla.
 
 ### Desde una versión publicada
 
 En Linux se compila desde el tarball de la [última release](https://github.com/RavilesX/x-AMP/releases/latest):
 
 ```sh
-tar -xzf x-amp-1.2.0.tar.gz
-cd x-amp-1.2.0
+tar -xzf x-amp-1.2.1.tar.gz
+cd x-amp-1.2.1
 cmake -B build && make -C build -j"$(nproc)"
 sudo make -C build install/strip
 sudo ldconfig
@@ -189,6 +190,12 @@ xamp --ui-list       # queda por compatibilidad; lista solo xui
 
 ## Novedades
 
+### 1.2.1
+
+- **Estilos del espectro**: barras, bloques, onda y osciloscopio. Un clic sobre el visualizador pasa al siguiente.
+- **Copiar ruta** y **Copiar archivo**, en el menú contextual de la lista.
+- **Iconos por formato en Windows**: al asociar los archivos de audio desde el instalador, `mp3`, `flac`, `ogg`, `oga`, `aac`, `wav`, `aif`, `aiff` y `wma` llevan cada uno su icono. `aif`, `aiff` y `wma` se suman a las extensiones que se asocian.
+
 ### 1.2.0
 
 - **Una sola interfaz.** `skinned` y `qsui`, las dos que venían de Qmmp, se eliminaron del árbol: 226 archivos y 20,8 MB que nada aquí usaba. x-AMP ya no carga skins.
@@ -213,7 +220,7 @@ Antes de actualizar: la versión menor forma parte de la ruta de los plugins (`q
 
 ## Estado
 
-Versión **1.2.0**. Ya no es un fork de solo rebranding: la interfaz es propia y es la única, y el motor de audio, los decodificadores y el sistema de plugins siguen siendo los de Qmmp.
+Versión **1.2.1**. Ya no es un fork de solo rebranding: la interfaz es propia y es la única, y el motor de audio, los decodificadores y el sistema de plugins siguen siendo los de Qmmp.
 
 | | |
 |---|---|
@@ -223,7 +230,7 @@ Versión **1.2.0**. Ya no es un fork de solo rebranding: la interfaz es propia y
 | Interfaz propia `xui` | ✅ por defecto desde 1.0, la única desde 1.2 |
 | Programador y cola compartida | ✅ desde 1.1 |
 | Compilaciones de Windows en la release | ✅ desde 1.2 |
-| Releases publicadas | ✅ [1.2.0](https://github.com/RavilesX/x-AMP/releases/latest), [1.1.0](https://github.com/RavilesX/x-AMP/releases/tag/v1.1.0) y [1.0.0](https://github.com/RavilesX/x-AMP/releases/tag/v1.0.0) |
+| Releases publicadas | ✅ [1.2.1](https://github.com/RavilesX/x-AMP/releases/latest), [1.2.0](https://github.com/RavilesX/x-AMP/releases/tag/v1.2.0), [1.1.0](https://github.com/RavilesX/x-AMP/releases/tag/v1.1.0) y [1.0.0](https://github.com/RavilesX/x-AMP/releases/tag/v1.0.0) |
 
 La CI compila en Ubuntu y en Windows (MinGW vía MSYS2) en cada push, con un guardián que falla si un plugin deja de construirse. Las releases se cortan por etiqueta y publican el tarball de fuentes, el instalador de Windows y el paquete portable, cada uno con su suma SHA-256. El build de Windows sale de la misma acción compuesta que usa la CI, para que no puedan divergir.
 

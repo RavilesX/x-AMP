@@ -242,6 +242,10 @@ jobs:
 
       # gh is preinstalled on the runner, so no third-party action gets a token.
       # --verify-tag refuses to invent a tag that is not really there.
+      # --draft because the player's update check reads the latest published
+      # release: a draft can be looked over, and its installer tried, before
+      # every running copy is told about it. Publish it from the releases page
+      # or with "gh release edit vX.Y.Z --draft=false".
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -284,6 +288,7 @@ jobs:
 
           gh release create "${GITHUB_REF_NAME}" \
             --verify-tag \
+            --draft \
             --title "x-AMP ${VERSION}" \
             --notes-file "$notes" \
             --repo "${GITHUB_REPOSITORY}" \

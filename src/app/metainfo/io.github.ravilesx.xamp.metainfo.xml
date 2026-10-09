@@ -79,6 +79,22 @@
     <name>Ricardo Aviles Sanders</name>
   </developer>
   <releases>
+    <release version="1.2.1" date="2026-10-08">
+      <description>
+        <p>Spectrum styles, two clipboard commands, and file icons on Windows.</p>
+        <ul>
+          <li>Four styles for the spectrum: bars, blocks, wave and oscilloscope. A click on the visualization moves to the next one.</li>
+          <li>Copy Path and Copy File, in the playlist's context menu.</li>
+          <li>The Windows installer gives the common audio formats an icon of their own when it associates them, and now offers AIFF and WMA as well.</li>
+        </ul>
+        <p xml:lang="es">Estilos para el espectro, dos órdenes de portapapeles e iconos de archivo en Windows.</p>
+        <ul xml:lang="es">
+          <li>Cuatro estilos para el espectro: barras, bloques, onda y osciloscopio. Un clic sobre el visualizador pasa al siguiente.</li>
+          <li>Copiar ruta y Copiar archivo, en el menú contextual de la lista.</li>
+          <li>El instalador de Windows da a los formatos de audio más comunes un icono propio al asociarlos, y ahora ofrece también AIFF y WMA.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.2.0" date="2026-09-20">
       <description>
         <p>One interface, two languages, and Windows builds on the release page.</p>
