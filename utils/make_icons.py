@@ -12,6 +12,8 @@ Run from the repository root:
 
 Writes src/app/images/<size>/qmmp.png, the two .svgz under scalable/, and the
 pair of .ico under ico/ that the Windows executable embeds through qmmp.rc.in.
+Also writes ico/file_<ext>.ico for every master in artwork/file_icons/, which
+the Windows installer assigns to the extensions it associates.
 The file names stay as upstream has them; the fork's name is applied at
 install time (see CLAUDE.md).
 """
@@ -47,6 +49,14 @@ PADDING = 0.04
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "logo.png"
 TARGET = ROOT / "src" / "app" / "images"
+
+#One master per file extension, named after it. Each becomes file_<ext>.ico,
+#which the Windows installer puts on that extension when it is associated.
+FILE_ICONS = ROOT / "artwork" / "file_icons"
+
+#Masters that exist but are not shipped. webm is a video extension first, and
+#an audio player that claims it takes someone's videos with it.
+FILE_ICONS_SKIPPED = {"webm"}
 
 
 def fitted(art: Image.Image, size: int) -> Image.Image:
@@ -145,6 +155,15 @@ def main() -> int:
     write_ico(lambda size: logo if size >= LETTERING_MIN else mark,
               ico / "qmmp.ico", "application")
     write_ico(lambda size: mark, ico / "qmmp_file.ico", "file association")
+
+    #The per-extension icons. qmmp_file.ico stays as the fallback for the
+    #extensions nobody has drawn one for.
+    for master in sorted(FILE_ICONS.glob("*.png")):
+        if master.stem in FILE_ICONS_SKIPPED:
+            continue
+        art = Image.open(master).convert("RGBA")
+        write_ico(lambda size: art, ico / f"file_{master.stem}.ico",
+                  f"{master.stem} files")
     return 0
 
 

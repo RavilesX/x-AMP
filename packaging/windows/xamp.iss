@@ -81,6 +81,9 @@ ShowLanguageDialog=auto
 ; last page offers that.
 CloseApplications=yes
 RestartApplications=no
+; Tells the shell the associations moved when the wizard ends. Without it
+; Explorer goes on showing the old icons until the user logs out.
+ChangesAssociations=yes
 
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
@@ -116,6 +119,9 @@ Source: "{#StageDir}\share\*"; DestDir: "{app}\share"; Flags: ignoreversion recu
 Source: "{#SourceRoot}\COPYING"; DestDir: "{app}"; DestName: "COPYING.txt"; Flags: ignoreversion
 Source: "{#SourceRoot}\README.md"; DestDir: "{app}"; DestName: "README.md"; Flags: ignoreversion
 Source: "{#SourceRoot}\src\app\images\ico\qmmp_file.ico"; DestDir: "{app}"; DestName: "audio-file.ico"; Flags: ignoreversion
+; One icon per extension that has artwork of its own, written by
+; utils/make_icons.py from artwork/file_icons.
+Source: "{#SourceRoot}\src\app\images\ico\file_*.ico"; DestDir: "{app}\icons"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\bin\{#AppExeName}"
@@ -132,19 +138,54 @@ Root: HKA; Subkey: "Software\Classes\x-AMP.AudioFile\DefaultIcon"; ValueType: st
 Root: HKA; Subkey: "Software\Classes\x-AMP.AudioFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\{#AppExeName}"" ""%1"""
 Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\{#AppExeName}"" ""%1"""; Flags: uninsdeletekey
 
+; An extension with an icon of its own needs a ProgID of its own: Windows
+; hangs the icon on the ProgID, not on the extension. Registered whether or
+; not the extensions are claimed, like the generic one above.
+Root: HKA; Subkey: "Software\Classes\x-AMP.mp3"; ValueType: string; ValueName: ""; ValueData: "MP3 audio"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\x-AMP.mp3\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\icons\file_mp3.ico"
+Root: HKA; Subkey: "Software\Classes\x-AMP.mp3\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\{#AppExeName}"" ""%1"""
+Root: HKA; Subkey: "Software\Classes\x-AMP.flac"; ValueType: string; ValueName: ""; ValueData: "FLAC audio"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\x-AMP.flac\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\icons\file_flac.ico"
+Root: HKA; Subkey: "Software\Classes\x-AMP.flac\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\{#AppExeName}"" ""%1"""
+Root: HKA; Subkey: "Software\Classes\x-AMP.ogg"; ValueType: string; ValueName: ""; ValueData: "Ogg audio"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\x-AMP.ogg\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\icons\file_ogg.ico"
+Root: HKA; Subkey: "Software\Classes\x-AMP.ogg\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\{#AppExeName}"" ""%1"""
+Root: HKA; Subkey: "Software\Classes\x-AMP.oga"; ValueType: string; ValueName: ""; ValueData: "Ogg audio"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\x-AMP.oga\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\icons\file_oga.ico"
+Root: HKA; Subkey: "Software\Classes\x-AMP.oga\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\{#AppExeName}"" ""%1"""
+Root: HKA; Subkey: "Software\Classes\x-AMP.aac"; ValueType: string; ValueName: ""; ValueData: "AAC audio"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\x-AMP.aac\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\icons\file_aac.ico"
+Root: HKA; Subkey: "Software\Classes\x-AMP.aac\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\{#AppExeName}"" ""%1"""
+Root: HKA; Subkey: "Software\Classes\x-AMP.wav"; ValueType: string; ValueName: ""; ValueData: "WAVE audio"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\x-AMP.wav\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\icons\file_wav.ico"
+Root: HKA; Subkey: "Software\Classes\x-AMP.wav\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\{#AppExeName}"" ""%1"""
+Root: HKA; Subkey: "Software\Classes\x-AMP.aif"; ValueType: string; ValueName: ""; ValueData: "AIFF audio"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\x-AMP.aif\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\icons\file_aif.ico"
+Root: HKA; Subkey: "Software\Classes\x-AMP.aif\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\{#AppExeName}"" ""%1"""
+Root: HKA; Subkey: "Software\Classes\x-AMP.aiff"; ValueType: string; ValueName: ""; ValueData: "AIFF audio"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\x-AMP.aiff\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\icons\file_aiff.ico"
+Root: HKA; Subkey: "Software\Classes\x-AMP.aiff\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\{#AppExeName}"" ""%1"""
+Root: HKA; Subkey: "Software\Classes\x-AMP.wma"; ValueType: string; ValueName: ""; ValueData: "Windows Media audio"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\x-AMP.wma\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\icons\file_wma.ico"
+Root: HKA; Subkey: "Software\Classes\x-AMP.wma\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\{#AppExeName}"" ""%1"""
+
 ; Claimed only when the task is ticked. One line per extension rather than a
 ; loop: Inno has no loop here, and an explicit list is what can be checked
 ; against the decoders that are actually built.
-Root: HKA; Subkey: "Software\Classes\.mp3";  ValueType: string; ValueName: ""; ValueData: "x-AMP.AudioFile"; Tasks: associate; Flags: uninsdeletevalue
-Root: HKA; Subkey: "Software\Classes\.flac"; ValueType: string; ValueName: ""; ValueData: "x-AMP.AudioFile"; Tasks: associate; Flags: uninsdeletevalue
-Root: HKA; Subkey: "Software\Classes\.ogg";  ValueType: string; ValueName: ""; ValueData: "x-AMP.AudioFile"; Tasks: associate; Flags: uninsdeletevalue
-Root: HKA; Subkey: "Software\Classes\.oga";  ValueType: string; ValueName: ""; ValueData: "x-AMP.AudioFile"; Tasks: associate; Flags: uninsdeletevalue
-Root: HKA; Subkey: "Software\Classes\.opus"; ValueType: string; ValueName: ""; ValueData: "x-AMP.AudioFile"; Tasks: associate; Flags: uninsdeletevalue
-Root: HKA; Subkey: "Software\Classes\.m4a";  ValueType: string; ValueName: ""; ValueData: "x-AMP.AudioFile"; Tasks: associate; Flags: uninsdeletevalue
-Root: HKA; Subkey: "Software\Classes\.aac";  ValueType: string; ValueName: ""; ValueData: "x-AMP.AudioFile"; Tasks: associate; Flags: uninsdeletevalue
-Root: HKA; Subkey: "Software\Classes\.wav";  ValueType: string; ValueName: ""; ValueData: "x-AMP.AudioFile"; Tasks: associate; Flags: uninsdeletevalue
-Root: HKA; Subkey: "Software\Classes\.wv";   ValueType: string; ValueName: ""; ValueData: "x-AMP.AudioFile"; Tasks: associate; Flags: uninsdeletevalue
-Root: HKA; Subkey: "Software\Classes\.ape";  ValueType: string; ValueName: ""; ValueData: "x-AMP.AudioFile"; Tasks: associate; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.mp3";     ValueType: string; ValueName: ""; ValueData: "x-AMP.mp3"; Tasks: associate; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.flac";    ValueType: string; ValueName: ""; ValueData: "x-AMP.flac"; Tasks: associate; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.ogg";     ValueType: string; ValueName: ""; ValueData: "x-AMP.ogg"; Tasks: associate; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.oga";     ValueType: string; ValueName: ""; ValueData: "x-AMP.oga"; Tasks: associate; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.aac";     ValueType: string; ValueName: ""; ValueData: "x-AMP.aac"; Tasks: associate; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.wav";     ValueType: string; ValueName: ""; ValueData: "x-AMP.wav"; Tasks: associate; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.aif";     ValueType: string; ValueName: ""; ValueData: "x-AMP.aif"; Tasks: associate; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.aiff";    ValueType: string; ValueName: ""; ValueData: "x-AMP.aiff"; Tasks: associate; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.wma";     ValueType: string; ValueName: ""; ValueData: "x-AMP.wma"; Tasks: associate; Flags: uninsdeletevalue
+; No artwork for these yet, so they share the generic icon.
+Root: HKA; Subkey: "Software\Classes\.opus";    ValueType: string; ValueName: ""; ValueData: "x-AMP.AudioFile"; Tasks: associate; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.m4a";     ValueType: string; ValueName: ""; ValueData: "x-AMP.AudioFile"; Tasks: associate; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.wv";      ValueType: string; ValueName: ""; ValueData: "x-AMP.AudioFile"; Tasks: associate; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.ape";     ValueType: string; ValueName: ""; ValueData: "x-AMP.AudioFile"; Tasks: associate; Flags: uninsdeletevalue
 
 [Run]
 Filename: "{app}\bin\{#AppExeName}"; Description: "{cm:LaunchApp}"; Flags: nowait postinstall skipifsilent
