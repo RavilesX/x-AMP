@@ -109,6 +109,20 @@ runs:
         # here.
         if grep -q 'compiler ABI info - failed' configure-windows.log; then
           grep -m1 -A150 'Detecting CXX compiler ABI info' build/CMakeFiles/CMakeConfigureLog.yaml || true
+          # Temporary probe: the log shows g++ -v dying at the assembler.
+          tool=C:/msys64/mingw64/x86_64-w64-mingw32/bin
+          echo 'int main(void){return 0;}' > probe.c
+          gcc -S probe.c -o probe.s; echo "gcc -S: $?"
+          ls -l $tool/as.exe C:/msys64/mingw64/bin/as.exe
+          $tool/as.exe --version | head -1; echo "tooldir as --version: $?"
+          $tool/as.exe -o probe.o probe.s; echo "tooldir as: $?"
+          $tool/as.exe -v -o probe.o probe.s; echo "tooldir as -v: $?"
+          C:/msys64/mingw64/bin/as.exe -v -o probe.o probe.s; echo "bin as -v: $?"
+          gcc -c probe.c -o probe.o; echo "gcc -c: $?"
+          gcc -v -c probe.c -o probe.o > /dev/null 2>&1; echo "gcc -v -c: $?"
+          (cd /tmp && gcc -v -c "$OLDPWD/probe.c" -o probe.o > /dev/null 2>&1; echo "gcc -v -c in /tmp: $?")
+          pacman() { C:/msys64/usr/bin/bash.exe -lc "pacman $1"; }
+          pacman '-Q mingw-w64-x86_64-binutils mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja'
           echo "::error title=compiler ABI detection failed::see the configure log above"
           exit 1
         fi
