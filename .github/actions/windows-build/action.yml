@@ -91,40 +91,28 @@ runs:
             "$(tail -40 "$2" | sed 's/%/%25/g; s/\r//g' | awk '{printf "%s%%0A", $0}')"
         }
 
+        # The two IMPLICIT_INCLUDE_DIRECTORIES are what CMake's ABI probe would
+        # have found, said by hand. MSYS2's binutils 2.47 (built 2026-10-07)
+        # segfaults on "as -v", and -v is how that probe runs the compiler, so
+        # it fails while ordinary compiles are fine. CMake carries on without
+        # the list, passes the system directory as -isystem like any other,
+        # and libstdc++'s #include_next <stdlib.h> then finds nothing after
+        # it. Harmless once the probe works again: its answer takes over.
         if ! cmake -B build -G Ninja \
                -DCMAKE_BUILD_TYPE=Release \
                -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ \
-               -DCMAKE_PREFIX_PATH=C:/msys64/mingw64 > configure-windows.log 2>&1; then
+               -DCMAKE_PREFIX_PATH=C:/msys64/mingw64 \
+               -DCMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES=C:/msys64/mingw64/include \
+               -DCMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES=C:/msys64/mingw64/include \
+               > configure-windows.log 2>&1; then
           cat configure-windows.log
           annotate "configure failed" configure-windows.log
           exit 1
         fi
         cat configure-windows.log
 
-        # CMake learns the compiler's implicit include directories from this
-        # check, and carries on without them when it fails: the system
-        # directory then reaches the command line as -isystem, and libstdc++'s
-        # #include_next <stdlib.h> finds nothing after it. The build dies a
-        # step later with an error that names the wrong culprit, so say why
-        # here.
         if grep -q 'compiler ABI info - failed' configure-windows.log; then
-          grep -m1 -A150 'Detecting CXX compiler ABI info' build/CMakeFiles/CMakeConfigureLog.yaml || true
-          # Temporary probe: the log shows g++ -v dying at the assembler.
-          tool=C:/msys64/mingw64/x86_64-w64-mingw32/bin
-          echo 'int main(void){return 0;}' > probe.c
-          gcc -S probe.c -o probe.s; echo "gcc -S: $?"
-          ls -l $tool/as.exe C:/msys64/mingw64/bin/as.exe
-          $tool/as.exe --version | head -1; echo "tooldir as --version: $?"
-          $tool/as.exe -o probe.o probe.s; echo "tooldir as: $?"
-          $tool/as.exe -v -o probe.o probe.s; echo "tooldir as -v: $?"
-          C:/msys64/mingw64/bin/as.exe -v -o probe.o probe.s; echo "bin as -v: $?"
-          gcc -c probe.c -o probe.o; echo "gcc -c: $?"
-          gcc -v -c probe.c -o probe.o > /dev/null 2>&1; echo "gcc -v -c: $?"
-          (cd /tmp && gcc -v -c "$OLDPWD/probe.c" -o probe.o > /dev/null 2>&1; echo "gcc -v -c in /tmp: $?")
-          pacman() { C:/msys64/usr/bin/bash.exe -lc "pacman $1"; }
-          pacman '-Q mingw-w64-x86_64-binutils mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja'
-          echo "::error title=compiler ABI detection failed::see the configure log above"
-          exit 1
+          echo "::warning title=compiler ABI detection failed::CMake could not probe the compiler; building on the implicit include directories given by hand."
         fi
 
     # The point of pulling the codec libraries in is the Input plugins, and
