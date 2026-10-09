@@ -101,6 +101,18 @@ runs:
         fi
         cat configure-windows.log
 
+        # CMake learns the compiler's implicit include directories from this
+        # check, and carries on without them when it fails: the system
+        # directory then reaches the command line as -isystem, and libstdc++'s
+        # #include_next <stdlib.h> finds nothing after it. The build dies a
+        # step later with an error that names the wrong culprit, so say why
+        # here.
+        if grep -q 'compiler ABI info - failed' configure-windows.log; then
+          grep -m1 -A150 'Detecting CXX compiler ABI info' build/CMakeFiles/CMakeConfigureLog.yaml || true
+          echo "::error title=compiler ABI detection failed::see the configure log above"
+          exit 1
+        fi
+
     # The point of pulling the codec libraries in is the Input plugins, and
     # a silently empty set is the failure worth catching: pkg_check_modules
     # reports a missing library by disabling its plugin, not by failing, so
