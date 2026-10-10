@@ -71,6 +71,7 @@ private:
     int m_frameSize = 0;
     QString m_id;
     bool m_exclusive = false;
+    CO_MTA_USAGE_COOKIE m_mtaUsage = nullptr;
     qint64 m_bufferSize = 1000000L; //microseconds
     static QList< QPair<Qmmp::ChannelPosition, DWORD> > m_wasapi_pos; //channel position, mask
 };

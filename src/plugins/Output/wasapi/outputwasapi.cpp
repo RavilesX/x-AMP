@@ -59,12 +59,25 @@ OutputWASAPI::OutputWASAPI() : Output()
     m_id = settings.value("WASAPI/device"_L1, u"default"_s).toString();
     m_bufferSize = settings.value("WASAPI/buffer_size"_L1, 1000).toInt() * 1000LL;
     m_exclusive = settings.value("WASAPI/exclusive_mode"_L1, false).toBool();
+
+    //Nothing here ever initialised COM, so the interfaces below lived in an
+    //apartment some other thread happened to have opened, and were left
+    //dangling when that thread closed it. A native file dialog starts and
+    //ends such threads, and the player was seen to die right after one was
+    //used during playback. This holds the multithreaded apartment open for as
+    //long as the output exists; unlike CoInitializeEx it is not tied to a
+    //thread, and this object is created, written to and destroyed on
+    //different ones.
+    if(FAILED(CoIncrementMTAUsage(&m_mtaUsage)))
+        m_mtaUsage = nullptr;
 }
 
 OutputWASAPI::~OutputWASAPI()
 {
     instance = nullptr;
     uninitialize();
+    if(m_mtaUsage)
+        CoDecrementMTAUsage(m_mtaUsage);
 }
 
 bool OutputWASAPI::initialize(quint32 freq, ChannelMap map, Qmmp::AudioFormat format)
