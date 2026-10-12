@@ -58,7 +58,13 @@ QString Qmmp::configDir()
         //directory -- the one collision the whole naming scheme exists to
         //avoid, and a silent one: both players read the file and the last to
         //quit wins.
-        const QString dir = u"/."_s + QCoreApplication::organizationName();
+        //
+        //Spelled out rather than built from organizationName(): QMMPStarter
+        //renames the organization to this directory's own name, ".xamp", so
+        //that QSettings lands inside it, and from then on a derived path read
+        //"..xamp" -- a directory nobody creates, where the playlist and
+        //everything else kept beside the settings was silently never written.
+        const QString dir = u"/.xamp"_s;
 
         if(isPortable())
             return *::appDir() + dir;
@@ -82,7 +88,9 @@ void Qmmp::setConfigDir(const QString &path)
 QString Qmmp::cacheDir()
 {
 #ifdef Q_OS_WIN
-    return *::configDir();
+    //x-AMP: the function, not the override behind it, which is empty unless
+    //setConfigDir() was called
+    return configDir();
 #else
     if(::configDir()->isEmpty())
         return QStringLiteral("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation),

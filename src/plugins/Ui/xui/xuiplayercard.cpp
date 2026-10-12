@@ -17,6 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
+#include <QFileInfo>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLocale>
@@ -394,10 +395,16 @@ void XUiPlayerCard::updateTrackInfo()
 {
     const TrackInfo info = m_core->trackInfo();
 
-    const QString title = info.value(Qmmp::TITLE);
+    //A file without tags -- most WAVs -- has neither title nor artist, and is
+    //playing all the same: only a missing path means there is no track. The
+    //file name stands in for the title, as it does in the playlist.
+    const bool loaded = !info.path().isEmpty();
+    QString title = info.value(Qmmp::TITLE);
+    if(title.isEmpty() && loaded)
+        title = QFileInfo(info.path()).completeBaseName();
     m_title->setText(title.isEmpty() ? tr("x-AMP") : title);
     const QString artist = info.value(Qmmp::ARTIST);
-    m_artist->setText(artist.isEmpty() ? tr("Not playing") : artist);
+    m_artist->setText(artist.isEmpty() && !loaded ? tr("Not playing") : artist);
 
     const AudioParameters params = m_core->audioParameters();
     m_format->setText(info.value(Qmmp::FORMAT_NAME));
