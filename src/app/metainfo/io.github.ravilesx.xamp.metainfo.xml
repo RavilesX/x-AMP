@@ -79,6 +79,22 @@
     <name>Ricardo Aviles Sanders</name>
   </developer>
   <releases>
+    <release version="1.2.2" date="2026-10-12">
+      <description>
+        <p>Fixes, most of them for Windows.</p>
+        <ul>
+          <li>The playlist survives closing the player on Windows. The data directory was worked out wrongly after startup, so the playlist and everything else kept beside the settings was never written.</li>
+          <li>A file without tags, as most WAVs are, no longer reads "Not playing" while it plays: the card shows the file name.</li>
+          <li>The player no longer dies on Windows after a file dialog is used during playback: the WASAPI output keeps its own COM apartment open.</li>
+        </ul>
+        <p xml:lang="es">Correcciones, casi todas de Windows.</p>
+        <ul xml:lang="es">
+          <li>La lista de reproducción se conserva al cerrar el reproductor en Windows. La carpeta de datos se calculaba mal después del arranque, así que la lista y todo lo que se guarda junto a la configuración no llegaba a escribirse.</li>
+          <li>Un archivo sin etiquetas, como casi cualquier WAV, ya no dice «No se está reproduciendo» mientras suena: la tarjeta muestra el nombre del archivo.</li>
+          <li>El reproductor ya no se cierra en Windows después de usar un diálogo de archivos durante la reproducción: la salida WASAPI mantiene abierto su propio entorno COM.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.2.1" date="2026-10-08">
       <description>
         <p>Spectrum styles, two clipboard commands, and file icons on Windows.</p>
